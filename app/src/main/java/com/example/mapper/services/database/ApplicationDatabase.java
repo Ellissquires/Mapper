@@ -8,13 +8,19 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.mapper.services.models.Path;
+import com.example.mapper.services.models.PathDAO;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.PointDAO;
+import com.example.mapper.services.models.Visit;
+import com.example.mapper.services.models.VisitDAO;
 
-@Database(entities = {Point.class}, version = 1, exportSchema = false)
+@Database(entities = {Point.class, Path.class, Visit.class}, version = 1, exportSchema = false)
 public abstract class ApplicationDatabase extends RoomDatabase {
 
     public abstract PointDAO pointDao();
+    public abstract PathDAO pathDao();
+    public abstract VisitDAO visitDao();
 
     private static volatile ApplicationDatabase INSTANCE;
 
@@ -38,7 +44,6 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
-
             // do any init operation about any initialisation here
         }
     };
