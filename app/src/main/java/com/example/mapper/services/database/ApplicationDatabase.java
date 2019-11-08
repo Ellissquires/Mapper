@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.mapper.services.models.Path;
@@ -16,6 +17,8 @@ import com.example.mapper.services.models.Visit;
 import com.example.mapper.services.models.VisitDAO;
 
 @Database(entities = {Point.class, Path.class, Visit.class}, version = 1, exportSchema = false)
+@TypeConverters({Converters.class})
+
 public abstract class ApplicationDatabase extends RoomDatabase {
 
     public abstract PointDAO pointDao();
