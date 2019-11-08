@@ -1,6 +1,7 @@
 package com.example.mapper.services.database;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -47,8 +48,27 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
-            // do any init operation about any initialisation here
+
+            new PopulateWithTestVisitsAsync(INSTANCE).execute();
+
         }
     };
+
+    private static class PopulateWithTestVisitsAsync extends AsyncTask<Void, Void, Void> {
+
+        private final VisitDAO mDao;
+
+        PopulateWithTestVisitsAsync(ApplicationDatabase db) {
+            mDao = db.visitDao();
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            mDao.deleteAll();
+            return null;
+        }
+    }
+
+
 
 }

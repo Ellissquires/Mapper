@@ -12,12 +12,14 @@ public class Visit {
 
     private int id = 0;
     private String title;
-    private int pathId;
     private Date visitDate;
+    private int pathId;
 
 
-    public Visit(){
-
+    public Visit(String title, Date visitDate, int pathId){
+        this.title = title;
+        this.visitDate = visitDate;
+        this.pathId = pathId;
     }
 
     public int getId() {
@@ -28,6 +30,27 @@ public class Visit {
         this.id = id;
     }
 
+    public String getTitle() {
+        return title;
+    }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
+    public Date getVisitDate() {
+        return visitDate;
+    }
+
+    public void setVisitDate(Date visitDate) {
+        this.visitDate = visitDate;
+    }
+
+    public int getPathId() {
+        return pathId;
+    }
+
+    public void setPathId(int pathId) {
+        this.pathId = pathId;
+    }
 }

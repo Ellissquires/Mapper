@@ -20,17 +20,14 @@ public class PathRepository extends ViewModel {
         pathDAO = db.pathDao();
     }
 
-
     public void createPath(Point... points){
-
         new InsertPathAsyncTask(pathDAO).execute(new Path());
-
     }
 
     static class InsertPathAsyncTask extends AsyncTask<Path, Void, Void> {
         private PathDAO asyncPathDao;
 
-        public InsertPathAsyncTask(PathDAO dao){
+        private InsertPathAsyncTask(PathDAO dao){
             asyncPathDao = dao;
         }
 
@@ -38,10 +35,8 @@ public class PathRepository extends ViewModel {
         protected Void doInBackground(final Path... params){
             long pathID = asyncPathDao.insert(params[0]);
 
-
             return null;
         }
     }
-
 
 }
