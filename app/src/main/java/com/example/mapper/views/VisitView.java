@@ -47,8 +47,11 @@ public class VisitView extends AppCompatActivity {
                 if(visits.size() == 0){
                     TextView tv = findViewById(R.id.visitInfoMessage);
                     tv.setText("No Visits Recorded");
+                } else  {
+                    TextView tv = findViewById(R.id.visitInfoMessage);
+                    tv.setText("Number of visits " + visits.size());
                 }
-                adapter.setWords(visits);
+                adapter.setVisits(visits);
             }
         });
 
