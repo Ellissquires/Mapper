@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
 import com.example.mapper.sensors.BarometerSensor;
+import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.sensors.TemperatureSensor;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.VisitViewModel;
@@ -30,6 +31,7 @@ public class VisitView extends AppCompatActivity {
     private VisitViewModel mVisitViewModel;
     private BarometerSensor mBarometer;
     private TemperatureSensor mTempSensor;
+    private LocationSensor mGPSSensor;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -71,6 +73,7 @@ public class VisitView extends AppCompatActivity {
 
         mBarometer = new BarometerSensor(this);
         mTempSensor = new TemperatureSensor(this);
+//        mGPSSensor = new LocationSensor(this);
         mBarometer.startSensing();
         mTempSensor.startSensing();
     }
