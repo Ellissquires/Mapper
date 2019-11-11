@@ -15,7 +15,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:scaleType="centerCrop"
-                app:srcCompat="@drawable/dog" />
+                app:srcCompat="@drawable/dog"
+                android:contentDescription="@string/visit_card_contentDesc"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,12 +41,12 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Share"
+                    android:text="@string/visit_card_share"
                     android:theme="@style/PrimaryFlatButton" />
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Explore"
+                    android:text="@string/visit_card_explore"
                     android:theme="@style/PrimaryFlatButton" />
             </LinearLayout>
         </LinearLayout>
