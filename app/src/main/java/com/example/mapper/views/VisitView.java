@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
+import com.example.mapper.sensors.Barometer;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.VisitViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,7 +28,7 @@ import java.util.List;
 public class VisitView extends AppCompatActivity {
 
     private VisitViewModel mVisitViewModel;
-
+    private Barometer mBarometer;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -67,7 +68,20 @@ public class VisitView extends AppCompatActivity {
             }
         });
 
+        mBarometer = new Barometer(this);
+        mBarometer.startSensingPressure();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBarometer.startSensingPressure();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mBarometer.stopBarometer();
     }
 
     @Override
