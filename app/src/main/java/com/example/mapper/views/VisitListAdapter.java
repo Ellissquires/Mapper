@@ -42,11 +42,11 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             holder.visitItemView.setText(current.getTitle());
         } else {
             // Covers the case of data not being ready yet.
-            holder.visitItemView.setText("No Word");
+            holder.visitItemView.setText("No Title");
         }
     }
 
-    void setWords(List<Visit> visits){
+    void setVisits(List<Visit> visits){
         mVisits = visits;
         notifyDataSetChanged();
     }
