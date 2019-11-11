@@ -11,13 +11,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
-import com.example.mapper.sensors.Barometer;
+import com.example.mapper.sensors.BarometerSensor;
+import com.example.mapper.sensors.TemperatureSensor;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.VisitViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,7 +28,8 @@ import java.util.List;
 public class VisitView extends AppCompatActivity {
 
     private VisitViewModel mVisitViewModel;
-    private Barometer mBarometer;
+    private BarometerSensor mBarometer;
+    private TemperatureSensor mTempSensor;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -68,20 +69,24 @@ public class VisitView extends AppCompatActivity {
             }
         });
 
-        mBarometer = new Barometer(this);
-        mBarometer.startSensingPressure();
+        mBarometer = new BarometerSensor(this);
+        mTempSensor = new TemperatureSensor(this);
+        mBarometer.startSensing();
+        mTempSensor.startSensing();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mBarometer.startSensingPressure();
+        mBarometer.startSensing();
+        mTempSensor.startSensing();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mBarometer.stopBarometer();
+        mBarometer.stopSensing();
+        mTempSensor.stopSensing();
     }
 
     @Override
