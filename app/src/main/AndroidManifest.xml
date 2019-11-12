@@ -38,6 +38,13 @@
             android:name=".views.MapView"
             android:label="Map">
         </activity>
+
+        <activity
+            android:name=".views.NewVisitView"
+            android:label="New Visit"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>

@@ -38,16 +38,24 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:insetLeft="5dp"
+                    android:insetRight="5dp"
                     android:text="@string/visit_card_share"
-                    android:theme="@style/PrimaryFlatButton" />
+                    app:backgroundTint="@color/colorAccent"
+                    />
+
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:insetLeft="5dp"
+                    android:insetRight="5dp"
                     android:text="@string/visit_card_explore"
-                    android:theme="@style/PrimaryFlatButton" />
+                    app:backgroundTint="@color/colorAccent"
+                    />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

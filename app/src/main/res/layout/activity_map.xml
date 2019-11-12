@@ -36,26 +36,28 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_record"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:background="@android:color/white"
-        android:orientation="vertical">
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="120dp"
+        android:backgroundTint="?attr/colorAccent"
+        app:maxImageSize="40dp"
+        app:srcCompat="@drawable/ic_play_arrow_black_24dp"
+        app:tint="?attr/colorPrimary" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_record"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_margin="@dimen/fab_margin"
-            android:layout_marginBottom="120dp"
-            android:backgroundTint="@android:color/black"
-            app:maxImageSize="40dp"
-            app:srcCompat="@drawable/ic_stop_black_40dp"
-            app:tint="?attr/colorAccent" />
+    <!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|center"-->
+<!--        android:background="@android:color/white"-->
+<!--        android:orientation="vertical">-->
 
-    </LinearLayout>
+
+
+<!--    </LinearLayout>-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
