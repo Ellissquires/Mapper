@@ -1,9 +1,12 @@
 package com.example.mapper.views;
 
         import androidx.annotation.NonNull;
+        import androidx.core.app.ActivityCompat;
+        import androidx.core.content.ContextCompat;
         import androidx.fragment.app.FragmentActivity;
 
         import android.content.Intent;
+        import android.content.pm.PackageManager;
         import android.content.res.Resources;
         import android.location.Location;
         import android.os.Bundle;
@@ -31,6 +34,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean mLocationPermissionGranted;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +64,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
     @Override
     public void onMapReady(GoogleMap map) {
-
+        getLocationPermission();
         mMap = map;
 
         try {
@@ -76,6 +82,15 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         // location permission from the user. This sample does not include
         // a request for location permission.
 
+        getCurrentLocation();
+
+        mMap.setMyLocationEnabled(true);
+        mMap.setOnMyLocationButtonClickListener(this);
+        mMap.setOnMyLocationClickListener(this);
+    }
+
+    public void getCurrentLocation(){
+        //function to get the current location of the user.
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -92,10 +107,46 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                         }
                     }
                 });
+    }
 
-        mMap.setMyLocationEnabled(true);
-        mMap.setOnMyLocationButtonClickListener(this);
-        mMap.setOnMyLocationClickListener(this);
+
+    /**
+     * Prompts the user for permission to use the device location.
+     */
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    /**
+     * Handles the result of the request for location permissions.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                }
+            }
+        }
     }
 
     @Override
