@@ -72,11 +72,13 @@ public class VisitView extends AppCompatActivity {
             }
         });
 
+        // Setup Sensors
         mBarometer = new BarometerSensor(this);
         mTempSensor = new TemperatureSensor(this);
-        mGPSSensor = new LocationSensor(this, this);
-        mBarometer.startSensing();
+        mGPSSensor = new LocationSensor(this, this); // Both context and acticity are this because reasons...
+        mBarometer.startSensing(); // Start sensing
         mTempSensor.startSensing();
+        mGPSSensor.startSensing();
     }
 
     /**
@@ -86,22 +88,25 @@ public class VisitView extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
+        //Let GPS Sensor know about permission results.
         mGPSSensor.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 
     @Override
-    protected void onResume() {
+    protected void onResume() { // start sensing on resume
         super.onResume();
         mBarometer.startSensing();
         mTempSensor.startSensing();
+        mGPSSensor.startSensing();
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause() { //stop sensing on pause
         super.onPause();
         mBarometer.stopSensing();
         mTempSensor.stopSensing();
+        mGPSSensor.stopSensing();
     }
 
     @Override

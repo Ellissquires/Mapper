@@ -138,7 +138,7 @@ public class LocationSensor extends AndroidSensor {
     }
 
     /**
-     * Does Nothing.
+     * Does Nothing.-
      * @param event
      * @param ms
      */
