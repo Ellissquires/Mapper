@@ -5,65 +5,62 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Location;
 import android.os.SystemClock;
 import android.util.Log;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.Executor;
 
-public abstract class HardwareSensor {
-    protected String TAG = HardwareSensor.class.getSimpleName();
+/**
+ * Android Sensor is an abstract class representing a single sensor.
+ */
+public abstract class AndroidSensor {
+    protected String TAG = AndroidSensor.class.getSimpleName();
+    // Sampling rates
     protected long mSamplingRateInMS;
     protected long mSamplingRateNano;
+
+    // Hardware sensors.
     private SensorEventListener mListener = null;
     private SensorManager mSensorManager;
     private Sensor mSensor;
-    private long lastRebootTime = 0;
-    private long BAROMETER_READING_FREQUENCY = 30000;
-    private long lastReportTime = 0;
     private String mSensorType;
+    // Variables for timings
+    private long lastRebootTime = 0;
+    private long READING_FREQUENCY = 3000;
+    private long lastReportTime = 0;
 
-    protected FusedLocationProviderClient mFusedLocationClient;
+    protected SensorEvent mLastResult;
 
-    public HardwareSensor (Context context, int type) {
-        this(context, type, false);
-    }
 
-    public HardwareSensor (Context context, int type, boolean GPSSensor) {
+    /**
+     *
+     * @param context The Activity this sensor is being used in.
+     * @param type The android sensor id
+     */
+    public AndroidSensor(Context context, int type) {
         lastRebootTime = System.currentTimeMillis() - SystemClock.elapsedRealtime();
-        mSamplingRateNano = (long) (BAROMETER_READING_FREQUENCY) * 1000000;
-        mSamplingRateInMS = (long) BAROMETER_READING_FREQUENCY;
-        if (!GPSSensor) {
+        mSamplingRateNano = (long) (READING_FREQUENCY) * 1000000;
+        mSamplingRateInMS = (long) READING_FREQUENCY;
+        // If type is invalid, don't initialize most values
+        if (type > -1) {
             mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
             mSensor = mSensorManager.getDefaultSensor(type);
-            mSensorType = mSensor.getStringType();
+            if (standardSensorAvailable()) {
+                mSensorType = mSensor.getStringType();
+            }
             TAG = mSensorType;
             initListener();
-        } else {
-            TAG = "GPS Location Service";
-            mFusedLocationClient = new FusedLocationProviderClient(context);
-            mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener((Executor) this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-
-                        }
-                    }
-                });
         }
-
 
     }
 
 
+    /**
+     * Initiliaseds the sensor.
+     */
     protected void initListener() {
         if(!standardSensorAvailable()) {
             Log.d(TAG, "Sensor type " + mSensorType + " unavailable.");
@@ -76,6 +73,8 @@ public abstract class HardwareSensor {
                     if (diff >= mSamplingRateNano) {
                         long actualTimeInMS = lastRebootTime + (long) (event.timestamp / 1000000.0);
 
+                        mLastResult = event;
+                        // Call the fn with the event and time in ms
                         onSensorChange(event, actualTimeInMS);
 
                         lastReportTime = event.timestamp;
@@ -92,10 +91,23 @@ public abstract class HardwareSensor {
 
     protected abstract void onSensorChange(SensorEvent event, long ms);
 
+    public SensorEvent fetchLastResults () {
+        return mLastResult;
+    }
+
+    /**
+     *
+     * @return False if the sensor is null.
+     */
     protected boolean standardSensorAvailable () {
         return (mSensor != null);
     }
 
+    /**
+     * Converts ms to a date
+     * @param ms milliseconds since 1/1/1970
+     * @return the date string in HH:mm:ss
+     */
     public static String mSecsToString(long ms) {
         Date date = new Date(ms);
         DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
@@ -104,6 +116,9 @@ public abstract class HardwareSensor {
     }
 
 
+    /**
+     * Starts the sensor.
+     */
     public void startSensing() {
         if(standardSensorAvailable()) {
             Log.d(TAG, "starting listener");
@@ -113,6 +128,9 @@ public abstract class HardwareSensor {
         }
     }
 
+    /**
+     * Stops the sensor
+     */
     public void stopSensing() {
         if(standardSensorAvailable()) {
             Log.d(TAG, "starting listener");

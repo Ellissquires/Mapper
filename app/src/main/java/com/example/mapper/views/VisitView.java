@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -73,10 +74,21 @@ public class VisitView extends AppCompatActivity {
 
         mBarometer = new BarometerSensor(this);
         mTempSensor = new TemperatureSensor(this);
-//        mGPSSensor = new LocationSensor(this);
+        mGPSSensor = new LocationSensor(this, this);
         mBarometer.startSensing();
         mTempSensor.startSensing();
     }
+
+    /**
+     * Handles the result of the request for location permissions.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mGPSSensor.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 
     @Override
     protected void onResume() {

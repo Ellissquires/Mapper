@@ -6,7 +6,7 @@ import android.hardware.SensorEvent;
 import android.util.Log;
 
 
-public class BarometerSensor extends HardwareSensor{
+public class BarometerSensor extends AndroidSensor {
     public BarometerSensor(Context context) {
         super(context, Sensor.TYPE_PRESSURE);
     }

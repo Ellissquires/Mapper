@@ -6,7 +6,7 @@ import android.hardware.SensorEvent;
 import android.util.Log;
 
 
-public class TemperatureSensor extends HardwareSensor{
+public class TemperatureSensor extends AndroidSensor {
     public TemperatureSensor(Context context) {
         super(context, Sensor.TYPE_AMBIENT_TEMPERATURE);
     }
