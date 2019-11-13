@@ -17,12 +17,12 @@
     <include layout="@layout/content_map" />
 
 
-
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom|center">
+        android:layout_gravity="bottom|center"
+        android:orientation="horizontal">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_record"
@@ -32,9 +32,25 @@
             android:layout_margin="@dimen/fab_margin"
             android:layout_marginBottom="120dp"
             android:backgroundTint="?attr/colorAccent"
+            android:visibility="visible"
+            app:backgroundTint="?attr/colorAccent"
             app:maxImageSize="40dp"
             app:srcCompat="@drawable/ic_play_arrow_black_24dp"
-            app:tint="?attr/colorPrimary" />
+            app:tint="@android:color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_marginBottom="120dp"
+            android:backgroundTint="?attr/colorAccent"
+            android:visibility="gone"
+            app:backgroundTint="?attr/colorAccent"
+            app:maxImageSize="40dp"
+            app:srcCompat="@drawable/ic_stop_black"
+            app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_camera"
@@ -43,8 +59,9 @@
             android:layout_gravity="center|end"
             android:layout_margin="@dimen/fab_margin"
             android:backgroundTint="?attr/colorAccent"
+            app:backgroundTint="?attr/colorAccent"
             app:srcCompat="@drawable/ic_camera_alt_black"
-            app:tint="?attr/colorPrimary" />
+            app:tint="@android:color/white" />
 
     </LinearLayout>
 

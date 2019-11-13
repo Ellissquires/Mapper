@@ -47,13 +47,29 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
             }
         });
 
-        FloatingActionButton fab_record = (FloatingActionButton) findViewById(R.id.fab_record);
+
+        final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
+        final FloatingActionButton fab_record = (FloatingActionButton) findViewById(R.id.fab_record);
+        fab_record.setVisibility(View.VISIBLE);
+        fab_stop.setVisibility(View.GONE);
+
         fab_record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                fab_record.setVisibility(View.GONE);
+                fab_stop.setVisibility(View.VISIBLE);
+            }
+        });
+
+        fab_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fab_record.setVisibility(View.VISIBLE);
+                fab_stop.setVisibility(View.GONE);
             }
         });
 
@@ -77,10 +93,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             if (!success) {
             }
         } catch (Resources.NotFoundException e) {
+
         }
-        // TODO: Before enabling the My Location layer, you must request
-        // location permission from the user. This sample does not include
-        // a request for location permission.
 
         getCurrentLocation();
 
