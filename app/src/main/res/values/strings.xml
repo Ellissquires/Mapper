@@ -4,5 +4,9 @@
     <string name="visit_card_share">Share</string>
     <string name="visit_card_explore">Explore</string>
     <string name="visit_card_contentDesc">Visit Thumbnail</string>
+    <string name="visit_title_label">Title</string>
+    <string name="visit_description_label">Description</string>
+    <string name="visit_add_button">Record Visit</string>
+
 
 </resources>

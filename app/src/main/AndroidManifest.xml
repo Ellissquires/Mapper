@@ -9,6 +9,7 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <dist:module dist:instant="true" />
 
@@ -36,6 +37,13 @@
         <activity
             android:name=".views.MapView"
             android:label="Map">
+        </activity>
+
+        <activity
+            android:name=".views.NewVisitView"
+            android:label="New Visit"
+            android:theme="@style/AppTheme.NoActionBar">
+
         </activity>
     </application>
 
