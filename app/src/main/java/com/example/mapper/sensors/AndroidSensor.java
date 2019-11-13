@@ -33,6 +33,7 @@ public abstract class AndroidSensor {
     private long lastReportTime = 0;
 
     protected SensorEvent mLastResult;
+    protected AndroidSensorCallback mSensorCallback;
 
 
     /**
@@ -57,6 +58,10 @@ public abstract class AndroidSensor {
 
     }
 
+    public void setSensorCallback(AndroidSensorCallback callback) {
+        mSensorCallback = callback;
+    }
+
 
     /**
      * Initiliaseds the sensor.
@@ -76,6 +81,7 @@ public abstract class AndroidSensor {
                         mLastResult = event;
                         // Call the fn with the event and time in ms
                         onSensorChange(event, actualTimeInMS);
+
 
                         lastReportTime = event.timestamp;
                     }

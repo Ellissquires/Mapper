@@ -16,6 +16,10 @@ public class TemperatureSensor extends AndroidSensor {
         float pressureValue = event.values[0];
         int accuracy = event.accuracy;
 
+        if (mSensorCallback != null) {
+            mSensorCallback.onSensorCallback(event);
+        }
+
         Log.i(super.TAG, mSecsToString(ms) + ": current pressure:  " + pressureValue + ": accuracy: "+ accuracy);
     }
 }
