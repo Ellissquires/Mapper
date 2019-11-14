@@ -23,26 +23,19 @@ public class LocationSensor extends AndroidSensor {
     private boolean mLocationPermissionGranted = false;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
-
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
 
     private LocationResult mLastResult;
 
+    private final Activity activity;
+
     public LocationSensor(Context context, Activity activity) {
         super(context, 0);
+        this.activity = activity;
         TAG = "GPS Location Service";
 
         mFusedLocationClient = new FusedLocationProviderClient(context);
-        mFusedLocationClient.getLastLocation() // Get Last location with fusedLocationClient
-                .addOnSuccessListener(activity, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            Log.d(TAG, location.toString());
-                        }
-                    }
-            });
 
         // Create a location callback
         mLocationCallback = new LocationCallback() {
@@ -66,6 +59,21 @@ public class LocationSensor extends AndroidSensor {
         fetchPermission(context, activity);
     }
 
+    /**
+     * Extra function to get Current Location reading if needed.
+     * @param callback
+     */
+    public void getCurrentLocation(final AndroidSensorCallback callback) {
+        mFusedLocationClient.getLastLocation() // Get Last location with fusedLocationClient
+                .addOnSuccessListener(activity, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        callback.onSensorCallback(location);
+                    }
+                });
+
+    }
+
     @Override
     public void startSensing () {
         if (mLocationPermissionGranted) {
@@ -83,7 +91,10 @@ public class LocationSensor extends AndroidSensor {
     }
 
 
-    // Fetch the last obtained result.
+    /**
+     * Fetch the last obtained result.
+     * @return Returns the last location recorded by the sensor.
+     */
     public LocationResult fetchLastLocation() {
         return mLastResult;
     }
