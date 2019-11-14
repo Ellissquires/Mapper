@@ -8,14 +8,21 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.mapper.sensors.AndroidSensorCallback;
+import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
+import com.example.mapper.sensors.TemperatureSensor;
+import com.example.mapper.services.PointRepository;
+import com.example.mapper.services.models.Point;
+import com.example.mapper.services.models.PointDAO;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,6 +44,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private GoogleMap mMap;
 
     private LocationSensor mGPSSensor;
+    private BarometerSensor mBarometerSensor;
+    private TemperatureSensor mTempSensor;
 
 
     @Override
@@ -55,6 +64,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         fab_record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                beginRecording();
             }
         });
 
@@ -62,7 +72,38 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
         mGPSSensor = new LocationSensor(this, this);
+        mBarometerSensor = new BarometerSensor(this);
+        mTempSensor = new TemperatureSensor(this);
+    }
+
+    /**
+     * Starts recording the map and stores it as points in the database.
+     */
+    public void beginRecording () {
+        AndroidSensorCallback callback = new AndroidSensorCallback() {
+            @Override
+            public void onSensorCallback (Location location) {
+                if (location != null) {
+                    SensorEvent pressureResults = mBarometerSensor.fetchLastResults();
+                    SensorEvent tempResults = mTempSensor.fetchLastResults();
+
+                    double temp = tempResults.values[0];
+                    double pressure = pressureResults.values[0];
+
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
+
+                    Point p = new Point(lat, lng, pressure, temp, 0);
+                }
+            }
+        };
+        mGPSSensor.setSensorCallback(callback);
+
+        mGPSSensor.startSensing();
+        mBarometerSensor.startSensing();
+        mTempSensor.startSensing();
     }
 
     @Override

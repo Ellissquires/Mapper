@@ -46,11 +46,11 @@ public class NewVisitView extends AppCompatActivity {
         TemperatureSensor mTS = new TemperatureSensor(this);
         if(!mBS.sensorAvailable()) {
             CheckBox checkbox = (CheckBox) findViewById(R.id.pressure_checkbox);
-            checkbox.setVisibility(View.INVISIBLE);
+            checkbox.setVisibility(View.GONE);
         }
         if(!mTS.sensorAvailable()) {
             CheckBox checkbox = (CheckBox) findViewById(R.id.temp_checkbox);
-            checkbox.setVisibility(View.INVISIBLE);
+            checkbox.setVisibility(View.GONE);
         }
 
 

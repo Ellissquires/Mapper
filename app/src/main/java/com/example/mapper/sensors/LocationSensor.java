@@ -45,6 +45,7 @@ public class LocationSensor extends AndroidSensor {
                 mLastResult = locationResult;
                 if (mSensorCallback != null) {
                     mSensorCallback.onSensorCallback(locationResult);
+                    mSensorCallback.onSensorCallback(locationResult.getLastLocation());
                 }
                 Log.d(TAG, locationResult.toString());
             }
