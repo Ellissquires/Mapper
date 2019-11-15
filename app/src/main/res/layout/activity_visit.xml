@@ -19,6 +19,7 @@
         app:backgroundTint="#3487FC"
         app:hideOnScroll="true"
         app:elevation="5dp"
+        app:itemIconTint="@color/txtColor"
         app:menu="@menu/bottomappbar_menu"
         />
 

@@ -11,11 +11,10 @@
         android:layout_marginLeft="@dimen/mtrl_card_spacing"
         android:layout_marginTop="@dimen/mtrl_card_spacing"
         android:layout_marginRight="@dimen/mtrl_card_spacing"
-        android:backgroundTint="#434273"
+        android:backgroundTint="@color/colorPrimaryDark"
         android:minHeight="200dp"
         app:cardCornerRadius="6dp"
-        app:cardElevation="18dp"
-        app:cardMaxElevation="20dp"
+        app:cardElevation="5dp"
         app:contentPadding="8dp">
 
 
@@ -33,7 +32,7 @@
                 android:lineSpacingExtra="8sp"
                 android:text=""
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/colorPrimaryLight"
                 android:textSize="18sp"
                 android:typeface="normal"
                 app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +40,7 @@
 
             <ImageButton
                 android:id="@+id/options"
-                android:layout_width="20dp"
+                android:layout_width="10dp"
                 android:layout_height="30dp"
                 android:layout_gravity="right"
                 android:layout_marginTop="8dp"
@@ -84,7 +83,7 @@
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/poppins_light"
                 android:text="This is a description of my amazing trip. It was fun"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/colorPrimaryLight"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +101,7 @@
                 android:gravity="center_vertical"
                 android:text="56.7km"
                 android:textAlignment="center"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/colorPrimaryLight"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 

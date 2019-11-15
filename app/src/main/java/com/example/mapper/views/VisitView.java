@@ -42,7 +42,6 @@ public class VisitView extends AppCompatActivity {
 
         //set bottom bar to Action bar as it is similar like Toolbar
         setSupportActionBar(bottomAppBar);
-        bottomAppBar.replaceMenu(R.menu.bottomappbar_menu);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
