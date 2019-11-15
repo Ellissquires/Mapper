@@ -1,24 +1,31 @@
 package com.example.mapper.views;
 
 import android.content.Intent;
+import android.hardware.SensorEvent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
+import com.example.mapper.sensors.AndroidSensorCallback;
+import com.example.mapper.sensors.BarometerSensor;
+import com.example.mapper.sensors.LocationSensor;
+import com.example.mapper.sensors.TemperatureSensor;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.VisitViewModel;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -29,7 +36,11 @@ public class VisitView extends AppCompatActivity {
 
     private VisitViewModel mVisitViewModel;
     private BottomAppBar bottomAppBar;
-
+    
+    private BarometerSensor mBarometer;
+    private TemperatureSensor mTempSensor;
+    private LocationSensor mGPSSensor;
+  
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -75,7 +86,57 @@ public class VisitView extends AppCompatActivity {
             }
         });
 
+        // Setup Sensors
+        mBarometer = new BarometerSensor(this);
+        mTempSensor = new TemperatureSensor(this);
+        mGPSSensor = new LocationSensor(this, this); // Both context and acticity are this because reasons...
+        mBarometer.startSensing(); // Start sensing
+        mTempSensor.startSensing();
+        mGPSSensor.startSensing();
 
+        mBarometer.setSensorCallback(new AndroidSensorCallback() {
+            @Override
+            public void onSensorCallback(SensorEvent event) {
+                // Sensor callback for non location sensors
+                Log.d("YES", "YES THIS WORKS");
+            }
+        });
+
+        mGPSSensor.setSensorCallback(new AndroidSensorCallback() {
+            @Override
+            public void onSensorCallback(LocationResult result) {
+                //Sensor callback for location sensor.
+                Log.d("YES", "YES THIS WORKS");
+            }
+        });
+    }
+
+    /**
+     * Handles the result of the request for location permissions.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        //Let GPS Sensor know about permission results.
+        mGPSSensor.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+    @Override
+    protected void onResume() { // start sensing on resume
+        super.onResume();
+        mBarometer.startSensing();
+        mTempSensor.startSensing();
+        mGPSSensor.startSensing();
+    }
+
+    @Override
+    protected void onPause() { //stop sensing on pause
+        super.onPause();
+        mBarometer.stopSensing();
+        mTempSensor.stopSensing();
+        mGPSSensor.stopSensing();
     }
 
     @Override
