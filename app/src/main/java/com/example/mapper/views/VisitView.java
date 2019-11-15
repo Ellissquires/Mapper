@@ -42,6 +42,8 @@ public class VisitView extends AppCompatActivity {
 
         //set bottom bar to Action bar as it is similar like Toolbar
         setSupportActionBar(bottomAppBar);
+        bottomAppBar.replaceMenu(R.menu.bottomappbar_menu);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -77,12 +79,12 @@ public class VisitView extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.bottomappbar_menu, menu);
+        return true;
+    }
 
 //
 //    @Override

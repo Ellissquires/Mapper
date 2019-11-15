@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="Search"/>
+
+    <item
+        android:id="@+id/navigation_logo"
+        android:title="Mapper"/>
+
+    <item
+        android:id="@+id/navigation_new"
+        android:icon="@drawable/ic_add_white_24dp"
+        android:title="New"
+        />
+
+</menu>
