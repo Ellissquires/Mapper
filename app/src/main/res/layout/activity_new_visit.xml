@@ -28,7 +28,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="auto"
-                android:fontFamily="@font/poppins_light" />
+                android:fontFamily="@font/poppins_light"
+                android:textColor="@color/colorPrimaryLight"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,7 +49,7 @@
                 android:gravity="top"
                 android:inputType="textMultiLine"
                 android:minLines="4"
-                android:textColor="@color/txtColor" />
+                android:textColor="@color/colorPrimaryLight" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
