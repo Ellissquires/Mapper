@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#3E3A63"
     tools:context=".views.VisitView">
 
 
@@ -14,16 +15,21 @@
         android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            app:boxStrokeColor="@color/colorPrimaryLight"
+            app:hintTextColor="@color/colorPrimaryLight"
             android:hint="Title">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/description"
+                android:id="@+id/title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:focusable="auto"
+                android:fontFamily="@font/poppins_light"
+                android:textColor="@color/colorPrimaryLight"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -31,13 +37,19 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description">
+            android:hint="Description"
+            app:boxStrokeColor="@color/colorPrimaryLight"
+            app:hintTextColor="@color/colorPrimaryLight"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:maxLines="4" />
+                android:fontFamily="@font/poppins_light"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:minLines="4"
+                android:textColor="@color/colorPrimaryLight" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,22 +58,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Track pressure" />
+            android:checked="true"
+            android:fontFamily="@font/poppins_light"
+            android:gravity="center_vertical"
+            android:text="Track pressure"
+            android:textColor="@color/colorPrimaryLight" />
 
         <CheckBox
             android:id="@+id/checkBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text=" Track Temperature" />
+            android:checked="true"
+            android:fontFamily="@font/poppins_light"
+            android:text="Track Temperature"
+            android:textColor="@color/colorPrimaryLight" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/record"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Record Visit" />
+            android:fontFamily="@font/poppins_light"
+            android:text="Record Visit"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/colorPrimaryLight"
+            app:iconTint="@color/colorPrimaryLight"
+            app:strokeColor="@color/colorPrimaryLight" />
 
     </LinearLayout>
 

@@ -67,8 +67,8 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(final Void... params) {
             mDao.deleteAll();
-            mDao.insert(new Visit("Test1", new Date(), 1));
-            mDao.insert(new Visit("Test2", new Date(), 1));
+            mDao.insert(new Visit("Athens", new Date(), 1));
+            mDao.insert(new Visit("London", new Date(), 1));
 
             return null;
         }
