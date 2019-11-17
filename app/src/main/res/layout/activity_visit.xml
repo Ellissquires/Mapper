@@ -6,9 +6,11 @@
     android:layout_height="match_parent"
     android:layout_alignParentEnd="true"
     android:layout_alignParentRight="true"
-    android:background="#3E3A63">
+    android:background="@color/colorPrimaryDark">
 
-    <include layout="@layout/content_visits" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_visits" />
 
     <!-- Bottom bar -->
     <com.google.android.material.bottomappbar.BottomAppBar
@@ -16,12 +18,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:backgroundTint="#3487FC"
-        app:hideOnScroll="true"
+        app:backgroundTint="@color/colorPrimary"
         app:elevation="5dp"
+        app:hideOnScroll="true"
         app:itemIconTint="@color/txtColor"
-        app:menu="@menu/bottomappbar_menu"
-        />
+        app:menu="@menu/bottomappbar_menu" />
 
     <!-- Floating Action button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,11 +30,11 @@
         style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:tint="@color/txtColor"
         app:backgroundTint="@color/colorAccent"
+        app:elevation="5dp"
         app:fabSize="normal"
         app:layout_anchor="@id/bar"
-        app:elevation="5dp"
-        app:srcCompat="@drawable/ic_add_white_24dp" />
+        app:srcCompat="@drawable/ic_add_white_24dp"
+        app:tint="@color/txtColor" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

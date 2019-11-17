@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3E3A63"
+    android:background="@color/colorPrimaryDark"
     tools:context=".views.VisitView">
 
 
@@ -19,9 +19,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:boxStrokeColor="@color/colorPrimaryLight"
+            android:hint="@string/title"
+            android:textColorHint="@color/colorSecondary"
+            app:boxStrokeColor="@color/colorSecondary"
+            app:boxStrokeWidth="2dp"
             app:hintTextColor="@color/colorPrimaryLight"
-            android:hint="Title">
+            app:passwordToggleTint="@color/colorSecondary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
@@ -29,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="auto"
                 android:fontFamily="@font/poppins_light"
-                android:textColor="@color/colorPrimaryLight"/>
+                android:textColor="@color/colorPrimaryLight" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -37,10 +40,12 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
-            app:boxStrokeColor="@color/colorPrimaryLight"
-            app:hintTextColor="@color/colorPrimaryLight"
-            >
+            android:hint="@string/description"
+            android:textColorHint="@color/colorOnSecondary"
+            app:boxStrokeColor="@color/colorSecondary"
+            app:boxStrokeWidth="2dp"
+            app:helperTextTextColor="@color/colorSecondary"
+            app:hintTextColor="@color/colorPrimaryLight">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -49,7 +54,10 @@
                 android:gravity="top"
                 android:inputType="textMultiLine"
                 android:minLines="4"
-                android:textColor="@color/colorPrimaryLight" />
+                android:selectAllOnFocus="false"
+                android:singleLine="false"
+                android:textColor="@color/colorPrimaryLight"
+                android:textColorHighlight="#00BCD4" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,8 +69,10 @@
             android:checked="true"
             android:fontFamily="@font/poppins_light"
             android:gravity="center_vertical"
-            android:text="Track pressure"
-            android:textColor="@color/colorPrimaryLight" />
+            android:text="@string/track_pressure"
+            android:textColor="@color/colorPrimaryLight"
+            app:useMaterialThemeColors="false"
+            tools:textColorHighlight="@color/colorSecondary" />
 
         <CheckBox
             android:id="@+id/checkBox"
@@ -70,8 +80,9 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:fontFamily="@font/poppins_light"
-            android:text="Track Temperature"
-            android:textColor="@color/colorPrimaryLight" />
+            android:text="@string/track_temperature"
+            android:textColor="@color/colorPrimaryLight"
+            app:useMaterialThemeColors="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/record"
@@ -80,11 +91,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_light"
-            android:text="Record Visit"
+            android:text="@string/record_visit"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/colorPrimaryLight"
-            app:iconTint="@color/colorPrimaryLight"
-            app:strokeColor="@color/colorPrimaryLight" />
+            app:backgroundTint="@color/colorPrimary"
+            app:iconTint="@color/colorPrimary"
+            app:strokeColor="@color/colorPrimary" />
 
     </LinearLayout>
 
