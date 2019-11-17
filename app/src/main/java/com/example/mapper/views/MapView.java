@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Camera;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
@@ -47,7 +48,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MapView.this, CameraView.class);
+                startActivity(intent);
             }
         });
 
@@ -157,7 +159,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Sorry!!!, you can't use this app without granting permission", Toast.LENGTH_LONG).show();
                     mLocationPermissionGranted = true;
+                    finish();
                 }
             }
         }
