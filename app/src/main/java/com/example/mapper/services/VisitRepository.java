@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.mapper.services.database.ApplicationDatabase;
+import com.example.mapper.services.models.Path;
+import com.example.mapper.services.models.PathDAO;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.services.models.VisitDAO;
 
@@ -15,26 +17,33 @@ import java.util.List;
 public class VisitRepository extends ViewModel {
 
     private final VisitDAO visitDAO;
+    private final PathDAO pathDAO;
 
     public VisitRepository(Application application) {
         ApplicationDatabase db = ApplicationDatabase.getDatabase(application);
         visitDAO = db.visitDao();
+        pathDAO = db.pathDao();
     }
 
     public void createVisit(Visit visit){
-        new InsertVisitAsyncTask(visitDAO).execute(visit);
+        new InsertVisitAsyncTask(visitDAO, pathDAO).execute(visit);
     }
 
     static class InsertVisitAsyncTask extends AsyncTask<Visit, Void, Void> {
         private VisitDAO asyncVisitDao;
+        private PathDAO asyncPathDao;
 
-        private InsertVisitAsyncTask(VisitDAO dao){
-            asyncVisitDao = dao;
+        private InsertVisitAsyncTask(VisitDAO vDao, PathDAO pDao){
+            asyncPathDao = pDao;
+            asyncVisitDao = vDao;
         }
 
         @Override
         protected Void doInBackground(final Visit... params){
-            asyncVisitDao.insert(params[0]);
+            long pathID = asyncPathDao.insert(new Path());
+            Visit visit = params[0];
+            visit.setPathId(pathID);
+            asyncVisitDao.insert(visit);
 
             return null;
         }
