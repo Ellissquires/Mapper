@@ -12,20 +12,21 @@
         android:layout_height="match_parent"
         android:layout_weight="1" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_picture"
+    <Button
+        android:id="@+id/btn_picture"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="@dimen/fab_margin"
         android:background="@android:color/transparent"
         android:backgroundTint="@android:color/transparent"
-        app:backgroundTint="@android:color/transparent"
-        app:fabSize="auto"
-        app:maxImageSize="64dp"
-        app:srcCompat="@drawable/ic_radio_button_unchecked"
-        app:tint="@android:color/white" />
-
+        android:fontFamily="@font/poppins_bold"
+        android:shadowColor="@android:color/transparent"
+        app:icon="@drawable/ic_radio_button_unchecked_black_90dp"
+        app:iconSize="120dp"
+        app:iconTint="@color/colorSecondary"
+        app:layout_anchor="@id/textureView"
+        app:layout_anchorGravity="bottom|center"
+        app:rippleColor="@android:color/transparent" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
