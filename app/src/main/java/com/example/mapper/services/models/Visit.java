@@ -12,14 +12,15 @@ public class Visit {
 
     private int id = 0;
     private String title;
+    private String description;
     private Date visitDate;
-    private int pathId;
+    private long pathId;
 
 
-    public Visit(String title, Date visitDate, int pathId){
+    public Visit(String title,String description, Date visitDate){
         this.title = title;
+        this.description = description;
         this.visitDate = visitDate;
-        this.pathId = pathId;
     }
 
     public int getId() {
@@ -34,6 +35,10 @@ public class Visit {
         return title;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -46,11 +51,11 @@ public class Visit {
         this.visitDate = visitDate;
     }
 
-    public int getPathId() {
+    public long getPathId() {
         return pathId;
     }
 
-    public void setPathId(int pathId) {
+    public void setPathId(long pathId) {
         this.pathId = pathId;
     }
 }
