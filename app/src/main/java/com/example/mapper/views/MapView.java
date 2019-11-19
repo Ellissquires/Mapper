@@ -31,6 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
+    public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -50,6 +51,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
             }
         });
+
+        String testing = getIntent().getStringExtra(EXTRA_VISIT);
 
 
         final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);

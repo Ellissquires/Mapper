@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 public class NewVisitView extends AppCompatActivity {
+    public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     private EditText mEditTitleView;
     private EditText mEditDescriptionView;
@@ -37,7 +38,7 @@ public class NewVisitView extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_visit);
-        Button recordButton = (Button) findViewById(R.id.record);
+        Button recordButton = findViewById(R.id.record);
         mEditTitleView = findViewById(R.id.title);
         mEditDescriptionView = findViewById(R.id.description);
         mNewVisitViewModel = ViewModelProviders.of(this).get(NewVisitViewModel.class);
@@ -51,9 +52,9 @@ public class NewVisitView extends AppCompatActivity {
                 Visit newVisit = new Visit(title, description, new Date());
                 mNewVisitViewModel.createVisit(newVisit);
                 Intent intent = new Intent(NewVisitView.this, MapView.class);
+                intent.putExtra(EXTRA_VISIT, "Testing");
                 startActivity(intent);
             }
-    });
-
+        });
     }
 }
