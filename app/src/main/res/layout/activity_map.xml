@@ -19,7 +19,7 @@
         android:layout_marginLeft="@dimen/mtrl_card_spacing"
         android:layout_marginTop="@dimen/mtrl_card_spacing"
         android:layout_marginRight="@dimen/mtrl_card_spacing"
-        android:backgroundTint="@color/colorPrimaryDark"
+        android:backgroundTint="@color/colorPrimary"
         app:cardCornerRadius="6dp"
         app:contentPadding="8dp">
 
