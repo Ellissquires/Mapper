@@ -18,7 +18,9 @@ import com.example.mapper.sensors.AndroidSensorCallback;
 import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.sensors.TemperatureSensor;
+import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PointRepository;
+import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.PointDAO;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -47,6 +49,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private BarometerSensor mBarometerSensor;
     private TemperatureSensor mTempSensor;
 
+    private PathRepository mPathDB;
+    private PointRepository mPointDB;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             public void onClick(View view) {
             }
         });
+
+        mPathDB = new PathRepository(this.getApplication());
+        mPointDB = new PointRepository(this.getApplication());
 
         FloatingActionButton fab_record = (FloatingActionButton) findViewById(R.id.fab_record);
         fab_record.setOnClickListener(new View.OnClickListener() {
@@ -82,21 +90,26 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
      * Starts recording the map and stores it as points in the database.
      */
     public void beginRecording () {
+        Path path = new Path();
+        final long pathID = mPathDB.createPath(path);
+
+
         AndroidSensorCallback callback = new AndroidSensorCallback() {
             @Override
             public void onSensorCallback (Location location) {
-                if (location != null) {
-                    SensorEvent pressureResults = mBarometerSensor.fetchLastResults();
-                    SensorEvent tempResults = mTempSensor.fetchLastResults();
+            if (location != null) {
+                SensorEvent pressureResults = mBarometerSensor.fetchLastResults();
+                SensorEvent tempResults = mTempSensor.fetchLastResults();
 
-                    double temp = tempResults.values[0];
-                    double pressure = pressureResults.values[0];
+                double temp = tempResults.values[0];
+                double pressure = pressureResults.values[0];
 
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
 
-                    Point p = new Point(lat, lng, pressure, temp, 0);
-                }
+                Point p = new Point(lat, lng, pressure, temp, pathId);
+                mPointDB.createPoint(p);
+            }
             }
         };
         mGPSSensor.setSensorCallback(callback);
@@ -121,9 +134,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             }
         } catch (Resources.NotFoundException e) {
         }
-        // TODO: Before enabling the My Location layer, you must request
-        // location permission from the user. This sample does not include
-        // a request for location permission.
 
         getCurrentLocation();
 
@@ -136,14 +146,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mGPSSensor.getCurrentLocation(new AndroidSensorCallback() {
             @Override
             public void onSensorCallback (Location location) {
-                if (location != null) {
-                    LatLng currentLoc = new LatLng( location.getLatitude(),location.getLongitude());
-                    mMap.addMarker(new MarkerOptions()
-                            .position(currentLoc).title("Hi There")
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
-                }
+            if (location != null) {
+                LatLng currentLoc = new LatLng( location.getLatitude(),location.getLongitude());
+                mMap.addMarker(new MarkerOptions()
+                        .position(currentLoc).title("Hi There")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
+            }
             }
         });
     }

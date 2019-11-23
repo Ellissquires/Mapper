@@ -24,6 +24,11 @@ public class PathRepository extends ViewModel {
         new InsertPathAsyncTask(pathDAO).execute(new Path());
     }
 
+
+    public long createPath(Path path){
+        new InsertPathAsyncTask(pathDAO).execute(path);
+    }
+
     static class InsertPathAsyncTask extends AsyncTask<Path, Void, Void> {
         private PathDAO asyncPathDao;
 
