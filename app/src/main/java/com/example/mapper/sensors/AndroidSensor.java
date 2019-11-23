@@ -1,10 +1,12 @@
 package com.example.mapper.sensors;
 
+import android.app.Service;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -57,7 +59,6 @@ public abstract class AndroidSensor {
         }
 
     }
-
     public void setSensorCallback(AndroidSensorCallback callback) {
         mSensorCallback = callback;
     }

@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
@@ -43,9 +42,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
     private GoogleMap mMap;
 
-    private LocationSensor mGPSSensor;
-    private BarometerSensor mBarometerSensor;
-    private TemperatureSensor mTempSensor;
 
 
     @Override
@@ -72,38 +68,13 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
-        mGPSSensor = new LocationSensor(this, this);
-        mBarometerSensor = new BarometerSensor(this);
-        mTempSensor = new TemperatureSensor(this);
     }
 
     /**
      * Starts recording the map and stores it as points in the database.
      */
     public void beginRecording () {
-        AndroidSensorCallback callback = new AndroidSensorCallback() {
-            @Override
-            public void onSensorCallback (Location location) {
-                if (location != null) {
-                    SensorEvent pressureResults = mBarometerSensor.fetchLastResults();
-                    SensorEvent tempResults = mTempSensor.fetchLastResults();
-
-                    double temp = tempResults.values[0];
-                    double pressure = pressureResults.values[0];
-
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-
-                    Point p = new Point(lat, lng, pressure, temp, 0);
-                }
-            }
-        };
-        mGPSSensor.setSensorCallback(callback);
-
-        mGPSSensor.startSensing();
-        mBarometerSensor.startSensing();
-        mTempSensor.startSensing();
+        return;
     }
 
     @Override
@@ -148,16 +119,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         });
     }
 
-
-    /**
-     * Handles the result of the request for location permissions.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        mGPSSensor.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
