@@ -28,11 +28,11 @@ public class LocationSensor extends AndroidSensor {
 
     private LocationResult mLastResult;
 
-    private final Activity activity;
+    private final Activity mActivity;
 
-    public LocationSensor(Context context, Activity activity) {
+    public LocationSensor(Context context) {
         super(context, 0);
-        this.activity = activity;
+        mActivity = (Activity)context;
         TAG = "GPS Location Service";
 
         mFusedLocationClient = new FusedLocationProviderClient(context);
@@ -57,7 +57,7 @@ public class LocationSensor extends AndroidSensor {
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         // Make sure app has correct permissions.
-        fetchPermission(context, activity);
+        fetchPermission(context, mActivity);
     }
 
     /**
@@ -66,7 +66,7 @@ public class LocationSensor extends AndroidSensor {
      */
     public void getCurrentLocation(final AndroidSensorCallback callback) {
         mFusedLocationClient.getLastLocation() // Get Last location with fusedLocationClient
-                .addOnSuccessListener(activity, new OnSuccessListener<Location>() {
+                .addOnSuccessListener(mActivity, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         callback.onSensorCallback(location);
