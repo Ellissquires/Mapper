@@ -32,10 +32,10 @@ public class PointRepository extends ViewModel {
      * @return
      */
 
-    public LiveData<List<Point>> getAllPoints() {
-        LiveData<List<Point>> points = pointDAO.getAllPoints();
-        return points;
-    }
+//    public LiveData<List<Point>> getAllPoints() {
+//        LiveData<List<Point>> points = pointDAO.getAllPoints();
+//        return points;
+//    }
 
     static class InsertPointAsyncTask extends AsyncTask<Point, Void, Void> {
         private PointDAO asyncPointDao;

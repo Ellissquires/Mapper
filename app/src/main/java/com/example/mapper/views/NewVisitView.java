@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
 
+import com.example.mapper.sensors.BarometerSensor;
+import com.example.mapper.sensors.TemperatureSensor;
 import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.NewVisitViewModel;
@@ -40,7 +42,6 @@ public class NewVisitView extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_visit);
-        Button recordButton = findViewById(R.id.record);
         mEditTitleView = findViewById(R.id.title);
         mEditDescriptionView = findViewById(R.id.description);
         mNewVisitViewModel = ViewModelProviders.of(this).get(NewVisitViewModel.class);
