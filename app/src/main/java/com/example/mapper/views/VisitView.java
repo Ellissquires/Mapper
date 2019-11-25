@@ -88,7 +88,7 @@ public class VisitView extends AppCompatActivity {
         // Setup Sensors
         mBarometer = new BarometerSensor(this);
         mTempSensor = new TemperatureSensor(this);
-        mGPSSensor = new LocationSensor(this, this); // Both context and acticity are this because reasons...
+        mGPSSensor = new LocationSensor(this);
         mBarometer.startSensing(); // Start sensing
         mTempSensor.startSensing();
         mGPSSensor.startSensing();

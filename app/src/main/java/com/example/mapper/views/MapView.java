@@ -1,31 +1,27 @@
 package com.example.mapper.views;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
-import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.mapper.sensors.AndroidSensorCallback;
-import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
-import com.example.mapper.sensors.TemperatureSensor;
+import com.example.mapper.services.LocationFetchService;
+import com.example.mapper.services.LocationResultReceiver;
+import com.example.mapper.services.PathRecorderService;
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PointRepository;
-import com.example.mapper.services.models.Path;
-import com.example.mapper.services.models.Point;
-import com.example.mapper.services.models.PointDAO;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,13 +36,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
-public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
+public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
 
     private GoogleMap mMap;
 
+    private LocationResultReceiver mReceiver;
 
     private PathRepository mPathDB;
     private PointRepository mPointDB;
+
+    private PathRecorderService mService;
 
 
     @Override
@@ -68,7 +67,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         fab_record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                beginRecording();
+                beginRecording(view.getContext());
             }
         });
 
@@ -76,13 +75,20 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        mReceiver = new LocationResultReceiver(new Handler());
+
     }
 
     /**
-     * Starts recording the map and stores it as points in the database.
+     * Tells the Path Recorder service to start.
      */
-    public void beginRecording () {
-        return;
+    public void beginRecording (Context context) {
+
+        // Make sure app has correct permissions.
+        LocationSensor.fetchPermission(context);
+        // Start PathRecorderService
+        Intent i= new Intent(context, PathRecorderService.class);
+        context.startService(i);
     }
 
     @Override
@@ -101,6 +107,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         } catch (Resources.NotFoundException e) {
         }
 
+        // Make sure app has correct permissions.
+        LocationSensor.fetchPermission(this);
         getCurrentLocation();
 
         mMap.setMyLocationEnabled(true);
@@ -108,20 +116,12 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mMap.setOnMyLocationClickListener(this);
     }
 
+    /**
+     * Starts the IntentService to get the current location, and attaches this class as the result receiver.
+     */
     public void getCurrentLocation(){
-        mGPSSensor.getCurrentLocation(new AndroidSensorCallback() {
-            @Override
-            public void onSensorCallback (Location location) {
-            if (location != null) {
-                LatLng currentLoc = new LatLng( location.getLatitude(),location.getLongitude());
-                mMap.addMarker(new MarkerOptions()
-                        .position(currentLoc).title("Hi There")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
-            }
-            }
-        });
+        mReceiver.setReceiver(this);
+        LocationFetchService.startActionGetLocation(this, mReceiver);
     }
 
 
@@ -136,5 +136,32 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+        PathRecorderService.PRSBinder b  = (PathRecorderService.PRSBinder) binder;
+        mService = b.getService();
+    }
+
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        mService = null;
+    }
+
+    /**
+     * When the location result is received, this is called.
+     * @param resultCode Whether it has been successful or not.
+     * @param bundle The bundle of data sent from the FetchService Thread.
+     */
+    @Override
+    public void onReceiveResult(int resultCode, Bundle bundle) {
+        LatLng currentLoc = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lng"));
+        mMap.addMarker(new MarkerOptions()
+                .position(currentLoc).title("Hi There")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
     }
 }

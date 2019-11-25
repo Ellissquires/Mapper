@@ -1,13 +1,16 @@
 package com.example.mapper.sensors;
 
 import android.app.Activity;
+import android.app.IntentService;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -20,7 +23,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class LocationSensor extends AndroidSensor {
 
     private LocationRequest mLocationRequest;
-    private boolean mLocationPermissionGranted = false;
+    private static boolean mLocationPermissionGranted = false;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -28,11 +31,9 @@ public class LocationSensor extends AndroidSensor {
 
     private LocationResult mLastResult;
 
-    private final Activity mActivity;
 
     public LocationSensor(Context context) {
         super(context, 0);
-        mActivity = (Activity)context;
         TAG = "GPS Location Service";
 
         mFusedLocationClient = new FusedLocationProviderClient(context);
@@ -56,8 +57,7 @@ public class LocationSensor extends AndroidSensor {
         mLocationRequest.setInterval(mSamplingRateInMS);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        // Make sure app has correct permissions.
-        fetchPermission(context, mActivity);
+
     }
 
     /**
@@ -66,7 +66,7 @@ public class LocationSensor extends AndroidSensor {
      */
     public void getCurrentLocation(final AndroidSensorCallback callback) {
         mFusedLocationClient.getLastLocation() // Get Last location with fusedLocationClient
-                .addOnSuccessListener(mActivity, new OnSuccessListener<Location>() {
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         callback.onSensorCallback(location);
@@ -107,7 +107,7 @@ public class LocationSensor extends AndroidSensor {
      * @param permissions
      * @param grantResults
      */
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public static void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
@@ -122,15 +122,14 @@ public class LocationSensor extends AndroidSensor {
     /**
      * Asks the user for location permission.
      * @param context
-     * @param activity
      */
-    public void fetchPermission (Context context, Activity activity) {
+    public static void fetchPermission (Context context) {
         if (ContextCompat.checkSelfPermission(context,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
         } else {
-            ActivityCompat.requestPermissions(activity,
+            ActivityCompat.requestPermissions((Activity)context,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
@@ -161,4 +160,5 @@ public class LocationSensor extends AndroidSensor {
     protected void onSensorChange(SensorEvent event, long ms) {
         Log.d(TAG, "");
     }
+
 }
