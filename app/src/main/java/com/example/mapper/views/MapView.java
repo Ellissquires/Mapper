@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Camera;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.mapper.services.models.Point;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,6 +29,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -35,9 +39,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     private GoogleMap mMap;
+    private Polyline currentPath;
     private FusedLocationProviderClient fusedLocationClient;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
+
 
 
     @Override
@@ -81,6 +87,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     @Override
@@ -106,6 +113,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
+
     }
 
     public void getCurrentLocation(){
@@ -126,6 +134,25 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                         }
                     }
                 });
+    }
+
+    public void drawPathOnMap(Point... points){
+
+        // Clear current path
+        if (currentPath != null) { mMap.clear(); }
+
+        // Define line options
+        PolylineOptions options = new PolylineOptions().width(5).color(Color.WHITE).geodesic(true);
+
+        // Loop points and add them to the line
+        for(Point p : points){
+            LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
+            options.add(mapPoint);
+        }
+
+        // draw line
+        currentPath = mMap.addPolyline(options);
+
     }
 
 
