@@ -19,16 +19,5 @@ public class PointRepository extends ViewModel {
         pointDAO = db.pointDao();
     }
 
-
-    /**
-     * it returns the value of the live data
-     * @return
-     */
-
-    public LiveData<List<Point>> getAllPoints() {
-        LiveData<List<Point>> points = pointDAO.getAllPoints();
-        return points;
-    }
-
 }
 

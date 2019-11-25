@@ -1,9 +1,14 @@
 package com.example.mapper.services.models;
 
+//import statements
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
 import java.util.Date;
+
+/**
+ * @author      Ellis Squires <ellis.squires@gmail.com>
+ * Room Database entity for the com.example.mapper.models.Visit model
+ */
 
 @Entity(tableName = "visits")
 public class Visit {
