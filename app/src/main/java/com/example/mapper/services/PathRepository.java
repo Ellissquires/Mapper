@@ -27,6 +27,7 @@ public class PathRepository extends ViewModel {
         new InsertPathAsyncTask(pathDAO).execute(new Path());
     }
 
+
     public List<Point> getPointsOnPath(int pathId) {
         return pathDAO.findPointsOnPath(pathId);
     }

@@ -1,10 +1,12 @@
 package com.example.mapper.sensors;
 
+import android.app.Service;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -29,7 +31,7 @@ public abstract class AndroidSensor {
     private String mSensorType;
     // Variables for timings
     private long lastRebootTime = 0;
-    private long READING_FREQUENCY = 3000;
+    private long READING_FREQUENCY = 20000; //20 seconds in ms
     private long lastReportTime = 0;
 
     protected SensorEvent mLastResult;
@@ -49,7 +51,7 @@ public abstract class AndroidSensor {
         if (type > -1) {
             mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
             mSensor = mSensorManager.getDefaultSensor(type);
-            if (standardSensorAvailable()) {
+            if (sensorAvailable()) {
                 mSensorType = mSensor.getStringType();
             }
             TAG = mSensorType;
@@ -57,7 +59,6 @@ public abstract class AndroidSensor {
         }
 
     }
-
     public void setSensorCallback(AndroidSensorCallback callback) {
         mSensorCallback = callback;
     }
@@ -67,7 +68,7 @@ public abstract class AndroidSensor {
      * Initiliaseds the sensor.
      */
     protected void initListener() {
-        if(!standardSensorAvailable()) {
+        if(!sensorAvailable()) {
             Log.d(TAG, "Sensor type " + mSensorType + " unavailable.");
         } else {
             Log.d(TAG, "Using " + mSensorType);
@@ -105,7 +106,7 @@ public abstract class AndroidSensor {
      *
      * @return False if the sensor is null.
      */
-    protected boolean standardSensorAvailable () {
+    public boolean sensorAvailable() {
         return (mSensor != null);
     }
 
@@ -126,7 +127,7 @@ public abstract class AndroidSensor {
      * Starts the sensor.
      */
     public void startSensing() {
-        if(standardSensorAvailable()) {
+        if(sensorAvailable()) {
             Log.d(TAG, "starting listener");
             mSensorManager.registerListener(mListener, mSensor, (int) (mSamplingRateInMS * 1000));
         } else {
@@ -138,7 +139,7 @@ public abstract class AndroidSensor {
      * Stops the sensor
      */
     public void stopSensing() {
-        if(standardSensorAvailable()) {
+        if(sensorAvailable()) {
             Log.d(TAG, "starting listener");
             try {
                 mSensorManager.unregisterListener(mListener);

@@ -15,7 +15,6 @@
     <uses-feature android:name="android.hardware.location.gps" />
 
 
-
     <dist:module dist:instant="true" />
 
     <application
@@ -25,6 +24,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <receiver
+            android:name=".services.LocationResultReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <service
+            android:name=".services.LocationFetchService"
+            android:exported="false" />
+        <service
+            android:name=".services.PathRecorderService"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -39,6 +49,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -52,7 +63,6 @@
             android:name=".views.NewVisitView"
             android:label="New Visit"
             android:theme="@style/AppTheme.NoActionBar">
-
         </activity>
 
         <activity
@@ -60,7 +70,6 @@
             android:label="Camera"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
     </application>
 
 </manifest>

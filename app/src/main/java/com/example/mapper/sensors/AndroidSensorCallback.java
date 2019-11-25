@@ -1,6 +1,7 @@
 package com.example.mapper.sensors;
 
 import android.hardware.SensorEvent;
+import android.location.Location;
 
 import com.google.android.gms.location.LocationResult;
 
@@ -10,4 +11,5 @@ import com.google.android.gms.location.LocationResult;
 public class AndroidSensorCallback {
     public void onSensorCallback(SensorEvent event) {}
     public void onSensorCallback(LocationResult locationResult) {}
+    public void onSensorCallback(Location location) {}
 }

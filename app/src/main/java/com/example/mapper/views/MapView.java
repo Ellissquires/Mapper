@@ -1,25 +1,37 @@
 package com.example.mapper.views;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.graphics.Camera;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.view.View;
 import android.widget.Toast;
+
+
+import com.example.mapper.sensors.LocationSensor;
+import com.example.mapper.services.LocationFetchService;
+import com.example.mapper.services.LocationResultReceiver;
+import com.example.mapper.services.PathRecorderService;
+import com.example.mapper.services.PathRepository;
+import com.example.mapper.services.PointRepository;
 
 import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.viewmodels.MapViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -31,15 +43,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-
-public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
+public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     private GoogleMap mMap;
@@ -49,6 +62,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private boolean mLocationPermissionGranted;
     private MapViewModel mMapViewModel;
 
+    private LocationResultReceiver mReceiver;
+    private PathRecorderService mService;
 
 
 
@@ -94,11 +109,23 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        mReceiver = new LocationResultReceiver(new Handler());
+    }
+
+    /**
+     * Tells the Path Recorder service to start.
+     */
+    public void beginRecording (Context context) {
+
+        // Make sure app has correct permissions.
+        LocationSensor.fetchPermission(context);
+        // Start PathRecorderService
+        Intent i= new Intent(context, PathRecorderService.class);
+        context.startService(i);
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
-        getLocationPermission();
         mMap = map;
 
         try {
@@ -114,32 +141,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         }
 
+        // Make sure app has correct permissions.
+        LocationSensor.fetchPermission(this);
         getCurrentLocation();
 
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
 
-    }
-
-    public void getCurrentLocation(){
-        //function to get the current location of the user.
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            LatLng currentLoc = new LatLng( location.getLatitude(),location.getLongitude());
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(currentLoc).title("Hi There")
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
-                        }
-                    }
-                });
     }
 
     public void drawPathOnMap(Point... points){
@@ -180,47 +189,13 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         currentPath = mMap.addPolyline(options);
 
     }
-
-
+    
     /**
-     * Prompts the user for permission to use the device location.
+     * Starts the IntentService to get the current location, and attaches this class as the result receiver.
      */
-    private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    /**
-     * Handles the result of the request for location permissions.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Sorry!!!, you can't use this app without granting permission", Toast.LENGTH_LONG).show();
-                    mLocationPermissionGranted = true;
-                    finish();
-                }
-            }
-        }
+    public void getCurrentLocation(){
+        mReceiver.setReceiver(this);
+        LocationFetchService.startActionGetLocation(this, mReceiver);
     }
 
     @Override
@@ -234,5 +209,32 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder binder) {
+        PathRecorderService.PRSBinder b  = (PathRecorderService.PRSBinder) binder;
+        mService = b.getService();
+    }
+
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        mService = null;
+    }
+
+    /**
+     * When the location result is received, this is called.
+     * @param resultCode Whether it has been successful or not.
+     * @param bundle The bundle of data sent from the FetchService Thread.
+     */
+    @Override
+    public void onReceiveResult(int resultCode, Bundle bundle) {
+        LatLng currentLoc = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lng"));
+        mMap.addMarker(new MarkerOptions()
+                .position(currentLoc).title("Hi There")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
     }
 }
