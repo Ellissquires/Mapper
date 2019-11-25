@@ -15,7 +15,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
+import com.example.mapper.viewmodels.MapViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -34,6 +36,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
@@ -43,6 +47,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private FusedLocationProviderClient fusedLocationClient;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
+    private MapViewModel mMapViewModel;
+
 
 
 
@@ -143,6 +149,26 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // Define line options
         PolylineOptions options = new PolylineOptions().width(5).color(Color.WHITE).geodesic(true);
+
+        // Loop points and add them to the line
+        for(Point p : points){
+            LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
+            options.add(mapPoint);
+        }
+
+        // draw line
+        currentPath = mMap.addPolyline(options);
+
+    }
+
+    public void drawPathOnMap(int pathId){
+
+        // Clear current path
+        if (currentPath != null) { mMap.clear(); }
+
+        // Define line options
+        PolylineOptions options = new PolylineOptions().width(5).color(Color.WHITE).geodesic(true);
+        List<Point> points = mMapViewModel.getPoints(pathId);
 
         // Loop points and add them to the line
         for(Point p : points){

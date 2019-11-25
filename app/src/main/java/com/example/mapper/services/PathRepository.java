@@ -10,6 +10,9 @@ import com.example.mapper.services.database.ApplicationDatabase;
 import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.PathDAO;
 import com.example.mapper.services.models.Point;
+import com.example.mapper.services.models.Visit;
+
+import java.util.List;
 
 public class PathRepository extends ViewModel {
 
@@ -23,6 +26,11 @@ public class PathRepository extends ViewModel {
     public void createPath(){
         new InsertPathAsyncTask(pathDAO).execute(new Path());
     }
+
+    public List<Point> getPointsOnPath(int pathId) {
+        return pathDAO.findPointsOnPath(pathId);
+    }
+
 
     static class InsertPathAsyncTask extends AsyncTask<Path, Void, Long> {
         private PathDAO asyncPathDao;
