@@ -7,7 +7,7 @@ import java.util.Date;
 
 /**
  * @author      Ellis Squires <ellis.squires@gmail.com>
- * Room Database entity for the com.example.mapper.models.Visit model
+ * Room Database entity for the com.example.mapper.services.models.Visit model
  */
 
 @Entity(tableName = "visits")

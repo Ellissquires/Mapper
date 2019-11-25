@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey;
 
 /**
  * @author      Ellis Squires <ellis.squires@gmail.com>
- * Room Database entity for the com.example.mapper.models.Path model
+ * Room Database entity for the com.example.mapper.services.models.Path model
  */
 
 @Entity(tableName = "paths")

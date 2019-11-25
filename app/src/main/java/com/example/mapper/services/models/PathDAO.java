@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @author      Ellis Squires <ellis.squires@gmail.com>
- * Room DAO fop the com.example.mapper.models.Path model
+ * Room DAO fop the com.example.mapper.services.models.Path model
  */
 
 @Dao
@@ -25,7 +25,7 @@ public interface PathDAO {
     /**
      * Returns the list of points associated with the given pathID
      *
-     * @param pathId a com.example.mapper.models.Path id
+     * @param pathId a com.example.mapper.services.models.Path id
      */
     @Query("SELECT * FROM points WHERE pathId=:pathId")
     List<Point> findPointsOnPath(final int pathId);
