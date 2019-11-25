@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
+import android.graphics.Camera;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,12 +18,20 @@ import android.os.ResultReceiver;
 import android.view.View;
 import android.widget.Toast;
 
+
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.services.LocationFetchService;
 import com.example.mapper.services.LocationResultReceiver;
 import com.example.mapper.services.PathRecorderService;
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PointRepository;
+
+import com.example.mapper.services.models.Path;
+import com.example.mapper.services.models.Point;
+import com.example.mapper.viewmodels.MapViewModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,19 +43,28 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
 
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
+    public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     private GoogleMap mMap;
+    private Polyline currentPath;
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean mLocationPermissionGranted;
+    private MapViewModel mMapViewModel;
 
     private LocationResultReceiver mReceiver;
-
-    private PathRepository mPathDB;
-    private PointRepository mPointDB;
-
     private PathRecorderService mService;
+
 
 
     @Override
@@ -57,17 +76,32 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(MapView.this, CameraView.class);
+                startActivity(intent);
             }
         });
 
-        mPathDB = new PathRepository(this.getApplication());
-        mPointDB = new PointRepository(this.getApplication());
+        String testing = getIntent().getStringExtra(EXTRA_VISIT);
 
-        FloatingActionButton fab_record = (FloatingActionButton) findViewById(R.id.fab_record);
+
+        final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
+        final FloatingActionButton fab_record = (FloatingActionButton) findViewById(R.id.fab_record);
+        fab_record.setVisibility(View.VISIBLE);
+        fab_stop.setVisibility(View.GONE);
+
         fab_record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                beginRecording(view.getContext());
+                fab_record.setVisibility(View.GONE);
+                fab_stop.setVisibility(View.VISIBLE);
+            }
+        });
+
+        fab_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fab_record.setVisibility(View.VISIBLE);
+                fab_stop.setVisibility(View.GONE);
             }
         });
 
@@ -76,7 +110,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mapFragment.getMapAsync(this);
 
         mReceiver = new LocationResultReceiver(new Handler());
-
     }
 
     /**
@@ -105,6 +138,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             if (!success) {
             }
         } catch (Resources.NotFoundException e) {
+
         }
 
         // Make sure app has correct permissions.
@@ -114,8 +148,48 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
+
     }
 
+    public void drawPathOnMap(Point... points){
+
+        // Clear current path
+        if (currentPath != null) { mMap.clear(); }
+
+        // Define line options
+        PolylineOptions options = new PolylineOptions().width(5).color(Color.WHITE).geodesic(true);
+
+        // Loop points and add them to the line
+        for(Point p : points){
+            LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
+            options.add(mapPoint);
+        }
+
+        // draw line
+        currentPath = mMap.addPolyline(options);
+
+    }
+
+    public void drawPathOnMap(int pathId){
+
+        // Clear current path
+        if (currentPath != null) { mMap.clear(); }
+
+        // Define line options
+        PolylineOptions options = new PolylineOptions().width(5).color(Color.WHITE).geodesic(true);
+        List<Point> points = mMapViewModel.getPoints(pathId);
+
+        // Loop points and add them to the line
+        for(Point p : points){
+            LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
+            options.add(mapPoint);
+        }
+
+        // draw line
+        currentPath = mMap.addPolyline(options);
+
+    }
+    
     /**
      * Starts the IntentService to get the current location, and attaches this class as the result receiver.
      */
@@ -123,7 +197,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mReceiver.setReceiver(this);
         LocationFetchService.startActionGetLocation(this, mReceiver);
     }
-
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {

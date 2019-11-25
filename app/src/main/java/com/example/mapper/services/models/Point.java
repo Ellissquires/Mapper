@@ -1,5 +1,6 @@
 package com.example.mapper.services.models;
 
+// import statements
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -7,6 +8,14 @@ import androidx.room.PrimaryKey;
 
 import static androidx.room.ForeignKey.CASCADE;
 
+/**
+ * @author      Ellis Squires <ellis.squires@gmail.com>
+ * Room Database entity for the com.example.mapper.services.models.Point model
+ */
+
+/**
+ * Setup entity one-to-many relationship between Path and Point models
+ */
 @Entity(foreignKeys = @ForeignKey(entity = Path.class,
         parentColumns = "id",
         childColumns = "pathId",

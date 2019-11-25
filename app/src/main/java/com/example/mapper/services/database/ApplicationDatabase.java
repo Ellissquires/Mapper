@@ -19,7 +19,7 @@ import com.example.mapper.services.models.VisitDAO;
 
 import java.util.Date;
 
-@Database(entities = {Point.class, Path.class, Visit.class}, version = 1, exportSchema = false)
+@Database(entities = {Point.class, Path.class, Visit.class}, version = 2, exportSchema = false)
 @TypeConverters({Converters.class})
 
 public abstract class ApplicationDatabase extends RoomDatabase {
@@ -67,8 +67,8 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(final Void... params) {
             mDao.deleteAll();
-            mDao.insert(new Visit("Test1", new Date(), 1));
-            mDao.insert(new Visit("Test2", new Date(), 1));
+            mDao.insert(new Visit("Athens", "Blah", new Date()));
+            mDao.insert(new Visit("London", "Blah", new Date()));
 
             return null;
         }

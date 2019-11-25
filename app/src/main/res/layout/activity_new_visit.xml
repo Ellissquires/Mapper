@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context=".views.VisitView">
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,16 +14,24 @@
         android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Title">
+            android:hint="@string/title"
+            android:textColorHint="@color/colorSecondary"
+            app:boxStrokeColor="@color/colorSecondary"
+            app:boxStrokeWidth="2dp"
+            app:hintTextColor="@color/colorPrimaryLight"
+            app:passwordToggleTint="@color/colorSecondary">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/description"
+                android:id="@+id/title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:focusable="auto"
+                android:fontFamily="@font/poppins_light"
+                android:textColor="@color/colorPrimaryLight" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -31,13 +39,25 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description">
+            android:hint="@string/description"
+            android:textColorHint="@color/colorOnSecondary"
+            app:boxStrokeColor="@color/colorSecondary"
+            app:boxStrokeWidth="2dp"
+            app:helperTextTextColor="@color/colorSecondary"
+            app:hintTextColor="@color/colorPrimaryLight">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:maxLines="4" />
+                android:fontFamily="@font/poppins_light"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:minLines="4"
+                android:selectAllOnFocus="false"
+                android:singleLine="false"
+                android:textColor="@color/colorPrimaryLight"
+                android:textColorHighlight="#00BCD4" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -47,22 +67,37 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Track pressure" />
+            android:checked="true"
+            android:fontFamily="@font/poppins_light"
+            android:gravity="center_vertical"
+            android:text="@string/track_pressure"
+            android:textColor="@color/colorPrimaryLight"
+            app:useMaterialThemeColors="false"
+            tools:textColorHighlight="@color/colorSecondary" />
 
         <CheckBox
             android:id="@+id/temp_checkbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text=" Track Temperature" />
+            android:checked="true"
+            android:fontFamily="@font/poppins_light"
+            android:text="@string/track_temperature"
+            android:textColor="@color/colorPrimaryLight"
+            app:useMaterialThemeColors="false" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:id="@+id/record"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Record Visit" />
+            android:fontFamily="@font/poppins_light"
+            android:text="@string/record_visit"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/colorPrimaryLight"
+            app:backgroundTint="@color/colorPrimary"
+            app:iconTint="@color/colorPrimary"
+            app:strokeColor="@color/colorPrimary" />
 
     </LinearLayout>
 

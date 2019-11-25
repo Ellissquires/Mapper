@@ -31,7 +31,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
 
     @Override
     public VisitViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.recyclerview_visit_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.recyclerview_visititem, parent, false);
         return new VisitViewHolder(itemView);
     }
 

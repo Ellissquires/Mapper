@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -53,6 +54,7 @@ public class VisitView extends AppCompatActivity {
 
         //set bottom bar to Action bar as it is similar like Toolbar
         setSupportActionBar(bottomAppBar);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -138,12 +140,12 @@ public class VisitView extends AppCompatActivity {
         mGPSSensor.stopSensing();
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.bottomappbar_menu, menu);
+        return true;
+    }
 
 //
 //    @Override

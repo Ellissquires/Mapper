@@ -51,6 +51,5 @@ public class PointRepository extends ViewModel {
             return null;
         }
     }
-
 }
 

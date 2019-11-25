@@ -6,23 +6,148 @@
     android:layout_height="match_parent"
     tools:context=".views.VisitView">
 
-
-
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginLeft="@dimen/mtrl_card_spacing"
+        android:layout_marginTop="@dimen/mtrl_card_spacing"
+        android:layout_marginRight="@dimen/mtrl_card_spacing"
+        android:backgroundTint="@color/colorPrimary"
+        app:cardCornerRadius="6dp"
+        app:contentPadding="8dp">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="58dp"
+                android:fontFamily="@font/poppins_bold"
+                android:lineSpacingExtra="8sp"
+                android:text="Testing"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorPrimaryLight"
+                android:textSize="18sp"
+                android:typeface="normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/pBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"></ProgressBar>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title">
+
+                <TextView
+                    android:id="@+id/current_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableLeft="@drawable/ic_location_on_white_24dp"
+                    android:drawablePadding="2dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:gravity="center_vertical"
+                    android:text="0km"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryLight"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/time_elapsed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableLeft="@drawable/ic_timer_white_24dp"
+                    android:drawablePadding="2dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:gravity="center_vertical"
+                    android:text="00:00:00"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryLight"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/current_distance" />
+
+
+                <TextView
+                    android:id="@+id/temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableLeft="@drawable/ic_wb_temp_white_24dp"
+                    android:drawablePadding="2dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:gravity="center_vertical"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryLight"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/distance" />
+
+                <TextView
+                    android:id="@+id/pressure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableLeft="@drawable/ic_hourglass_full_white_24dp"
+                    android:drawablePadding="2dp"
+                    android:fontFamily="@font/poppins_light"
+                    android:gravity="center_vertical"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryLight"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/distance" />
+
+            </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
     <include layout="@layout/content_map" />
 
-
-
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom|center">
+        android:layout_gravity="bottom|center"
+        android:orientation="horizontal">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_record"
@@ -31,10 +156,25 @@
             android:layout_gravity="bottom|center"
             android:layout_margin="@dimen/fab_margin"
             android:layout_marginBottom="120dp"
-            android:backgroundTint="?attr/colorAccent"
+            android:visibility="visible"
+            app:backgroundTint="?attr/colorAccent"
             app:maxImageSize="40dp"
             app:srcCompat="@drawable/ic_play_arrow_black_24dp"
-            app:tint="?attr/colorPrimary" />
+            app:tint="@android:color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_marginBottom="120dp"
+            android:backgroundTint="?attr/colorAccent"
+            android:visibility="gone"
+            app:backgroundTint="?attr/colorAccent"
+            app:maxImageSize="40dp"
+            app:srcCompat="@drawable/ic_stop_black"
+            app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_camera"
@@ -43,8 +183,9 @@
             android:layout_gravity="center|end"
             android:layout_margin="@dimen/fab_margin"
             android:backgroundTint="?attr/colorAccent"
+            app:backgroundTint="?attr/colorAccent"
             app:srcCompat="@drawable/ic_camera_alt_black"
-            app:tint="?attr/colorPrimary" />
+            app:tint="@android:color/white" />
 
     </LinearLayout>
 

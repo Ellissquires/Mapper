@@ -7,6 +7,12 @@
     <string name="visit_title_label">Title</string>
     <string name="visit_description_label">Description</string>
     <string name="visit_add_button">Record Visit</string>
+    <string name="track_pressure">Track pressure</string>
+    <string name="track_temperature">Track Temperature</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="record_visit">Record Visit</string>
+    <string name="search">Search</string>
 
 
 </resources>

@@ -1,12 +1,15 @@
 package com.example.mapper.services.models;
-
-import androidx.lifecycle.LiveData;
+// import statements
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-
 import java.util.List;
+
+/**
+ * @author      Ellis Squires <ellis.squires@gmail.com>
+ * Room DAO fop the com.example.mapper.services.models.Path model
+ */
+
 @Dao
 public interface PathDAO {
 
@@ -19,6 +22,11 @@ public interface PathDAO {
     @Insert
     void delete(Path paths);
 
+    /**
+     * Returns the list of points associated with the given pathID
+     *
+     * @param pathId a com.example.mapper.services.models.Path id
+     */
     @Query("SELECT * FROM points WHERE pathId=:pathId")
     List<Point> findPointsOnPath(final int pathId);
 
