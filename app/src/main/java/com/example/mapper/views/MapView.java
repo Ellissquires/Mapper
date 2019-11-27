@@ -38,8 +38,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-import pl.aprilapps.easyphotopicker.EasyImage;
-
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
@@ -60,19 +58,12 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        EasyImage.configuration(this)
-                .setImagesFolderName("EasyImage sample")
-                .setCopyTakenPhotosToPublicGalleryAppFolder(true)
-                .setCopyPickedImagesToPublicGalleryAppFolder(true)
-                .setAllowMultiplePickInGallery(true);
-
         FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(MapView.this, CameraView.class);
-//                startActivity(intent);
-            EasyImage.openCameraForImage(MapView.this, 0);
+                Intent intent = new Intent(MapView.this, CameraView.class);
+                startActivity(intent);
             }
         });
 
