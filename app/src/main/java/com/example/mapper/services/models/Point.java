@@ -25,7 +25,8 @@ import static androidx.room.ForeignKey.CASCADE;
 
 public class Point {
 
-    @PrimaryKey public int id;
+    @PrimaryKey(autoGenerate = true)
+    public int id;
     private int pathId;
     private double lat;
     private double lng;
