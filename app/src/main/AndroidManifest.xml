@@ -65,11 +65,11 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <activity
-            android:name=".views.CameraView"
-            android:label="Camera"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+<!--        <activity-->
+<!--            android:name=".views.CameraView"-->
+<!--            android:label="Camera"-->
+<!--            android:theme="@style/AppTheme.NoActionBar">-->
+<!--        </activity>-->
     </application>
 
 </manifest>

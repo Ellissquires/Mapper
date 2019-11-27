@@ -1,56 +1,44 @@
 package com.example.mapper.views;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
-import android.graphics.Camera;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.ResultReceiver;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
+import com.example.mapper.R;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.services.LocationFetchService;
 import com.example.mapper.services.LocationResultReceiver;
 import com.example.mapper.services.PathRecorderService;
-import com.example.mapper.services.PathRepository;
-import com.example.mapper.services.PointRepository;
-
-import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.viewmodels.MapViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-
-
-import com.example.mapper.R;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
@@ -72,12 +60,19 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        EasyImage.configuration(this)
+                .setImagesFolderName("EasyImage sample")
+                .setCopyTakenPhotosToPublicGalleryAppFolder(true)
+                .setCopyPickedImagesToPublicGalleryAppFolder(true)
+                .setAllowMultiplePickInGallery(true);
+
         FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MapView.this, CameraView.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MapView.this, CameraView.class);
+//                startActivity(intent);
+            EasyImage.openCameraForImage(MapView.this, 0);
             }
         });
 
