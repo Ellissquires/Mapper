@@ -12,7 +12,13 @@ import com.example.mapper.sensors.AndroidSensorCallback;
 import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.sensors.TemperatureSensor;
+import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
+import com.example.mapper.services.models.RepoInsertCallback;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class PathRecorderService extends Service {
@@ -31,8 +37,16 @@ public class PathRecorderService extends Service {
     private BarometerSensor mBarometerSensor;
     private TemperatureSensor mTempSensor;
 
+    private PathRepository mPathRepo;
+    private PointRepository mPointRepo;
+
+    long pathID = 0;
+    private List<Point> mRecordedPoints;
+
     public PathRecorderService() {
         mBinder = new PRSBinder();
+        mPathRepo = new PathRepository(getApplication());
+        mPointRepo = new PointRepository(getApplication());
     }
 
     @Override
@@ -45,6 +59,13 @@ public class PathRecorderService extends Service {
         startRecording();
 
         return Service.START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        stopRecording();
+
+        //TODO: Cleanup variables here
     }
 
     @Override
@@ -61,6 +82,15 @@ public class PathRecorderService extends Service {
 
 
     private void startRecording() {
+        mPathRepo.createPath(new RepoInsertCallback(){
+            @Override
+            public void OnFinishInsert(Long rowID) {
+                pathID = rowID;
+                Log.d(TAG, "Inserted path with ID: " + pathID);
+            }
+        });
+        mRecordedPoints = new ArrayList<Point>();
+
         AndroidSensorCallback callback = new AndroidSensorCallback() {
             @Override
             public void onSensorCallback (Location location) {
@@ -76,7 +106,8 @@ public class PathRecorderService extends Service {
 
                     Log.d(TAG, "Recorded values");
 
-                    Point p = new Point(lat, lng, pressure, temp, 0);
+                    Point p = new Point(lat, lng, pressure, temp, (int)pathID);
+                    mRecordedPoints.add(p);
                 }
             }
         };
@@ -88,9 +119,14 @@ public class PathRecorderService extends Service {
     }
 
     private void stopRecording() {
+        for (Point p : mRecordedPoints) {
+            mPointRepo.createPoint(p);
+        }
+
         mGPSSensor.stopSensing();
         mBarometerSensor.stopSensing();
         mTempSensor.stopSensing();
+        Log.d(TAG, "Finished recording!");
     }
 
 }

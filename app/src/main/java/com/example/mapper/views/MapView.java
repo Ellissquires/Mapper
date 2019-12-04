@@ -1,9 +1,17 @@
 package com.example.mapper.views;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import android.app.Activity;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
@@ -45,7 +53,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private Polyline currentPath;
     private FusedLocationProviderClient fusedLocationClient;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private boolean mLocationPermissionGranted;
+    private boolean mLocationPermissionGranted = false;
     private MapViewModel mMapViewModel;
 
     private LocationResultReceiver mReceiver;
@@ -57,6 +65,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        // Make sure app has correct permissions.
 
         FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +89,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             public void onClick(View view) {
                 fab_record.setVisibility(View.GONE);
                 fab_stop.setVisibility(View.VISIBLE);
+                beginRecording(getApplicationContext());
             }
         });
 
@@ -88,6 +98,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             public void onClick(View view) {
                 fab_record.setVisibility(View.VISIBLE);
                 fab_stop.setVisibility(View.GONE);
+                finishRecording(getApplicationContext());
             }
         });
 
@@ -96,6 +107,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mapFragment.getMapAsync(this);
 
         mReceiver = new LocationResultReceiver(new Handler());
+        fetchPermission(this);
     }
 
     /**
@@ -104,10 +116,16 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     public void beginRecording (Context context) {
 
         // Make sure app has correct permissions.
-        LocationSensor.fetchPermission(context);
+        fetchPermission(context);
         // Start PathRecorderService
         Intent i= new Intent(context, PathRecorderService.class);
         context.startService(i);
+    }
+
+    public void finishRecording(Context context) {
+        //Tell the service to stop.
+        Intent i= new Intent(context, PathRecorderService.class);
+        context.stopService(i);
     }
 
     @Override
@@ -127,14 +145,19 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         }
 
-        // Make sure app has correct permissions.
-        LocationSensor.fetchPermission(this);
+
+        // If permissions have not yet been granted, these lines get called when they are.
+        if (mLocationPermissionGranted) {
+            setUpMapPostPermissionCheck();
+        }
+    }
+
+    public void setUpMapPostPermissionCheck() {
         getCurrentLocation();
 
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
-
     }
 
     public void drawPathOnMap(Point... points){
@@ -222,5 +245,39 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
+    }
+
+    /**
+     * Callback for when permissions are granted/denied.
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                    setUpMapPostPermissionCheck();
+                }
+            }
+        }
+    }
+
+    /**
+     * Asks the user for location permission.
+     * @param context
+     */
+    public void fetchPermission (Context context) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
     }
 }

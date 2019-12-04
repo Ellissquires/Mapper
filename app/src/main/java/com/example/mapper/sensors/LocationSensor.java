@@ -124,13 +124,11 @@ public class LocationSensor extends AndroidSensor {
      * @param context
      */
     public static void fetchPermission (Context context) {
-        if (ContextCompat.checkSelfPermission(context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
         } else {
-            ActivityCompat.requestPermissions((Activity)context,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+            ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }

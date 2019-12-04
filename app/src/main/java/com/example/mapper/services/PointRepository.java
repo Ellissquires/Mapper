@@ -27,6 +27,7 @@ public class PointRepository extends ViewModel {
     }
 
 
+
     /**
      * it returns the value of the live data
      * @return
