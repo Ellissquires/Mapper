@@ -1,273 +1,203 @@
 package com.example.mapper.views;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.ImageFormat;
-import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.StreamConfigurationMap;
-import android.icu.text.SimpleDateFormat;
-import android.media.Image;
-import android.media.ImageReader;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.util.Log;
-import android.view.Surface;
-import android.view.TextureView;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-import android.util.Size;
 
-import androidx.annotation.NonNull;
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class CameraView extends AppCompatActivity {
-    private static final String TAG = "AndroidCameraApi";
-    private TextureView mtextureView;
-    private static final int REQUEST_CAMERA_PERMISSION = 200;
-    protected CameraDevice mcamDevice;
-    protected CameraCaptureSession cameraCaptureSessions;
-    protected CaptureRequest.Builder captureRequestBuilder;
-    Handler mBackgroundHandler;
-    private String cameraId;
 
-    private Size imageDimension;
+    private static final int REQUEST_READ_EXTERNAL_STORAGE = 2987;
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 7829;
+    private static final int REQUEST_CAMERA = 7500;
 
-    CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
-        @Override
-        public void onOpened(CameraDevice camera) {
-            Log.e(TAG, "onOpened");
-//            assigning parameter to mcamDevice
-            mcamDevice = camera;
-            createCameraPreview();
-        }
-        @Override
-        public void onDisconnected(CameraDevice camera) {
-            mcamDevice.close();
-        }
-        @Override
-        public void onError(CameraDevice camera, int error) {
-            mcamDevice.close();
-            mcamDevice = null;
-        }
-    };
+    private List<ImageObj> myPictureList = new ArrayList<>();
+    private RecyclerView.Adapter  mAdapter;
+    private RecyclerView mRecyclerView;
 
-    TextureView.SurfaceTextureListener mtextureListener = new TextureView.SurfaceTextureListener() {
-        @Override
-        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            //open your camera here
-            openCamera();
-        }
+    private Activity activity;
 
-        @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-            // Transform you image captured size according to the surface width and height
-        }
+    private void initEasyImage(){
+       EasyImage.configuration(this)
+               .setImagesFolderName("Mapper")
+               .setCopyTakenPhotosToPublicGalleryAppFolder(true)
+               .setCopyPickedImagesToPublicGalleryAppFolder(true)
+               .setAllowMultiplePickInGallery(true);
+   }
 
-        @Override
-        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-            return false;
-        }
-
-        @Override
-        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-        }
-    };
-
-    private void openCamera() {
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
-            cameraId = manager.getCameraIdList()[0];
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
-            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            assert map != null;
-            imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
-
-            // Add permission for camera and let user grant the permission
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
-                return;
-            }
-            manager.openCamera(cameraId, stateCallback, null);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        setContentView(R.layout.activity_gallery);
 
-        mtextureView = (TextureView) findViewById(R.id.textureView);
+        mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
+        // set up the RecyclerView
+        int numberOfColumns = 3;
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        mAdapter= new ImageAdapter(myPictureList);
+        mRecyclerView.setAdapter(mAdapter);
+        initData();
 
-        mtextureView.setSurfaceTextureListener(mtextureListener);
+        checkPermissions(getApplicationContext());
 
-        Button fab_camera = (Button) findViewById(R.id.btn_picture);
+        initEasyImage();
+        activity= this;
+
+        FloatingActionButton fab_gallery = (FloatingActionButton) findViewById(R.id.fab_gallery);
+        fab_gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                EasyImage.openGallery(getActivity(), 0);
+            }
+        });
+
+        FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takePicture();
+                int cameraPermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
+                if (android.os.Build.VERSION.SDK_INT >= 23) {
+                    if (cameraPermission != PackageManager.PERMISSION_GRANTED  ) {
+
+                        ActivityCompat.requestPermissions( getActivity(),
+                                new String[]{Manifest.permission.CAMERA },
+                                REQUEST_CAMERA
+                        );
+                    }
+                    else{
+                        EasyImage.openCamera(getActivity(), 0);
+                    }
+                }
             }
         });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, "Permission required for this feature", Toast.LENGTH_LONG).show();
-                finish();
+    /**
+     * artificial init of the data so to upload some images as a starting point
+     */
+    private void initData() {
+//        myPictureList.add(new ImageObj(R.drawable.dog));
+    }
+
+    /**
+     * check permissions are necessary starting from Android 6
+     * if you do not set the permissions, the activity will simply not work and you will be probably baffled for some hours
+     * until you find a note on StackOverflow
+     * @param context the calling context
+     */
+    private void checkPermissions(final Context context) {
+        int currentAPIVersion = Build.VERSION.SDK_INT;
+        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    androidx.appcompat.app.AlertDialog.Builder alertBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                    alertBuilder.setCancelable(true);
+                    alertBuilder.setTitle("Permission necessary");
+                    alertBuilder.setMessage("External storage permission is necessary");
+                    alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE);
+                        }
+                    });
+                    androidx.appcompat.app.AlertDialog alert = alertBuilder.create();
+                    alert.show();
+
+                } else {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE);
+                }
+
             }
-        }
-    }
-
-    protected void createCameraPreview(){
-        try{
-//
-            SurfaceTexture texture = mtextureView.getSurfaceTexture();
-            texture.setDefaultBufferSize(imageDimension.getHeight(),imageDimension.getWidth());
-            Surface msurface = new Surface(texture);
-            captureRequestBuilder = mcamDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            captureRequestBuilder.addTarget(msurface);
-            mcamDevice.createCaptureSession(Arrays.asList(msurface), new CameraCaptureSession.StateCallback(){
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-                    //The camera is already closed
-                    if (null == mcamDevice) {
-                        return;
-                    }
-                    // When the session is ready, we start displaying the preview.
-                    cameraCaptureSessions = cameraCaptureSession;
-                    updatePreview();
-                }
-                @Override
-                public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-
-                }
-            }, null);
-        }
-        catch(CameraAccessException e){
-            e.printStackTrace();
-        }
-    }
-
-    protected void updatePreview() {
-        if(null == mcamDevice) {
-            Log.e(TAG, "updatePreview error, return");
-        }
-        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-        try {
-            cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void takePicture() {
-        if(null == mcamDevice) {
-            Log.e(TAG, "cameraDevice is null");
-            return;
-        }
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
-
-            int width = imageDimension.getWidth();
-            int height = imageDimension.getHeight();
-
-            ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
-            List<Surface> outputSurfaces = new ArrayList<Surface>(2);
-            outputSurfaces.add(reader.getSurface());
-            outputSurfaces.add(new Surface(mtextureView.getSurfaceTexture()));
-            final CaptureRequest.Builder captureBuilder = mcamDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-            captureBuilder.addTarget(reader.getSurface());
-            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-            // Orientation
-            int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 90);
-
-            final File file = new File(Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/pic.jpg");
-            ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
-                @Override
-                public void onImageAvailable(ImageReader reader) {
-                    Image image = null;
-                    try {
-                        image = reader.acquireLatestImage();
-                        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                        byte[] bytes = new byte[buffer.capacity()];
-                        buffer.get(bytes);
-                        save(bytes);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (image != null) {
-                            image.close();
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    androidx.appcompat.app.AlertDialog.Builder alertBuilder = new androidx.appcompat.app.AlertDialog.Builder(context);
+                    alertBuilder.setCancelable(true);
+                    alertBuilder.setTitle("Permission necessary");
+                    alertBuilder.setMessage("Writing external storage permission is necessary");
+                    alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE);
                         }
-                    }
+                    });
+                    androidx.appcompat.app.AlertDialog alert = alertBuilder.create();
+                    alert.show();
+
+                } else {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_WRITE_EXTERNAL_STORAGE);
                 }
-                private void save(byte[] bytes) throws IOException {
-                    OutputStream output = null;
-                    try {
-                        output = new FileOutputStream(file);
-                        output.write(bytes);
-                    } finally {
-                        if (null != output) {
-                            output.close();
-                        }
-                    }
-                }
-            };
-            reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
-            final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
-                @Override
-                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    super.onCaptureCompleted(session, request, result);
-                    createCameraPreview();
-                }
-            };
-            mcamDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(CameraCaptureSession session) {
-                    try {
-                        session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-                @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
-                }
-            }, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+            }
+
         }
+
     }
 
+    private List<ImageObj> getImageElements(List<File> returnedPhotos) {
+        List<ImageObj> imageElementList= new ArrayList<>();
+        for (File file: returnedPhotos){
+            ImageObj element= new ImageObj(file);
+            imageElementList.add(element);
+        }
+        return imageElementList;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+                //Some error handling
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onImagesPicked(@NotNull List<File> imageFiles, EasyImage.ImageSource source, int type) {
+                onPhotosReturned(imageFiles);
+            }
+
+            @Override
+            public void onCanceled(EasyImage.ImageSource source, int type) {
+
+            }
+        });
+    }
+
+    private void onPhotosReturned(List<File> returnedPhotos) {
+        myPictureList.addAll(getImageElements(returnedPhotos));
+        // we tell the adapter that the data is changed and hence the grid needs
+        // refreshing
+        mAdapter.notifyDataSetChanged();
+        mRecyclerView.scrollToPosition(returnedPhotos.size() - 1);
+    }
+
+    public Activity getActivity() {
+        return activity;
+    }
 }

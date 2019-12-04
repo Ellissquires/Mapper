@@ -6,52 +6,42 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.Activity;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Camera;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.ResultReceiver;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
+import com.example.mapper.R;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.services.LocationFetchService;
 import com.example.mapper.services.LocationResultReceiver;
 import com.example.mapper.services.PathRecorderService;
-import com.example.mapper.services.PathRepository;
-import com.example.mapper.services.PointRepository;
-
-import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.viewmodels.MapViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-
-
-import com.example.mapper.R;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;

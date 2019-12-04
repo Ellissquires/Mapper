@@ -1,5 +1,6 @@
 package com.example.mapper.views;
 
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -65,6 +67,8 @@ public class VisitView extends AppCompatActivity {
             }
         });
 
+
+
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         final VisitListAdapter adapter = new VisitListAdapter(this);
         recyclerView.setAdapter(adapter);
@@ -84,8 +88,11 @@ public class VisitView extends AppCompatActivity {
                     tv.setText("Number of visits " + visits.size());
                 }
                 adapter.setVisits(visits);
+
+
             }
         });
+
 
         // Setup Sensors
         mBarometer = new BarometerSensor(this);
