@@ -23,7 +23,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class LocationSensor extends AndroidSensor {
 
     private LocationRequest mLocationRequest;
-    private static boolean mLocationPermissionGranted = false;
+    private static boolean mLocationPermissionGranted = true;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private FusedLocationProviderClient mFusedLocationClient;

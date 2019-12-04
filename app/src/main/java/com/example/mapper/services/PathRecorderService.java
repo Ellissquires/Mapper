@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.example.mapper.sensors.AndroidSensorCallback;
@@ -43,6 +45,8 @@ public class PathRecorderService extends Service {
     long pathID = 0;
     private List<Point> mRecordedPoints;
 
+    private ResultReceiver mReceiver;
+
     public PathRecorderService() {
         mBinder = new PRSBinder();
         mPathRepo = new PathRepository(getApplication());
@@ -55,6 +59,11 @@ public class PathRecorderService extends Service {
         mGPSSensor = new LocationSensor(this);
         mBarometerSensor = new BarometerSensor(this);
         mTempSensor = new TemperatureSensor(this);
+
+        if (intent.hasExtra("receiverTag")) {
+            mReceiver = (ResultReceiver) intent.getParcelableExtra("receiverTag");
+            Log.d(TAG, "has receiver");
+        }
 
         startRecording();
 
@@ -70,10 +79,14 @@ public class PathRecorderService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, this.toString());
         mGPSSensor = new LocationSensor(this);
         mBarometerSensor = new BarometerSensor(this);
         mTempSensor = new TemperatureSensor(this);
+
+        if (intent.hasExtra("receiverTag")) {
+            mReceiver = (ResultReceiver) intent.getParcelableExtra("receiverTag");
+            Log.d(TAG, "has receiver");
+        }
 
         startRecording();
 
@@ -108,6 +121,13 @@ public class PathRecorderService extends Service {
 
                     Point p = new Point(lat, lng, pressure, temp, (int)pathID);
                     mRecordedPoints.add(p);
+
+                    if (mReceiver != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelableArrayList("points", (ArrayList)mRecordedPoints);
+                        mReceiver.send(1, bundle); //Code 1 for list of points
+                    }
+
                 }
             }
         };

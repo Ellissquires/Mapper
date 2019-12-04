@@ -24,6 +24,7 @@ public class LocationResultReceiver extends ResultReceiver {
 
     public interface Receiver {
         void onReceiveResult(int resultCode, Bundle resultData);
+        void onPathPut(int resultCode, Bundle resultData);
     }
 
     public void setReceiver (Receiver receiver) {
@@ -33,7 +34,10 @@ public class LocationResultReceiver extends ResultReceiver {
     @Override
     public void onReceiveResult(int rc, Bundle b) {
         if (mReceiver != null) {
-            mReceiver.onReceiveResult(rc, b);
+            if (rc == 0)
+                mReceiver.onReceiveResult(rc, b);
+            else if (rc == 1)
+                mReceiver.onPathPut(rc, b);
         }
     }
 
