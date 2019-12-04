@@ -15,9 +15,11 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -44,6 +46,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
@@ -119,6 +122,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         fetchPermission(context);
         // Start PathRecorderService
         Intent i= new Intent(context, PathRecorderService.class);
+        i.putExtra("receiverTag", mReceiver);
         context.startService(i);
     }
 
@@ -176,11 +180,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // draw line
         currentPath = mMap.addPolyline(options);
-
     }
 
     public void drawPathOnMap(int pathId){
-
         // Clear current path
         if (currentPath != null) { mMap.clear(); }
 
@@ -196,7 +198,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // draw line
         currentPath = mMap.addPolyline(options);
-
     }
     
     /**
@@ -245,6 +246,19 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
+    }
+
+    /**
+     * Callback function for when a new point is added to the recording.
+     * @param resultCode Should be 1, if not something has broken validating this is already done by now
+     * @param resultData Bundle containing the list of points.
+     */
+    @Override
+    public void onPathPut(int resultCode, Bundle resultData) {
+        ArrayList<Point> points = resultData.getParcelableArrayList("points");
+        Point[] pointsarr = new Point[points.toArray().length];
+        pointsarr = points.toArray(pointsarr);
+        drawPathOnMap(pointsarr);
     }
 
     /**
