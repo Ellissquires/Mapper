@@ -19,7 +19,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +29,10 @@ import com.example.mapper.R;
 import com.example.mapper.services.LocationFetchService;
 import com.example.mapper.services.LocationResultReceiver;
 import com.example.mapper.services.PathRecorderService;
+import com.example.mapper.services.PathRepository;
+import com.example.mapper.services.PointRepository;
 import com.example.mapper.services.models.Point;
+import com.example.mapper.services.models.RepoInsertCallback;
 import com.example.mapper.viewmodels.MapViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,12 +69,20 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private int mElapsedMinutes = 0;
     private int mElapsedSeconds = 0;
     private Timer mTimer;
+    private long mPathID;
+    private List<Point> mRecordedPoints;
+
+    private PathRepository mPathRepo;
+    private PointRepository mPointRepo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         // Make sure app has correct permissions.
+
+        mPathRepo = new PathRepository(getApplication());
+        mPointRepo = new PointRepository(getApplication());
 
         FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +119,28 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             }
         });
 
+        // When save button is pressed
+        final Button save_button = (Button) findViewById(R.id.save_path_button);
+        save_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Inserting the path
+                mPathRepo.createPath(new RepoInsertCallback(){
+                    @Override
+                    public void OnFinishInsert(Long rowID) {
+                        mPathID = rowID;
+                        Log.d("MapView", "Inserted path with ID: " + mPathID);
+                        // Inserting all points
+
+                        for (Point p : mRecordedPoints) {
+                            p.setPathId((int)mPathID);
+                            mPointRepo.createPoint(p);
+                        }
+                    }
+                });
+            }
+        });
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -127,7 +162,10 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         context.startService(i);
 
         findViewById(R.id.pBar).setVisibility(View.VISIBLE);
+        startTimer();
+    }
 
+    public void startTimer() {
         mTimer = new Timer();    //declare the timer
         mTimer.scheduleAtFixedRate(new TimerTask() { //Set the schedule function and rate
             @Override
@@ -135,8 +173,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 runOnUiThread(new Runnable() { // Must be on Ui Thread to access Ui
                     @Override
                     public void run() {
-                        TextView refreshTime = (TextView) findViewById(R.id.time_elapsed);
-                        refreshTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+                        TextView elapsedTime = (TextView) findViewById(R.id.time_elapsed);
+                        elapsedTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
                         if (++mElapsedSeconds == 60) {
                             mElapsedSeconds = 0;
                             mElapsedMinutes++;
@@ -147,31 +185,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         }, 0L, 1000L);
     }
 
+    public void stopTimer() {
+        mTimer.cancel();
+    }
     public void finishRecording(Context context) {
         //Tell the service to stop.
         Intent i= new Intent(context, PathRecorderService.class);
         context.stopService(i);
-        mTimer.cancel();
-
-        // Set values in card view
-        TextView distanceText = (TextView) findViewById(R.id.current_distance);
-        TextView temperatureText = (TextView) findViewById(R.id.temperature);
-        TextView pressureText = (TextView) findViewById(R.id.pressure);
-
-        TextView finalDistanceText = (TextView) findViewById(R.id.final_distance);
-        TextView finalTemperatureText = (TextView) findViewById(R.id.final_temperature);
-        TextView finalPressureText = (TextView) findViewById(R.id.final_pressure);
-        TextView finalTime = (TextView) findViewById(R.id.time_elapsed);
-
-        findViewById(R.id.final_path_view).setVisibility(View.VISIBLE);
-
-        finalTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
-        finalTemperatureText.setText(temperatureText.getText());
-        finalPressureText.setText(pressureText.getText());
-        finalDistanceText.setText(distanceText.getText());
-
-        findViewById(R.id.path_view).setVisibility(View.GONE);
-
+        stopTimer();
     }
 
     @Override
@@ -329,8 +350,36 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         } else {
             distanceText.setText(String.format("%.2f KM", currDist / 1000.0));
         }
+    }
 
+    /**
+     * Callback function for when a new point is added to the recording.
+     * @param resultCode Should be 2, if not something has broken. validating this is already done by now
+     * @param resultData Bundle containing the list of points.
+     */
+    @Override
+    public void onPathFinish(int resultCode, Bundle resultData) {
+        // Get the lsit of points
+        mRecordedPoints = resultData.getParcelableArrayList("points");
 
+        // Set values in card view
+        TextView distanceText = (TextView) findViewById(R.id.current_distance);
+        TextView temperatureText = (TextView) findViewById(R.id.temperature);
+        TextView pressureText = (TextView) findViewById(R.id.pressure);
+
+        TextView finalDistanceText = (TextView) findViewById(R.id.final_distance);
+        TextView finalTemperatureText = (TextView) findViewById(R.id.final_temperature);
+        TextView finalPressureText = (TextView) findViewById(R.id.final_pressure);
+        TextView finalTime = (TextView) findViewById(R.id.final_time);
+
+        findViewById(R.id.final_path_view).setVisibility(View.VISIBLE);
+
+        finalTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+        finalTemperatureText.setText(temperatureText.getText());
+        finalPressureText.setText(pressureText.getText());
+        finalDistanceText.setText(distanceText.getText());
+
+        findViewById(R.id.path_view).setVisibility(View.GONE);
     }
 
     /**

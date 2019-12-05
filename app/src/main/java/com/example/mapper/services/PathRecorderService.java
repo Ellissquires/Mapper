@@ -95,13 +95,6 @@ public class PathRecorderService extends Service {
 
 
     private void startRecording() {
-        mPathRepo.createPath(new RepoInsertCallback(){
-            @Override
-            public void OnFinishInsert(Long rowID) {
-                pathID = rowID;
-                Log.d(TAG, "Inserted path with ID: " + pathID);
-            }
-        });
         mRecordedPoints = new ArrayList<Point>();
 
         AndroidSensorCallback callback = new AndroidSensorCallback() {
@@ -144,8 +137,10 @@ public class PathRecorderService extends Service {
     }
 
     private void stopRecording() {
-        for (Point p : mRecordedPoints) {
-            mPointRepo.createPoint(p);
+        if (mReceiver != null) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("points", (ArrayList)mRecordedPoints);
+            mReceiver.send(2, bundle); //Code 1 for list of points
         }
 
         mGPSSensor.stopSensing();
