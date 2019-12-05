@@ -13,6 +13,8 @@
     <string name="title">Title</string>
     <string name="record_visit">Record Visit</string>
     <string name="search">Search</string>
+    <string name="save">Save</string>
+    <string name="discard">Discard</string>
 
 
 </resources>

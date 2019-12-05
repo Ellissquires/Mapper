@@ -38,6 +38,7 @@ public abstract class AndroidSensor {
     protected AndroidSensorCallback mSensorCallback;
 
 
+
     /**
      *
      * @param context The Activity this sensor is being used in.

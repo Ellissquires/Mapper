@@ -126,6 +126,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         i.putExtra("receiverTag", mReceiver);
         context.startService(i);
 
+        findViewById(R.id.pBar).setVisibility(View.VISIBLE);
+
         mTimer = new Timer();    //declare the timer
         mTimer.scheduleAtFixedRate(new TimerTask() { //Set the schedule function and rate
             @Override
@@ -133,8 +135,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 runOnUiThread(new Runnable() { // Must be on Ui Thread to access Ui
                     @Override
                     public void run() {
-                        TextView mRefreshTime = (TextView) findViewById(R.id.time_elapsed);
-                        mRefreshTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+                        TextView refreshTime = (TextView) findViewById(R.id.time_elapsed);
+                        refreshTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
                         if (++mElapsedSeconds == 60) {
                             mElapsedSeconds = 0;
                             mElapsedMinutes++;
@@ -150,6 +152,26 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         Intent i= new Intent(context, PathRecorderService.class);
         context.stopService(i);
         mTimer.cancel();
+
+        // Set values in card view
+        TextView distanceText = (TextView) findViewById(R.id.current_distance);
+        TextView temperatureText = (TextView) findViewById(R.id.temperature);
+        TextView pressureText = (TextView) findViewById(R.id.pressure);
+
+        TextView finalDistanceText = (TextView) findViewById(R.id.final_distance);
+        TextView finalTemperatureText = (TextView) findViewById(R.id.final_temperature);
+        TextView finalPressureText = (TextView) findViewById(R.id.final_pressure);
+        TextView finalTime = (TextView) findViewById(R.id.time_elapsed);
+
+        findViewById(R.id.final_path_view).setVisibility(View.VISIBLE);
+
+        finalTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+        finalTemperatureText.setText(temperatureText.getText());
+        finalPressureText.setText(pressureText.getText());
+        finalDistanceText.setText(distanceText.getText());
+
+        findViewById(R.id.path_view).setVisibility(View.GONE);
+
     }
 
     @Override
