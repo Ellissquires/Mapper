@@ -32,6 +32,7 @@ import com.example.mapper.services.LocationFetchService;
 import com.example.mapper.services.LocationResultReceiver;
 import com.example.mapper.services.PathRecorderService;
 import com.example.mapper.services.models.Point;
+import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.MapViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -58,7 +59,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted = false;
     private MapViewModel mMapViewModel;
-
+    private static final String TAG = "MapViewActivity";
     private LocationResultReceiver mReceiver;
     private PathRecorderService mService;
 
@@ -79,7 +80,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             }
         });
 
-        String testing = getIntent().getStringExtra(EXTRA_VISIT);
+        // Retrieve the visit from the intent
+        Bundle extras = getIntent().getExtras();
+        Visit visit = (Visit) extras.getParcelable(EXTRA_VISIT);
+        Log.d(TAG, "Visit ID received " + visit.toString());
+
 
 
         final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);

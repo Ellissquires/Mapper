@@ -53,7 +53,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
     public void onBindViewHolder(VisitViewHolder holder, final int position) {
         if (mVisits != null) {
             Visit current = mVisits.get(position);
-            holder.visitTitleView.setText(current.getTitle());
+            holder.visitTitleView.setText(Long.toString(current.getId()));
             holder.visitDescriptionView.setText(current.getDescription());
 
         } else {
