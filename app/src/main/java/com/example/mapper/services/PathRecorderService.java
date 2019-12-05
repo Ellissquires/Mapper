@@ -108,11 +108,16 @@ public class PathRecorderService extends Service {
             @Override
             public void onSensorCallback (Location location) {
                 if (location != null) {
-                    SensorEvent pressureResults = mBarometerSensor.fetchLastResults();
-                    SensorEvent tempResults = mTempSensor.fetchLastResults();
+                    double temp = 0.0, pressure = 0.0;
 
-                    double temp = tempResults.values[0];
-                    double pressure = pressureResults.values[0];
+                    if (mTempSensor.sensorAvailable()) {
+                        SensorEvent tempResults = mTempSensor.fetchLastResults();
+                        temp = tempResults.values[0];
+                    }
+                    if (mBarometerSensor.sensorAvailable()) {
+                        SensorEvent pressureResults = mBarometerSensor.fetchLastResults();
+                        pressure = pressureResults.values[0];
+                    }
 
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
