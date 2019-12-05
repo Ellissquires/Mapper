@@ -119,7 +119,6 @@ public class PathRecorderService extends Service {
                         pressure = pressureResults.values[0];
                     }
 
-
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
 
