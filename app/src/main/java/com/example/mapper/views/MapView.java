@@ -15,19 +15,15 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
-import android.nfc.Tag;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-
 import com.example.mapper.R;
-import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.services.LocationFetchService;
 import com.example.mapper.services.LocationResultReceiver;
 import com.example.mapper.services.PathRecorderService;
@@ -48,6 +44,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
@@ -63,6 +61,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private PathRecorderService mService;
 
 
+    private int mElapsedMinutes = 0;
+    private int mElapsedSeconds = 0;
+    private Timer mTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,12 +125,31 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         Intent i= new Intent(context, PathRecorderService.class);
         i.putExtra("receiverTag", mReceiver);
         context.startService(i);
+
+        mTimer = new Timer();    //declare the timer
+        mTimer.scheduleAtFixedRate(new TimerTask() { //Set the schedule function and rate
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() { // Must be on Ui Thread to access Ui
+                    @Override
+                    public void run() {
+                        TextView mRefreshTime = (TextView) findViewById(R.id.time_elapsed);
+                        mRefreshTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+                        if (++mElapsedSeconds == 60) {
+                            mElapsedSeconds = 0;
+                            mElapsedMinutes++;
+                        }
+                    }
+                });
+            }
+        }, 0L, 1000L);
     }
 
     public void finishRecording(Context context) {
         //Tell the service to stop.
         Intent i= new Intent(context, PathRecorderService.class);
         context.stopService(i);
+        mTimer.cancel();
     }
 
     @Override
@@ -256,9 +276,39 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onPathPut(int resultCode, Bundle resultData) {
         ArrayList<Point> points = resultData.getParcelableArrayList("points");
-        Point[] pointsarr = new Point[points.toArray().length];
+        int numpoints = points.toArray().length;
+        Point[] pointsarr = new Point[numpoints];
         pointsarr = points.toArray(pointsarr);
         drawPathOnMap(pointsarr);
+
+        // Set values in bar
+        TextView distanceText = (TextView) findViewById(R.id.current_distance);
+        TextView temperatureText = (TextView) findViewById(R.id.temperature);
+        TextView pressureText = (TextView) findViewById(R.id.pressure);
+
+        double currDist = 0.0;
+        Location lastLoc = null;
+        for (Point p : points) {
+            Location loc = new Location(LocationManager.GPS_PROVIDER);
+            loc.setLatitude(p.getLat());
+            loc.setLongitude(p.getLng());
+            if (lastLoc != null) {
+                currDist += loc.distanceTo(lastLoc);
+            }
+            lastLoc = loc;
+        }
+
+        Point refPoint = pointsarr[numpoints-1];
+        temperatureText.setText(String.format("%.1f", refPoint.getTemperature()));
+        pressureText.setText(String.format("%.1f", refPoint.getPressure()));
+
+        if (currDist < 100) {
+            distanceText.setText(String.format("%.1f M", currDist));
+        } else {
+            distanceText.setText(String.format("%.2f KM", currDist / 1000.0));
+        }
+
+
     }
 
     /**
