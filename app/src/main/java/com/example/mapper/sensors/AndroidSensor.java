@@ -84,7 +84,6 @@ public abstract class AndroidSensor {
                         // Call the fn with the event and time in ms
                         onSensorChange(event, actualTimeInMS);
 
-
                         lastReportTime = event.timestamp;
                     }
                 }

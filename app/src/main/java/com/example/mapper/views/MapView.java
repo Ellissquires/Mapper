@@ -96,13 +96,16 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // Retrieve the visit from the intent
         Bundle extras = getIntent().getExtras();
-        Visit visit = (Visit) extras.getParcelable(EXTRA_VISIT);
+        final Visit visit = (Visit) extras.getParcelable(EXTRA_VISIT);
         Log.d(TAG, "Visit ID received " + visit.toString());
-
+        ((TextView)findViewById(R.id.final_title)).setText(visit.getTitle());
+        ((TextView)findViewById(R.id.title)).setText(visit.getTitle());
 
 
         final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
         final FloatingActionButton fab_record = (FloatingActionButton) findViewById(R.id.fab_record);
+        final FloatingActionButton fab_pause = (FloatingActionButton) findViewById(R.id.fab_pause);
+        final FloatingActionButton fab_resume = (FloatingActionButton) findViewById(R.id.fab_resume);
         fab_record.setVisibility(View.VISIBLE);
         fab_stop.setVisibility(View.GONE);
 
@@ -110,6 +113,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             @Override
             public void onClick(View view) {
                 fab_record.setVisibility(View.GONE);
+                fab_pause.setVisibility(View.VISIBLE);
                 fab_stop.setVisibility(View.VISIBLE);
                 beginRecording(getApplicationContext());
             }
@@ -120,7 +124,29 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             public void onClick(View view) {
                 fab_record.setVisibility(View.VISIBLE);
                 fab_stop.setVisibility(View.GONE);
+                fab_pause.setVisibility(View.GONE);
+                fab_resume.setVisibility(View.GONE);
                 finishRecording(getApplicationContext());
+            }
+        });
+
+        fab_pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PathRecorderService.pauseRecordingService(getApplicationContext());
+                fab_pause.setVisibility(View.GONE);
+                fab_resume.setVisibility(View.VISIBLE);
+                stopTimer();
+            }
+        });
+
+        fab_resume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PathRecorderService.resumeRecordingService(getApplicationContext());
+                fab_pause.setVisibility(View.VISIBLE);
+                fab_resume.setVisibility(View.GONE);
+                startTimer();
             }
         });
 
@@ -130,13 +156,13 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             @Override
             public void onClick(View v) {
                 // Inserting the path
+
                 mPathRepo.createPath(new RepoInsertCallback(){
                     @Override
                     public void OnFinishInsert(Long rowID) {
                         mPathID = rowID;
                         Log.d("MapView", "Inserted path with ID: " + mPathID);
                         // Inserting all points
-
                         for (Point p : mRecordedPoints) {
                             p.setPathId((int)mPathID);
                             mPointRepo.createPoint(p);
@@ -174,6 +200,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         // Start PathRecorderService
         Intent i= new Intent(context, PathRecorderService.class);
         i.putExtra("receiverTag", mReceiver);
+        i.setAction(PathRecorderService.ACTION_START);
         context.startService(i);
 
         findViewById(R.id.pBar).setVisibility(View.VISIBLE);
