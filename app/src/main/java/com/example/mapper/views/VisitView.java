@@ -1,5 +1,6 @@
 package com.example.mapper.views;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorEvent;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -36,10 +38,10 @@ import java.util.List;
 
 
 public class VisitView extends AppCompatActivity {
-
+    private VisitListAdapter adapter;
     private VisitViewModel mVisitViewModel;
     private BottomAppBar bottomAppBar;
-    
+    private SearchView searchView;
     private BarometerSensor mBarometer;
     private TemperatureSensor mTempSensor;
     private LocationSensor mGPSSensor;
@@ -49,13 +51,12 @@ public class VisitView extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visit);
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        bottomAppBar = findViewById(R.id.bar);
-
+//        bottomAppBar = findViewById(R.id.bar);
         //set bottom bar to Action bar as it is similar like Toolbar
-        setSupportActionBar(bottomAppBar);
+//        setSupportActionBar(bottomAppBar);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -70,7 +71,7 @@ public class VisitView extends AppCompatActivity {
 
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        final VisitListAdapter adapter = new VisitListAdapter(this);
+        adapter = new VisitListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -78,18 +79,7 @@ public class VisitView extends AppCompatActivity {
         mVisitViewModel.getAllVisits().observe(this, new Observer<List<Visit>>() {
             @Override
             public void onChanged(@Nullable final List<Visit> visits) {
-                // Update the cached copy of the words in the adapter.
-
-                if(visits.size() == 0){
-                    TextView tv = findViewById(R.id.visitInfoMessage);
-                    tv.setText("No Visits Recorded");
-                } else  {
-                    TextView tv = findViewById(R.id.visitInfoMessage);
-                    tv.setText("Number of visits " + visits.size());
-                }
                 adapter.setVisits(visits);
-
-
             }
         });
 
@@ -149,8 +139,32 @@ public class VisitView extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.bottomappbar_menu, menu);
+//        getMenuInflater().inflate(R.menu.bottomappbar_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        // listening to search query text change
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // filter recycler view when query submitted
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                // filter recycler view when text is changed
+                adapter.getFilter().filter(query);
+                return false;
+            }
+        });
         return true;
     }
 

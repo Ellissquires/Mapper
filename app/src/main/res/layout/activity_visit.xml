@@ -8,21 +8,36 @@
     android:layout_alignParentRight="true"
     android:background="@color/colorPrimaryDark">
 
+    <com.google.android.material.appbar.AppBarLayout
+
+    android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:backgroundTint="@color/colorPrimaryLight"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <include
         android:id="@+id/include"
         layout="@layout/content_visits" />
 
     <!-- Bottom bar -->
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:backgroundTint="@color/colorPrimary"
-        app:elevation="5dp"
-        app:hideOnScroll="true"
-        app:itemIconTint="@color/txtColor"
-        app:menu="@menu/bottomappbar_menu" />
+<!--    <com.google.android.material.bottomappbar.BottomAppBar-->
+<!--        android:id="@+id/bar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        app:backgroundTint="@color/colorPrimary"-->
+<!--        app:elevation="5dp"-->
+<!--        app:hideOnScroll="true"-->
+<!--        app:itemIconTint="@color/txtColor"-->
+<!--        app:menu="@menu/bottomappbar_menu" />-->
 
     <!-- Floating Action button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -30,11 +45,12 @@
         style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:backgroundTint="@color/colorAccent"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="8dp"
+        app:backgroundTint="@color/colorPrimaryLight"
         app:elevation="5dp"
         app:fabSize="normal"
-        app:layout_anchor="@id/bar"
         app:srcCompat="@drawable/ic_add_white_24dp"
-        app:tint="@color/txtColor" />
+        app:tint="@color/colorPrimaryDark" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
