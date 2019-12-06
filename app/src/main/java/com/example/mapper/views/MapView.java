@@ -136,8 +136,18 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                             p.setPathId((int)mPathID);
                             mPointRepo.createPoint(p);
                         }
+                        // TODO return to visit list
                     }
                 });
+            }
+        });
+
+        // When save button is pressed
+        final Button discard_button = (Button) findViewById(R.id.discard_path_button);
+        discard_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               // TODO return to visit list
             }
         });
 
