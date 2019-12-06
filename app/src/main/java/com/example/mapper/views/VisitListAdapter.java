@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,9 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mapper.R;
 import com.example.mapper.services.models.Visit;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.VisitViewHolder>{
+public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.VisitViewHolder> implements Filterable {
 
     class VisitViewHolder extends RecyclerView.ViewHolder {
         private final TextView visitTitleView;
@@ -35,7 +38,8 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
 
     private final LayoutInflater mInflater;
     private final Context mContext;
-    private List<Visit> mVisits; // Cached copy of visit
+    private List<Visit> mVisits; // Cached copy of visits
+    private List<Visit> mVisitListFiltered;
 
     VisitListAdapter(Context context) {
         mContext = context;
@@ -51,8 +55,8 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
 
     @Override
     public void onBindViewHolder(VisitViewHolder holder, final int position) {
-        if (mVisits != null) {
-            Visit current = mVisits.get(position);
+        if (mVisitListFiltered != null) {
+            Visit current = mVisitListFiltered.get(position);
             holder.visitTitleView.setText(current.getTitle());
             holder.visitDescriptionView.setText(current.getDescription());
 
@@ -64,15 +68,15 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
         holder.parentLayout.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Visit current = mVisits.get(position);
+                Visit current = mVisitListFiltered.get(position);
                 Toast.makeText(mContext, current.getTitle(), Toast.LENGTH_SHORT).show();
-
             }
         });
     }
 
     void setVisits(List<Visit> visits){
         mVisits = visits;
+        mVisitListFiltered = mVisits;
         notifyDataSetChanged();
     }
 
@@ -80,8 +84,42 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
     // mWords has not been updated (means initially, it's null, and we can't return null).
     @Override
     public int getItemCount() {
-        if (mVisits != null)
-            return mVisits.size();
+        if (mVisitListFiltered != null)
+            return mVisitListFiltered.size();
         else return 0;
+    }
+
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    mVisitListFiltered = mVisits;
+                } else {
+                    List<Visit> filteredList = new ArrayList<>();
+                    for (Visit visit : mVisits) {
+
+                        if (visit.getTitle().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(visit);
+                        }
+                    }
+
+                    mVisitListFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mVisitListFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mVisitListFiltered = (ArrayList<Visit>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

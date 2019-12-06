@@ -33,6 +33,7 @@ import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PointRepository;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.RepoInsertCallback;
+import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.MapViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,7 +62,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted = false;
     private MapViewModel mMapViewModel;
-
+    private static final String TAG = "MapViewActivity";
     private LocationResultReceiver mReceiver;
     private PathRecorderService mService;
 
@@ -93,7 +94,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             }
         });
 
-        String testing = getIntent().getStringExtra(EXTRA_VISIT);
+        // Retrieve the visit from the intent
+        Bundle extras = getIntent().getExtras();
+        Visit visit = (Visit) extras.getParcelable(EXTRA_VISIT);
+        Log.d(TAG, "Visit ID received " + visit.toString());
+
 
 
         final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
@@ -198,11 +203,31 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     public void stopTimer() {
         mTimer.cancel();
     }
+
     public void finishRecording(Context context) {
         //Tell the service to stop.
         Intent i= new Intent(context, PathRecorderService.class);
         context.stopService(i);
         stopTimer();
+
+        // Set values in card view
+        TextView distanceText = (TextView) findViewById(R.id.current_distance);
+        TextView temperatureText = (TextView) findViewById(R.id.temperature);
+        TextView pressureText = (TextView) findViewById(R.id.pressure);
+
+        TextView finalDistanceText = (TextView) findViewById(R.id.final_distance);
+        TextView finalTemperatureText = (TextView) findViewById(R.id.final_temperature);
+        TextView finalPressureText = (TextView) findViewById(R.id.final_pressure);
+        TextView finalTime = (TextView) findViewById(R.id.time_elapsed);
+
+        findViewById(R.id.final_path_view).setVisibility(View.VISIBLE);
+
+        finalTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+        finalTemperatureText.setText(temperatureText.getText());
+        finalPressureText.setText(pressureText.getText());
+        finalDistanceText.setText(distanceText.getText());
+
+        findViewById(R.id.path_view).setVisibility(View.GONE);
     }
 
     @Override
