@@ -41,11 +41,12 @@ public class VisitView extends AppCompatActivity {
     private VisitListAdapter adapter;
     private VisitViewModel mVisitViewModel;
     private BottomAppBar bottomAppBar;
+  
     private SearchView searchView;
     private BarometerSensor mBarometer;
     private TemperatureSensor mTempSensor;
     private LocationSensor mGPSSensor;
-  
+
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -82,60 +83,8 @@ public class VisitView extends AppCompatActivity {
                 adapter.setVisits(visits);
             }
         });
-
-
-        // Setup Sensors
-        mBarometer = new BarometerSensor(this);
-        mTempSensor = new TemperatureSensor(this);
-        mGPSSensor = new LocationSensor(this);
-        mBarometer.startSensing(); // Start sensing
-        mTempSensor.startSensing();
-        mGPSSensor.startSensing();
-
-        mBarometer.setSensorCallback(new AndroidSensorCallback() {
-            @Override
-            public void onSensorCallback(SensorEvent event) {
-                // Sensor callback for non location sensors
-                Log.d("YES", "YES THIS WORKS");
-            }
-        });
-
-        mGPSSensor.setSensorCallback(new AndroidSensorCallback() {
-            @Override
-            public void onSensorCallback(LocationResult result) {
-                //Sensor callback for location sensor.
-                Log.d("YES", "YES THIS WORKS");
-            }
-        });
     }
 
-    /**
-     * Handles the result of the request for location permissions.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        //Let GPS Sensor know about permission results.
-        mGPSSensor.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-
-    @Override
-    protected void onResume() { // start sensing on resume
-        super.onResume();
-        mBarometer.startSensing();
-        mTempSensor.startSensing();
-        mGPSSensor.startSensing();
-    }
-
-    @Override
-    protected void onPause() { //stop sensing on pause
-        super.onPause();
-        mBarometer.stopSensing();
-        mTempSensor.stopSensing();
-        mGPSSensor.stopSensing();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
