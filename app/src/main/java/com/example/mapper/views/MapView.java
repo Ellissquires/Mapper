@@ -134,6 +134,10 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         findViewById(R.id.pBar).setVisibility(View.VISIBLE);
 
+        startTimer();
+    }
+
+    public void startTimer () {
         mTimer = new Timer();    //declare the timer
         mTimer.scheduleAtFixedRate(new TimerTask() { //Set the schedule function and rate
             @Override
@@ -153,11 +157,15 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         }, 0L, 1000L);
     }
 
+    public void stopTimer() {
+        mTimer.cancel();
+    }
+
     public void finishRecording(Context context) {
         //Tell the service to stop.
         Intent i= new Intent(context, PathRecorderService.class);
         context.stopService(i);
-        mTimer.cancel();
+        stopTimer();
 
         // Set values in card view
         TextView distanceText = (TextView) findViewById(R.id.current_distance);
