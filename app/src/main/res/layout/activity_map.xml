@@ -304,6 +304,32 @@
             app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_marginBottom="120dp"
+            android:visibility="gone"
+            app:backgroundTint="?attr/colorAccent"
+            app:maxImageSize="40dp"
+            app:srcCompat="@drawable/ic_hourglass_full_white_24dp"
+            app:tint="@android:color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_marginBottom="120dp"
+            android:visibility="gone"
+            app:backgroundTint="?attr/colorAccent"
+            app:maxImageSize="40dp"
+            app:srcCompat="@drawable/ic_play_arrow_black_24dp"
+            app:tint="@android:color/white" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -35,7 +35,7 @@ public class LocationResultReceiver extends ResultReceiver {
     @Override
     public void onReceiveResult(int rc, Bundle b) {
         if (mReceiver != null) {
-            if (rc == 0)
+            if (rc == 0) //0 for location result
                 mReceiver.onReceiveResult(rc, b);
             else if (rc == 1)
                 mReceiver.onPathPut(rc, b);
