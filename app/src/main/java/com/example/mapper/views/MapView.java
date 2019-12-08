@@ -31,6 +31,7 @@ import com.example.mapper.services.LocationResultReceiver;
 import com.example.mapper.services.PathRecorderService;
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PointRepository;
+import com.example.mapper.services.VisitRepository;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.RepoInsertCallback;
 import com.example.mapper.services.models.Visit;
@@ -75,6 +76,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
     private PathRepository mPathRepo;
     private PointRepository mPointRepo;
+    private VisitRepository mVisitRepo;
+
+    private Visit mVisit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +88,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         mPathRepo = new PathRepository(getApplication());
         mPointRepo = new PointRepository(getApplication());
+        mVisitRepo = new VisitRepository(getApplication());
 
         FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
@@ -96,10 +101,10 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // Retrieve the visit from the intent
         Bundle extras = getIntent().getExtras();
-        final Visit visit = (Visit) extras.getParcelable(EXTRA_VISIT);
-        Log.d(TAG, "Visit ID received " + visit.toString());
-        ((TextView)findViewById(R.id.final_title)).setText(visit.getTitle());
-        ((TextView)findViewById(R.id.title)).setText(visit.getTitle());
+        mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+        Log.d(TAG, "Visit ID received " + mVisit.toString());
+        ((TextView)findViewById(R.id.final_title)).setText(mVisit.getTitle());
+        ((TextView)findViewById(R.id.title)).setText(mVisit.getTitle());
 
 
         final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
@@ -167,7 +172,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                             p.setPathId((int)mPathID);
                             mPointRepo.createPoint(p);
                         }
-                        // TODO return to visit list
+                        mVisitRepo.createVisit(mVisit);
+                        finish();
                     }
                 });
             }
@@ -178,7 +184,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         discard_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // TODO return to visit list
+                finish();
             }
         });
 
