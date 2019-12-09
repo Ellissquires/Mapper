@@ -66,8 +66,6 @@ public abstract class ApplicationDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-            mDao.insert(new Visit("Athens", "Description", new Date(),0));
-            mDao.insert(new Visit("London", "Description", new Date(),0));
 
             return null;
         }
