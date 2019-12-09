@@ -47,7 +47,7 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity
-            android:name=".views.VisitView"
+            android:name=".views.VisitListView"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -62,6 +62,11 @@
         <activity
             android:name=".views.MapView"
             android:label="Map"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
+            android:name=".views.VisitView"
+            android:label="Visit View"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".views.NewVisitView"
