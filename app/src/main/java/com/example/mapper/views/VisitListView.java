@@ -3,16 +3,10 @@ package com.example.mapper.views;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.SensorEvent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -23,21 +17,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
-import com.example.mapper.sensors.AndroidSensorCallback;
 import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.sensors.TemperatureSensor;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.VisitViewModel;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Date;
 import java.util.List;
 
 
-public class VisitView extends AppCompatActivity {
+public class VisitListView extends AppCompatActivity {
     private VisitListAdapter adapter;
     private VisitViewModel mVisitViewModel;
     private BottomAppBar bottomAppBar;
@@ -64,7 +55,7 @@ public class VisitView extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(VisitView.this, NewVisitView.class);
+                Intent intent = new Intent(VisitListView.this, NewVisitView.class);
                 startActivity(intent);
             }
         });
