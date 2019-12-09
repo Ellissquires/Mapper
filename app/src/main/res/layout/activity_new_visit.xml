@@ -33,6 +33,24 @@
                 android:fontFamily="@font/poppins_light"
                 android:textColor="@color/colorPrimaryLight" />
 
+            <TextView
+                android:id="@+id/title_warning"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/poppins_bold"
+                android:lineSpacingExtra="8sp"
+                android:text="Title cannot be empty!"
+                android:visibility="gone"
+                android:textColor="@color/colorSecondary"
+                android:textSize="18sp"
+                android:typeface="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -58,6 +76,24 @@
                 android:singleLine="false"
                 android:textColor="@color/colorPrimaryLight"
                 android:textColorHighlight="#00BCD4" />
+
+            <TextView
+                android:id="@+id/description_warning"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/poppins_bold"
+                android:lineSpacingExtra="8sp"
+                android:text="description cannot be empty!"
+                android:visibility="gone"
+                android:textColor="@color/colorSecondary"
+                android:textSize="18sp"
+                android:typeface="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
