@@ -2,10 +2,13 @@ package com.example.mapper.views;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import com.example.mapper.R;
@@ -20,7 +23,12 @@ public class NewVisitView extends AppCompatActivity {
 
     private EditText mEditTitleView;
     private EditText mEditDescriptionView;
+    private TextView mTitleWarning;
+    private TextView mDescriptionWarning;
     private NewVisitViewModel mNewVisitViewModel;
+
+    public NewVisitView() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -28,6 +36,8 @@ public class NewVisitView extends AppCompatActivity {
         setContentView(R.layout.activity_new_visit);
         mEditTitleView = findViewById(R.id.title);
         mEditDescriptionView = findViewById(R.id.description);
+        mTitleWarning = findViewById(R.id.title_warning);
+        mDescriptionWarning = findViewById(R.id.description_warning);
         mNewVisitViewModel = ViewModelProviders.of(this).get(NewVisitViewModel.class);
 
         // Disable checkboxes if the sensor's are unavailaable
@@ -50,13 +60,32 @@ public class NewVisitView extends AppCompatActivity {
                 // Retrieve user inputs
                 String title = mEditTitleView.getText().toString();
                 String description = mEditDescriptionView.getText().toString();
-                Visit newVisit = new Visit(title, description, new Date(), 0);
-                // Create new intent for the MapView activity and pass the visit
-                Intent intent = new Intent(NewVisitView.this, MapView.class);
-                intent.putExtra(EXTRA_VISIT, newVisit);
-                startActivity(intent);
-                // End this activity, as it is not needed after this.
-                finish();
+
+                //Title and description can not be left as blank.
+                boolean titleOK = title.length() >= 1;
+                boolean descriptionOK = description.length() >= 1;
+
+                if (titleOK && descriptionOK) {
+                    Visit newVisit = new Visit(title, description, new Date(), 0);
+                    // Create new intent for the MapView activity and pass the visit
+                    Intent intent = new Intent(NewVisitView.this, MapView.class);
+                    intent.putExtra(EXTRA_VISIT, newVisit);
+                    startActivity(intent);
+                    // End this activity, as it is not needed after this.
+                    finish();
+                } else {
+                    // Set warnings to visible if need be.
+                    if (!titleOK) {
+                        mTitleWarning.setVisibility(View.VISIBLE);
+                    } else {
+                        mTitleWarning.setVisibility(View.GONE);
+                    }
+                    if (!descriptionOK) {
+                        mDescriptionWarning.setVisibility(View.VISIBLE);
+                    } else {
+                        mDescriptionWarning.setVisibility(View.GONE);
+                    }
+                }
             }
         });
     }

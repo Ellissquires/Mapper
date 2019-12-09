@@ -35,6 +35,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             visitTitleView = itemView.findViewById(R.id.title);
             visitDescriptionView = itemView.findViewById(R.id.description);
             visitDistanceView = itemView.findViewById(R.id.distance);
+
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
 
@@ -69,6 +70,15 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             holder.visitTitleView.setText(current.getTitle() + " - " + dateFormat.format(current.getVisitDate()));
             holder.visitDescriptionView.setText(current.getDescription());
             holder.visitDistanceView.setText(current.getDistance() + " km");
+
+            // Set distance (units dependant on distance, <100m = M, else KM)
+            float dist = (float)current.getDistance();
+            if (dist < 100) {
+                holder.visitDistanceView.setText(String.format("%.1f M", dist));
+            } else {
+                holder.visitDistanceView.setText(String.format("%.2f KM", dist / 1000.0));
+            }
+
 
         } else {
             // Covers the case of data not being ready yet.
