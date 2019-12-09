@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mapper.R;
 import com.example.mapper.services.models.Visit;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,12 +25,14 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
     class VisitViewHolder extends RecyclerView.ViewHolder {
         private final TextView visitTitleView;
         private final TextView visitDescriptionView;
+        private final TextView visitDistanceView;
         RelativeLayout parentLayout;
 
         private VisitViewHolder(View itemView) {
             super(itemView);
             visitTitleView = itemView.findViewById(R.id.title);
             visitDescriptionView = itemView.findViewById(R.id.description);
+            visitDistanceView = itemView.findViewById(R.id.distance);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
 
@@ -56,9 +60,11 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
     @Override
     public void onBindViewHolder(VisitViewHolder holder, final int position) {
         if (mVisitListFiltered != null) {
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             Visit current = mVisitListFiltered.get(position);
-            holder.visitTitleView.setText(current.getTitle());
+            holder.visitTitleView.setText(current.getTitle() + " - " + dateFormat.format(current.getVisitDate()));
             holder.visitDescriptionView.setText(current.getDescription());
+            holder.visitDistanceView.setText(current.getDistance() + " km");
 
         } else {
             // Covers the case of data not being ready yet.

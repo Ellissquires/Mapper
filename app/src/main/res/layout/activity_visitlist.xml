@@ -45,7 +45,7 @@
         style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|center"
         android:layout_margin="8dp"
         app:backgroundTint="@color/colorPrimaryLight"
         app:elevation="5dp"
