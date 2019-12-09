@@ -61,8 +61,10 @@ public class NewVisitView extends AppCompatActivity {
                 String title = mEditTitleView.getText().toString();
                 String description = mEditDescriptionView.getText().toString();
 
+                //Title and description can not be left as blank.
                 boolean titleOK = title.length() >= 1;
                 boolean descriptionOK = description.length() >= 1;
+
                 if (titleOK && descriptionOK) {
                     Visit newVisit = new Visit(title, description, new Date(), 0);
                     // Create new intent for the MapView activity and pass the visit
@@ -72,6 +74,7 @@ public class NewVisitView extends AppCompatActivity {
                     // End this activity, as it is not needed after this.
                     finish();
                 } else {
+                    // Set warnings to visible if need be.
                     if (!titleOK) {
                         mTitleWarning.setVisibility(View.VISIBLE);
                     } else {
