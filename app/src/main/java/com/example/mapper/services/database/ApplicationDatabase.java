@@ -51,7 +51,8 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
 
-            new PopulateWithTestVisitsAsync(INSTANCE).execute();
+            // Un Comment for Test DB
+//            new PopulateWithTestVisitsAsync(INSTANCE).execute();
 
         }
     };

@@ -55,6 +55,8 @@ public class NewVisitView extends AppCompatActivity {
                 Intent intent = new Intent(NewVisitView.this, MapView.class);
                 intent.putExtra(EXTRA_VISIT, newVisit);
                 startActivity(intent);
+                // End this activity, as it is not needed after this.
+                finish();
             }
         });
     }

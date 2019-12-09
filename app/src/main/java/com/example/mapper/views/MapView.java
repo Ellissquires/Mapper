@@ -161,7 +161,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             @Override
             public void onClick(View v) {
                 // Inserting the path
-
                 mPathRepo.createPath(new RepoInsertCallback(){
                     @Override
                     public void OnFinishInsert(Long rowID) {
@@ -172,7 +171,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                             p.setPathId((int)mPathID);
                             mPointRepo.createPoint(p);
                         }
-                        mVisitRepo.createVisit(mVisit);
+                        mVisitRepo.createVisit(mVisit
+                        );
                         finish();
                     }
                 });
@@ -392,11 +392,12 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         pointsarr = points.toArray(pointsarr);
         drawPathOnMap(pointsarr);
 
-        // Set values in bar
+        // Set values in in the card
         TextView distanceText = (TextView) findViewById(R.id.current_distance);
         TextView temperatureText = (TextView) findViewById(R.id.temperature);
         TextView pressureText = (TextView) findViewById(R.id.pressure);
 
+        // Calculate distance travelled using the distance between points
         double currDist = 0.0;
         Location lastLoc = null;
         for (Point p : points) {
@@ -409,10 +410,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             lastLoc = loc;
         }
 
+        // Set Visit distance
+        mVisit.setDistance(currDist);
+        // Get temperature and Pressure from last point and set it in the view
         Point refPoint = pointsarr[numpoints-1];
         temperatureText.setText(String.format("%.1f", refPoint.getTemperature()));
         pressureText.setText(String.format("%.1f", refPoint.getPressure()));
 
+        // Set the distance text view.
         if (currDist < 100) {
             distanceText.setText(String.format("%.1f M", currDist));
         } else {
