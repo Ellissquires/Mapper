@@ -63,6 +63,11 @@
             android:name=".views.MapView"
             android:label="Map"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
+            android:name=".views.VisitView"
+            android:label="Visit View"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".views.NewVisitView"
             android:label="New Visit"

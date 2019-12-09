@@ -1,6 +1,7 @@
 package com.example.mapper.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
         private final TextView visitDistanceView;
         RelativeLayout parentLayout;
 
+
         private VisitViewHolder(View itemView) {
             super(itemView);
             visitTitleView = itemView.findViewById(R.id.title);
@@ -44,6 +46,8 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
     private final Context mContext;
     private List<Visit> mVisits; // Cached copy of visits
     private List<Visit> mVisitListFiltered;
+    public static final String EXTRA_VISIT_VIEW = "com.example.mapper.VISIT_VIEW";
+
 
     VisitListAdapter(Context context) {
         mContext = context;
@@ -74,8 +78,11 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
         holder.parentLayout.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Visit current = mVisitListFiltered.get(position);
-                Toast.makeText(mContext, current.getTitle(), Toast.LENGTH_SHORT).show();
+                Visit visit = mVisitListFiltered.get(position);
+
+                Intent intent = new Intent(v.getContext(), VisitView.class);
+                intent.putExtra(EXTRA_VISIT_VIEW, visit);
+                v.getContext().startActivity(intent);
             }
         });
     }
