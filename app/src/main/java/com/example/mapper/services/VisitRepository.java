@@ -18,6 +18,7 @@ public class VisitRepository extends ViewModel {
 
     private final VisitDAO visitDAO;
     private final PathDAO pathDAO;
+    private long visitID;
 
     public VisitRepository(Application application) {
         ApplicationDatabase db = ApplicationDatabase.getDatabase(application);
@@ -29,9 +30,10 @@ public class VisitRepository extends ViewModel {
         new InsertVisitAsyncTask(visitDAO, pathDAO).execute(visit);
     }
 
-    static class InsertVisitAsyncTask extends AsyncTask<Visit, Void, Void> {
+    private class InsertVisitAsyncTask extends AsyncTask<Visit, Void, Void> {
         private VisitDAO asyncVisitDao;
         private PathDAO asyncPathDao;
+
 
         private InsertVisitAsyncTask(VisitDAO vDao, PathDAO pDao){
             asyncPathDao = pDao;
@@ -43,15 +45,20 @@ public class VisitRepository extends ViewModel {
             long pathID = asyncPathDao.insert(new Path());
             Visit visit = params[0];
             visit.setPathId(pathID);
-            asyncVisitDao.insert(visit);
+            long id = asyncVisitDao.insert(visit);
 
             return null;
         }
-    }
 
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+        }
+    }
 
     public LiveData<List<Visit>> getAllVisits() {
         return visitDAO.getAllVisits();
     }
+
 
 }

@@ -1,13 +1,16 @@
 package com.example.mapper.sensors;
 
 import android.app.Activity;
+import android.app.IntentService;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -20,29 +23,20 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class LocationSensor extends AndroidSensor {
 
     private LocationRequest mLocationRequest;
-    private boolean mLocationPermissionGranted = false;
+    private static boolean mLocationPermissionGranted = true;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-
 
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationCallback mLocationCallback;
 
     private LocationResult mLastResult;
 
-    public LocationSensor(Context context, Activity activity) {
+
+    public LocationSensor(Context context) {
         super(context, 0);
         TAG = "GPS Location Service";
 
         mFusedLocationClient = new FusedLocationProviderClient(context);
-        mFusedLocationClient.getLastLocation() // Get Last location with fusedLocationClient
-                .addOnSuccessListener(activity, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            Log.d(TAG, location.toString());
-                        }
-                    }
-            });
 
         // Create a location callback
         mLocationCallback = new LocationCallback() {
@@ -52,6 +46,7 @@ public class LocationSensor extends AndroidSensor {
                 mLastResult = locationResult;
                 if (mSensorCallback != null) {
                     mSensorCallback.onSensorCallback(locationResult);
+                    mSensorCallback.onSensorCallback(locationResult.getLastLocation());
                 }
                 Log.d(TAG, locationResult.toString());
             }
@@ -62,8 +57,22 @@ public class LocationSensor extends AndroidSensor {
         mLocationRequest.setInterval(mSamplingRateInMS);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        // Make sure app has correct permissions.
-        fetchPermission(context, activity);
+
+    }
+
+    /**
+     * Extra function to get Current Location reading if needed.
+     * @param callback
+     */
+    public void getCurrentLocation(final AndroidSensorCallback callback) {
+        mFusedLocationClient.getLastLocation() // Get Last location with fusedLocationClient
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        callback.onSensorCallback(location);
+                    }
+                });
+
     }
 
     @Override
@@ -83,7 +92,10 @@ public class LocationSensor extends AndroidSensor {
     }
 
 
-    // Fetch the last obtained result.
+    /**
+     * Fetch the last obtained result.
+     * @return Returns the last location recorded by the sensor.
+     */
     public LocationResult fetchLastLocation() {
         return mLastResult;
     }
@@ -95,7 +107,7 @@ public class LocationSensor extends AndroidSensor {
      * @param permissions
      * @param grantResults
      */
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public static void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
@@ -110,16 +122,13 @@ public class LocationSensor extends AndroidSensor {
     /**
      * Asks the user for location permission.
      * @param context
-     * @param activity
      */
-    public void fetchPermission (Context context, Activity activity) {
-        if (ContextCompat.checkSelfPermission(context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
+    public static void fetchPermission (Context context) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
         } else {
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+            ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
@@ -149,4 +158,5 @@ public class LocationSensor extends AndroidSensor {
     protected void onSensorChange(SensorEvent event, long ms) {
         Log.d(TAG, "");
     }
+
 }

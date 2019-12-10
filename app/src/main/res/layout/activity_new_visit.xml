@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3E3A63"
-    tools:context=".views.VisitView">
+    android:background="@color/colorPrimaryDark"
+    tools:context=".views.VisitListView">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,9 +18,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:boxStrokeColor="@color/colorPrimaryLight"
+            android:hint="@string/title"
+            android:textColorHint="@color/colorSecondary"
+            app:boxStrokeColor="@color/colorSecondary"
+            app:boxStrokeWidth="2dp"
             app:hintTextColor="@color/colorPrimaryLight"
-            android:hint="Title">
+            app:passwordToggleTint="@color/colorSecondary">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
@@ -28,7 +31,25 @@
                 android:layout_height="wrap_content"
                 android:focusable="auto"
                 android:fontFamily="@font/poppins_light"
-                android:textColor="@color/colorPrimaryLight"/>
+                android:textColor="@color/colorPrimaryLight" />
+
+            <TextView
+                android:id="@+id/title_warning"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/poppins_bold"
+                android:lineSpacingExtra="8sp"
+                android:text="@string/title_warning"
+                android:visibility="gone"
+                android:textColor="@color/colorSecondary"
+                android:textSize="18sp"
+                android:typeface="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -36,10 +57,12 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
-            app:boxStrokeColor="@color/colorPrimaryLight"
-            app:hintTextColor="@color/colorPrimaryLight"
-            >
+            android:hint="@string/description"
+            android:textColorHint="@color/colorOnSecondary"
+            app:boxStrokeColor="@color/colorSecondary"
+            app:boxStrokeWidth="2dp"
+            app:helperTextTextColor="@color/colorSecondary"
+            app:hintTextColor="@color/colorPrimaryLight">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/description"
@@ -49,29 +72,54 @@
                 android:gravity="top"
                 android:inputType="textMultiLine"
                 android:minLines="4"
-                android:textColor="@color/colorPrimaryLight" />
+                android:selectAllOnFocus="false"
+                android:singleLine="false"
+                android:textColor="@color/colorPrimaryLight"
+                android:textColorHighlight="#00BCD4" />
+
+            <TextView
+                android:id="@+id/description_warning"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:gravity="center_horizontal"
+                android:fontFamily="@font/poppins_bold"
+                android:lineSpacingExtra="8sp"
+                android:text="@string/description_warning"
+                android:visibility="gone"
+                android:textColor="@color/colorSecondary"
+                android:textSize="18sp"
+                android:typeface="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <CheckBox
+            android:id="@+id/pressure_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:checked="true"
             android:fontFamily="@font/poppins_light"
             android:gravity="center_vertical"
-            android:text="Track pressure"
-            android:textColor="@color/colorPrimaryLight" />
+            android:text="@string/track_pressure"
+            android:textColor="@color/colorPrimaryLight"
+            app:useMaterialThemeColors="false"
+            tools:textColorHighlight="@color/colorSecondary" />
 
         <CheckBox
-            android:id="@+id/checkBox"
+            android:id="@+id/temp_checkbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="true"
             android:fontFamily="@font/poppins_light"
-            android:text="Track Temperature"
-            android:textColor="@color/colorPrimaryLight" />
+            android:text="@string/track_temperature"
+            android:textColor="@color/colorPrimaryLight"
+            app:useMaterialThemeColors="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/record"
@@ -80,11 +128,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_light"
-            android:text="Record Visit"
+            android:text="@string/start_visit"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/colorPrimaryLight"
-            app:iconTint="@color/colorPrimaryLight"
-            app:strokeColor="@color/colorPrimaryLight" />
+            app:backgroundTint="@color/colorPrimary"
+            app:iconTint="@color/colorPrimary"
+            app:strokeColor="@color/colorPrimary" />
 
     </LinearLayout>
 

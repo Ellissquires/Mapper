@@ -19,7 +19,7 @@ import com.example.mapper.services.models.VisitDAO;
 
 import java.util.Date;
 
-@Database(entities = {Point.class, Path.class, Visit.class}, version = 2, exportSchema = false)
+@Database(entities = {Point.class, Path.class, Visit.class}, version = 4, exportSchema = false)
 @TypeConverters({Converters.class})
 
 public abstract class ApplicationDatabase extends RoomDatabase {
@@ -51,7 +51,8 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
 
-            new PopulateWithTestVisitsAsync(INSTANCE).execute();
+            // Un Comment for Test DB
+//            new PopulateWithTestVisitsAsync(INSTANCE).execute();
 
         }
     };
@@ -66,9 +67,6 @@ public abstract class ApplicationDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-            mDao.deleteAll();
-            mDao.insert(new Visit("Athens", "Blah", new Date()));
-            mDao.insert(new Visit("London", "Blah", new Date()));
 
             return null;
         }

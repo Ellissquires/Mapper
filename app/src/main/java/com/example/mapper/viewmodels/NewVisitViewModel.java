@@ -1,12 +1,8 @@
 package com.example.mapper.viewmodels;
 
 import android.app.Application;
-
 import androidx.lifecycle.AndroidViewModel;
-
-import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.VisitRepository;
-import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Visit;
 
 public class NewVisitViewModel extends AndroidViewModel {
@@ -17,6 +13,7 @@ public class NewVisitViewModel extends AndroidViewModel {
         visitRepository = new VisitRepository(application);
     }
 
-
-    public void createVisit(Visit visit) { visitRepository.createVisit(visit);}
+    public void createVisit(Visit visit) {
+        visitRepository.createVisit(visit);
+    }
 }

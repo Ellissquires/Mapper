@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/visit_delete"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="Delete"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/visit_edit"
+        android:icon="@drawable/ic_edit_white_24dp"
+        android:title="Edit"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/visit_share"
+        android:icon="@drawable/ic_share_black_24dp"
+        android:title="Sahre"
+        app:showAsAction="always" />
+</menu>

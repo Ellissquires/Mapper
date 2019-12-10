@@ -5,8 +5,14 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-
 import java.util.List;
+
+
+/**
+ * @author      Ellis Squires <ellis.squires@gmail.com>
+ * Room DAO fop the com.example.mapper.services.models.Point model
+ */
+
 @Dao
 public interface PointDAO {
 
@@ -18,9 +24,6 @@ public interface PointDAO {
 
     @Insert
     void delete(Point points);
-
-    @Query("SELECT * FROM points")
-    LiveData<List<Point>> getAllPoints();
 
     @Delete
     void deleteAll(Point... points);
