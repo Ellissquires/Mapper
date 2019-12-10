@@ -69,14 +69,13 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             Visit current = mVisitListFiltered.get(position);
             holder.visitTitleView.setText(current.getTitle() + " - " + dateFormat.format(current.getVisitDate()));
             holder.visitDescriptionView.setText(current.getDescription());
-            holder.visitDistanceView.setText(current.getDistance() + " km");
 
             // Set distance (units dependant on distance, <100m = M, else KM)
             float dist = (float)current.getDistance();
             if (dist < 100) {
-                holder.visitDistanceView.setText(String.format("%.1f M", dist));
+                holder.visitDistanceView.setText(String.format("%.1f m", dist));
             } else {
-                holder.visitDistanceView.setText(String.format("%.2f KM", dist / 1000.0));
+                holder.visitDistanceView.setText(String.format("%.2f Km", dist / 1000.0));
             }
 
 

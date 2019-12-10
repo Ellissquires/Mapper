@@ -272,7 +272,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             // in a raw resource file.
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.map_style));
+                            this, R.raw.map_style2));
 
             if (!success) {
             }
