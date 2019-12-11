@@ -10,34 +10,57 @@
 
     <include layout="@layout/content_visit_gallery" />
 
-
     <LinearLayout
+        android:id="@+id/menubar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal">
+        android:layout_gravity="bottom|center"
+        android:layout_margin="8dip"
+        android:background="@drawable/menu_background"
+        android:elevation="25dp"
+        android:outlineProvider="background"
+        tools:layout_margin="25dp">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/camera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:backgroundTint="?attr/colorAccent"
-            app:backgroundTint="?attr/colorAccent"
-            app:srcCompat="@drawable/ic_camera_alt_black"
-            app:tint="@android:color/white" />
+        android:id="@+id/camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:elevation="0dp"
+        android:focusable="auto"
+        android:outlineProvider="paddedBounds"
+        android:tint="@color/colorPrimaryDark"
+        android:visibility="visible"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:borderWidth="0dp"
+        app:elevation="0dp"
+        app:fabSize="normal"
+        app:maxImageSize="24dp"
+        app:pressedTranslationZ="0dp"
+        app:srcCompat="@drawable/ic_camera_alt_black"
+        app:tint="@android:color/white"
+        tools:backgroundTint="@android:color/transparent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:layout_weight="1"
-            android:backgroundTint="?attr/colorAccent"
-            app:backgroundTint="?attr/colorAccent"
-            app:srcCompat="@drawable/ic_gallery_black_24dp"
-            app:tint="@android:color/white" />
+            android:layout_marginBottom="0dp"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:elevation="0dp"
+            android:focusable="auto"
+            android:outlineProvider="paddedBounds"
+            android:tint="@color/colorPrimaryDark"
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:borderWidth="0dp"
+            app:elevation="0dp"
+            app:fabSize="normal"
+            app:maxImageSize="24dp"
+            app:pressedTranslationZ="0dp"
+            app:srcCompat="@drawable/ic_file_upload_black_24dp"
+            app:tint="@android:color/white"
+            tools:backgroundTint="@android:color/transparent" />
 
     </LinearLayout>
 

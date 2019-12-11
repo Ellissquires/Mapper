@@ -8,8 +8,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,19 +24,28 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
+import com.example.mapper.services.models.Visit;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class CameraView extends AppCompatActivity {
+    public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
+    private Visit mVisit;
+    private String title;
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 2987;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 7829;
     private static final int REQUEST_CAMERA = 7500;
@@ -54,6 +68,10 @@ public class CameraView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
+        Bundle extras = getIntent().getExtras();
+        mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+
+        title = mVisit.getTitle();
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
         // set up the RecyclerView
         int numberOfColumns = 3;
@@ -101,7 +119,14 @@ public class CameraView extends AppCompatActivity {
      * artificial init of the data so to upload some images as a starting point
      */
     private void initData() {
-//        myPictureList.add(new ImageObj(R.drawable.dog));
+        File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
+        if (storageDir.exists()){
+            File[] files = storageDir.listFiles();
+            List<File> imageFiles = (Arrays.asList(files));
+            myPictureList.addAll(getImageElements(imageFiles));
+            mAdapter.notifyDataSetChanged();
+            mRecyclerView.scrollToPosition(imageFiles.size() - 1);
+        }
     }
 
     /**
@@ -166,6 +191,39 @@ public class CameraView extends AppCompatActivity {
         return imageElementList;
     }
 
+
+    public void saveImage(List<File> mFile) {
+        File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
+
+        for(File file: mFile){
+            //         Create an image file name
+            Timestamp date = new Timestamp(System.currentTimeMillis());
+
+            String timestamp = title + date.toString();
+
+            if (!storageDir.exists())
+                storageDir.mkdirs();
+            File newFile = new File(storageDir, (timestamp + ".jpeg"));
+
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+
+                FileOutputStream output = new FileOutputStream(newFile);
+
+                // Compress into png format image from 0% - 100%
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+                output.flush();
+                output.close();
+            }
+
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -180,6 +238,7 @@ public class CameraView extends AppCompatActivity {
             @Override
             public void onImagesPicked(@NotNull List<File> imageFiles, EasyImage.ImageSource source, int type) {
                 onPhotosReturned(imageFiles);
+                saveImage(imageFiles);
             }
 
             @Override

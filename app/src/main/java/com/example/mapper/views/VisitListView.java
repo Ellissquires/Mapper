@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,7 +53,7 @@ public class VisitListView extends AppCompatActivity {
 //        setSupportActionBar(bottomAppBar);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        ImageButton fab = (ImageButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,12 +62,37 @@ public class VisitListView extends AppCompatActivity {
             }
         });
 
+        ImageButton open = (ImageButton) findViewById(R.id.open_gallery);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VisitListView.this, NewVisitView.class);
+                startActivity(intent);
+            }
+        });
 
+        final LinearLayout menubar = (LinearLayout) findViewById(R.id.menubar);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         adapter = new VisitListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int width, int height){
+                if (height>0)
+//                    menubar.setVisibility(recyclerView.GONE);
+                    menubar.animate().translationY(500);
+                else if(height<0)
+//                    menubar.setVisibility(recyclerView.VISIBLE);
+                    menubar.animate().translationY(0);
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
 
         mVisitViewModel = ViewModelProviders.of(this).get(VisitViewModel.class);
         mVisitViewModel.getAllVisits().observe(this, new Observer<List<Visit>>() {

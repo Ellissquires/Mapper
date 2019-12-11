@@ -97,7 +97,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
             // in a raw resource file.
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.map_style2));
+                            this, R.raw.map_style));
 
             if (!success) {
             }

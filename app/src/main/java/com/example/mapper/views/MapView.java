@@ -22,6 +22,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -90,25 +91,28 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mPointRepo = new PointRepository(getApplication());
         mVisitRepo = new VisitRepository(getApplication());
 
-        FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
+
+        Bundle extras = getIntent().getExtras();
+        mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+
+        final FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MapView.this, CameraView.class);
+                intent.putExtra(EXTRA_VISIT, mVisit);
                 startActivity(intent);
             }
         });
 
         // Retrieve the visit from the intent
-        Bundle extras = getIntent().getExtras();
-        mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
         Log.d(TAG, "Visit ID received " + mVisit.toString());
         ((TextView)findViewById(R.id.final_title)).setText(mVisit.getTitle());
         ((TextView)findViewById(R.id.title)).setText(mVisit.getTitle());
 
 
         final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
-        final FloatingActionButton fab_record = (FloatingActionButton) findViewById(R.id.fab_record);
+        final ImageButton fab_record = (ImageButton) findViewById(R.id.fab_record);
         final FloatingActionButton fab_pause = (FloatingActionButton) findViewById(R.id.fab_pause);
         final FloatingActionButton fab_resume = (FloatingActionButton) findViewById(R.id.fab_resume);
         fab_record.setVisibility(View.VISIBLE);
@@ -120,6 +124,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 fab_record.setVisibility(View.GONE);
                 fab_pause.setVisibility(View.VISIBLE);
                 fab_stop.setVisibility(View.VISIBLE);
+                fab_camera.setVisibility(View.VISIBLE);
                 beginRecording(getApplicationContext());
             }
         });
@@ -131,6 +136,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 fab_stop.setVisibility(View.GONE);
                 fab_pause.setVisibility(View.GONE);
                 fab_resume.setVisibility(View.GONE);
+                fab_camera.setVisibility(View.GONE);
                 finishRecording(getApplicationContext());
             }
         });
@@ -141,6 +147,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 PathRecorderService.pauseRecordingService(getApplicationContext());
                 fab_pause.setVisibility(View.GONE);
                 fab_resume.setVisibility(View.VISIBLE);
+                fab_camera.setVisibility(View.GONE);
                 stopTimer();
             }
         });
@@ -151,6 +158,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 PathRecorderService.resumeRecordingService(getApplicationContext());
                 fab_pause.setVisibility(View.VISIBLE);
                 fab_resume.setVisibility(View.GONE);
+                fab_camera.setVisibility(View.VISIBLE);
                 startTimer();
             }
         });
@@ -272,7 +280,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             // in a raw resource file.
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.map_style2));
+                            this, R.raw.map_style));
 
             if (!success) {
             }
