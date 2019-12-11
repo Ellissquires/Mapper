@@ -51,8 +51,7 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
 
-            // Un Comment for Test DB
-//            new PopulateWithTestVisitsAsync(INSTANCE).execute();
+            new PopulateWithTestVisitsAsync(INSTANCE).execute();
 
         }
     };
@@ -67,7 +66,7 @@ public abstract class ApplicationDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-
+            mDao.deleteAll();
             return null;
         }
     }

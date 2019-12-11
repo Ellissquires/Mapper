@@ -3,6 +3,7 @@ package com.example.mapper.views;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.mapper.R;
+import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.Visit;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,6 +23,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
 
@@ -31,6 +34,9 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     private TextView visitDistanceView;
     private TextView visitDateView;
     private GoogleMap mMap;
+    private Visit mVisit;
+    private PathRepository mPathRepo;
+
 
 
     @Override
@@ -46,29 +52,24 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
         // Retrieve the visit from the intent
         Bundle extras = getIntent().getExtras();
-        Visit visit = (Visit) extras.getParcelable(EXTRA_VISIT_VIEW);
+        mVisit = extras.getParcelable(EXTRA_VISIT_VIEW);
 
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         visitTitleView = findViewById(R.id.title);
-        visitTitleView.setText(visit.getTitle());
-
+        visitTitleView.setText(mVisit.getTitle());
         visitDescriptionView = findViewById(R.id.description);
-        visitDescriptionView.setText(visit.getDescription());
-
+        visitDescriptionView.setText(mVisit.getDescription());
         visitDistanceView = findViewById(R.id.distance);
-
+        visitDateView = findViewById(R.id.date);
+        visitDateView.setText(dateFormat.format(mVisit.getVisitDate()));
 
         // Set distance (units dependant on distance, <100m = M, else KM)
-        float dist = (float)visit.getDistance();
+        float dist = (float)mVisit.getDistance();
         if (dist < 100) {
             visitDistanceView.setText(String.format("%.1f m", dist));
         } else {
             visitDistanceView.setText(String.format("%.2f Km", dist / 1000.0));
         }
-
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        visitDateView = findViewById(R.id.date);
-        visitDateView.setText(dateFormat.format(visit.getVisitDate()));
-
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -104,6 +105,14 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         } catch (Resources.NotFoundException e) {
 
         }
+
+        // Fetching the visit path and drawing it on the map
+        long pathID = mVisit.getPathId();
+//        List<Point> path = mPathRepo.getPointsOnPath(pathID);
+
+        Log.d("VisitView", "Path retrieved with size " + mVisit.toString());
+
+
 
     }
 

@@ -14,7 +14,6 @@ import com.example.mapper.services.models.RepoInsertCallback;
 
 import java.util.List;
 
-
 public class PathRepository extends ViewModel {
 
     private final PathDAO pathDAO;
@@ -28,11 +27,9 @@ public class PathRepository extends ViewModel {
         new InsertPathAsyncTask(pathDAO, riCB).execute(new Path());
     }
 
-
-    public List<Point> getPointsOnPath(int pathId) {
+    public List<Point> getPointsOnPath(long pathId) {
         return pathDAO.findPointsOnPath(pathId);
     }
-
 
     static class InsertPathAsyncTask extends AsyncTask<Path, Void, Long> {
         private PathDAO asyncPathDao;

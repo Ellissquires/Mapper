@@ -35,11 +35,12 @@ public class Visit implements Parcelable {
     private long pathId;
 
 
-    public Visit(String title,String description, Date visitDate, double distance){
+    public Visit(String title, String description, Date visitDate, double distance, long pathId){
         this.title = title;
         this.description = description;
         this.visitDate = visitDate;
         this.distance = distance;
+        this.pathId = pathId;
     }
 
     public long getId() {
@@ -58,9 +59,7 @@ public class Visit implements Parcelable {
         return description;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public void setTitle(String title) { this.title = title; }
 
     public Date getVisitDate() {
         return visitDate;
@@ -93,6 +92,7 @@ public class Visit implements Parcelable {
         this.description = in.readString();
         this.visitDate = new Date(in.readLong());
         this.distance = in.readDouble();
+        this.pathId = in.readLong();
     }
 
     // Parcable overrides
@@ -108,6 +108,7 @@ public class Visit implements Parcelable {
         dest.writeString(this.description);
         dest.writeLong(visitDate.getTime());
         dest.writeDouble(this.distance);
+        dest.writeLong(this.pathId);
     }
 
     @Override
@@ -118,6 +119,7 @@ public class Visit implements Parcelable {
                 ", description='" + description + '\'' +
                 ", visitDate='" + visitDate.toString() + '\'' +
                 ", distance='" + distance + '\'' +
+                ", pathID='" + pathId + '\'' +
                 '}';
     }
 }

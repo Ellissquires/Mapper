@@ -80,6 +80,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private VisitRepository mVisitRepo;
 
     private Visit mVisit;
+    private Visit pVisit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
 
         Bundle extras = getIntent().getExtras();
-        mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+        mVisit = extras.getParcelable(EXTRA_VISIT);
 
         final FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
@@ -173,14 +174,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                     @Override
                     public void OnFinishInsert(Long rowID) {
                         mPathID = rowID;
+                        mVisit.setPathId(mPathID);
                         Log.d("MapView", "Inserted path with ID: " + mPathID);
                         // Inserting all points
                         for (Point p : mRecordedPoints) {
                             p.setPathId((int)mPathID);
                             mPointRepo.createPoint(p);
                         }
-                        mVisitRepo.createVisit(mVisit
-                        );
+                        mVisitRepo.createVisit(mVisit);
                         finish();
                     }
                 });

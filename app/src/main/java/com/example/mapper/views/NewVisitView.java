@@ -66,7 +66,7 @@ public class NewVisitView extends AppCompatActivity {
                 boolean descriptionOK = description.length() >= 1;
 
                 if (titleOK && descriptionOK) {
-                    Visit newVisit = new Visit(title, description, new Date(), 0);
+                    Visit newVisit = new Visit(title, description, new Date(), 0, 0);
                     // Create new intent for the MapView activity and pass the visit
                     Intent intent = new Intent(NewVisitView.this, MapView.class);
                     intent.putExtra(EXTRA_VISIT, newVisit);

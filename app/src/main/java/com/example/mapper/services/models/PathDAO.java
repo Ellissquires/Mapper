@@ -28,6 +28,6 @@ public interface PathDAO {
      * @param pathId a com.example.mapper.services.models.Path id
      */
     @Query("SELECT * FROM points WHERE pathId=:pathId")
-    List<Point> findPointsOnPath(final int pathId);
+    List<Point> findPointsOnPath(final long pathId);
 
 }
