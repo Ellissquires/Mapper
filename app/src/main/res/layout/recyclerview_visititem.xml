@@ -110,6 +110,24 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_date_white_24dp"
+                android:drawablePadding="2dp"
+                android:fontFamily="@font/poppins_light"
+                android:gravity="center_vertical"
+                android:text="13/12/1997"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryLight"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/distance" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

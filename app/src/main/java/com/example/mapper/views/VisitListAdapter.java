@@ -27,6 +27,8 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
         private final TextView visitTitleView;
         private final TextView visitDescriptionView;
         private final TextView visitDistanceView;
+        private final TextView visitDateView;
+
         RelativeLayout parentLayout;
 
 
@@ -35,7 +37,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             visitTitleView = itemView.findViewById(R.id.title);
             visitDescriptionView = itemView.findViewById(R.id.description);
             visitDistanceView = itemView.findViewById(R.id.distance);
-
+            visitDateView = itemView.findViewById(R.id.date);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
 
@@ -65,10 +67,12 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
     @Override
     public void onBindViewHolder(VisitViewHolder holder, final int position) {
         if (mVisitListFiltered != null) {
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            // Populate the Visit card with the visit data
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //date formatting
             Visit current = mVisitListFiltered.get(position);
-            holder.visitTitleView.setText(current.getTitle() + " - " + dateFormat.format(current.getVisitDate()));
+            holder.visitTitleView.setText(current.getTitle());
             holder.visitDescriptionView.setText(current.getDescription());
+            holder.visitDateView.setText(dateFormat.format(current.getVisitDate()));
 
             // Set distance (units dependant on distance, <100m = M, else KM)
             float dist = (float)current.getDistance();
@@ -84,13 +88,16 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             holder.visitTitleView.setText("No Title");
         }
 
+        // Listen for clicks on each visit item
         holder.parentLayout.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                // Get the clicked on visit
                 Visit visit = mVisitListFiltered.get(position);
-
+                // Create a new intent passing in the selected visit
                 Intent intent = new Intent(v.getContext(), VisitView.class);
                 intent.putExtra(EXTRA_VISIT_VIEW, visit);
+                // Launch the activity with the visit intent
                 v.getContext().startActivity(intent);
             }
         });
