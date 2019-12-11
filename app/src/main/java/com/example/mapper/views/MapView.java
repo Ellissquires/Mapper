@@ -173,7 +173,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 mPathRepo.createPath(new RepoInsertCallback(){
                     @Override
                     public void OnFinishInsert(Long rowID) {
-                        mPathID = rowID;
+                        mPathID = rowID+1;
                         mVisit.setPathId(mPathID);
                         Log.d("MapView", "Inserted path with ID: " + mPathID);
                         // Inserting all points
