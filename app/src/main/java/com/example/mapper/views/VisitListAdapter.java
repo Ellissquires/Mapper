@@ -117,14 +117,16 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
-                if (charString.isEmpty()) {
+                String cs = charSequence.toString().toLowerCase();
+                if (cs.isEmpty()) {
                     mVisitListFiltered = mVisits;
                 } else {
                     List<Visit> filteredList = new ArrayList<>();
+                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                     for (Visit visit : mVisits) {
-
-                        if (visit.getTitle().toLowerCase().contains(charString.toLowerCase())) {
+                        String date = dateFormat.format(visit.getVisitDate());
+                        if (visit.getTitle().toLowerCase().contains(cs) ||
+                            date.contains(cs)) {
                             filteredList.add(visit);
                         }
                     }
