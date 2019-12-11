@@ -1,7 +1,9 @@
 package com.example.mapper.views;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +17,7 @@ import java.text.SimpleDateFormat;
 
 import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
 
-public class VisitView extends AppCompatActivity {
+public class VisitView extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
 
     private TextView visitTitleView;
     private TextView visitDescriptionView;
@@ -28,6 +30,7 @@ public class VisitView extends AppCompatActivity {
         setContentView(R.layout.activity_visit);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setOnMenuItemClickListener(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -60,6 +63,19 @@ public class VisitView extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_visit, menu);
+        return true;
+    }
+
+    /**
+     * This method will be invoked when a menu item is clicked if the item itself did
+     * not already handle the event.
+     *
+     * @param item {@link MenuItem} that was clicked
+     * @return <code>true</code> if the event was handled, <code>false</code> otherwise.
+     */
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        Log.d("VisitVIew", item.toString());
         return true;
     }
 }

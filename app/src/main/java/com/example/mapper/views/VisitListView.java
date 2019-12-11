@@ -60,8 +60,6 @@ public class VisitListView extends AppCompatActivity {
             }
         });
 
-
-
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
         adapter = new VisitListAdapter(this);
         recyclerView.setAdapter(adapter);

@@ -315,7 +315,7 @@
             android:visibility="gone"
             app:backgroundTint="?attr/colorAccent"
             app:maxImageSize="40dp"
-            app:srcCompat="@drawable/ic_pause_black_24dp.xml"
+            app:srcCompat="@drawable/ic_pause_black_24dp"
             app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
