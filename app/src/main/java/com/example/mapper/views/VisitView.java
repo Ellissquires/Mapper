@@ -178,6 +178,16 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 return true;
             case R.id.visit_edit:
                 return true;
+            case R.id.visit_share:
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Look at where I've just been walking!");
+                sendIntent.setType("text/plain");
+
+                Intent shareIntent = Intent.createChooser(sendIntent, "Share path to...");
+                startActivity(shareIntent);
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
