@@ -150,7 +150,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
             }
         });
-        
+
     }
 
     @Override
