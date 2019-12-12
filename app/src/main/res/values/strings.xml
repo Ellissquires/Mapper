@@ -18,4 +18,8 @@
     <string name="save">Save</string>
     <string name="discard">Discard</string>
     <string name="action_search">Search for a visit</string>
+    <string name="view_images">View Images</string>
+    <string name="undo">Undo</string>
+    <string name="visit_removed_message">Visit has been removed successfully</string>
+
 </resources>

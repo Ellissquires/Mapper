@@ -30,6 +30,10 @@ public class VisitRepository extends ViewModel {
         new InsertVisitAsyncTask(visitDAO, pathDAO).execute(visit);
     }
 
+    public void deleteVisit(Visit visit){
+        new DeleteVisitAsyncTask(visitDAO).execute(visit);
+    }
+
     private class InsertVisitAsyncTask extends AsyncTask<Visit, Void, Void> {
         private VisitDAO asyncVisitDao;
         private PathDAO asyncPathDao;
@@ -53,6 +57,20 @@ public class VisitRepository extends ViewModel {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+        }
+    }
+
+    private class DeleteVisitAsyncTask extends AsyncTask<Visit, Void, Void> {
+        private VisitDAO asyncVisitDao;
+
+        private DeleteVisitAsyncTask(VisitDAO vDao){
+            asyncVisitDao = vDao;
+        }
+
+        @Override
+        protected Void doInBackground(final Visit... params){
+            asyncVisitDao.delete(params[0]);
+            return null;
         }
     }
 

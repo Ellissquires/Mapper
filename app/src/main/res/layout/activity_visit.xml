@@ -123,16 +123,38 @@
         </com.google.android.material.card.MaterialCardView>
 
         <include
+            android:id="@+id/include2"
             layout="@layout/content_map"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/record"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialCardView2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/record"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/poppins_light"
+            android:text="@string/view_images"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/colorPrimaryLight"
+            app:backgroundTint="@color/colorPrimary"
+            app:iconTint="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeColor="@color/colorPrimary" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

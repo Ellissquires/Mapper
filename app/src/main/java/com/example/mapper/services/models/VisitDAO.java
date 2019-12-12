@@ -3,6 +3,7 @@ package com.example.mapper.services.models;
 // import statements
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import java.util.List;
@@ -21,7 +22,7 @@ public interface VisitDAO {
     @Insert
     long insert(Visit visits);
 
-    @Insert
+    @Delete
     void delete(Visit visits);
 
     @Query("DELETE FROM visits")
