@@ -3,6 +3,7 @@ package com.example.mapper.viewmodels;
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.models.Point;
@@ -18,7 +19,6 @@ public class MapViewModel extends AndroidViewModel {
         pathRepository = new PathRepository(application);
     }
 
-    public List<Point> getPoints(int pathId) { return pathRepository.getPointsOnPath(pathId); }
 
 
 }

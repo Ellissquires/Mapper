@@ -7,18 +7,24 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.mapper.R;
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.Visit;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.DateFormat;
@@ -62,6 +68,8 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         visitDistanceView = findViewById(R.id.distance);
         visitDateView = findViewById(R.id.date);
         visitDateView.setText(dateFormat.format(mVisit.getVisitDate()));
+
+        mPathRepo = new PathRepository(getApplication());
 
         // Set distance (units dependant on distance, <100m = M, else KM)
         float dist = (float)mVisit.getDistance();
@@ -108,15 +116,35 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
         // Fetching the visit path and drawing it on the map
         long pathID = mVisit.getPathId();
-//        List<Point> path = mPathRepo.getPointsOnPath(pathID);
+        LiveData<List<Point>> path = mPathRepo.getPointsOnPath(pathID - 1);
 
-        Log.d("VisitView", "Path retrieved with size " + mVisit.toString());
+        path.observe(this, new Observer<List<Point>>() {
+            @Override
+            public void onChanged(@Nullable final List<Point> path) {
+                Log.d("VisitView", "Path retrieved with size " + path.size());
+                mMap.clear();
+                // Define line options
+                PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+                Point p1 = path.get(0);
+                CameraUpdate center=
+                        CameraUpdateFactory.newLatLng(new LatLng(p1.getLat(), p1.getLng()));
+                CameraUpdate zoom=CameraUpdateFactory.zoomTo(5);
 
+                Log.d("VisitView", "First Point" + p1.getLat() + " - " + p1.getLng());
+                LatLng latLng = new LatLng(p1.getLat(),p1.getLng());
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                mMap.animateCamera(cameraUpdate);
 
-
+                // Loop points and add them to the line
+                for(Point p : path){
+                    LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
+                    options.add(mapPoint);
+                }
+                // draw line
+                mMap.addPolyline(options);
+            }
+        });
+        
     }
-
-
-
 
 }

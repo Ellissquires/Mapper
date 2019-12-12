@@ -80,7 +80,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private VisitRepository mVisitRepo;
 
     private Visit mVisit;
-    private Visit pVisit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,7 +172,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 mPathRepo.createPath(new RepoInsertCallback(){
                     @Override
                     public void OnFinishInsert(Long rowID) {
-                        mPathID = rowID+1;
+                        mPathID = rowID;
                         mVisit.setPathId(mPathID);
                         Log.d("MapView", "Inserted path with ID: " + mPathID);
                         // Inserting all points
@@ -322,23 +321,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         currentPath = mMap.addPolyline(options);
     }
 
-    public void drawPathOnMap(int pathId){
-        // Clear current path
-        if (currentPath != null) { mMap.clear(); }
-
-        // Define line options
-        PolylineOptions options = new PolylineOptions().width(5).color(Color.WHITE).geodesic(true);
-        List<Point> points = mMapViewModel.getPoints(pathId);
-
-        // Loop points and add them to the line
-        for(Point p : points){
-            LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
-            options.add(mapPoint);
-        }
-
-        // draw line
-        currentPath = mMap.addPolyline(options);
-    }
     
     /**
      * Starts the IntentService to get the current location, and attaches this class as the result receiver.

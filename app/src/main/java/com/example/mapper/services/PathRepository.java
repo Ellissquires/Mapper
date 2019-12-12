@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.AsyncTask;
 import android.os.Handler;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.mapper.services.database.ApplicationDatabase;
@@ -27,7 +28,7 @@ public class PathRepository extends ViewModel {
         new InsertPathAsyncTask(pathDAO, riCB).execute(new Path());
     }
 
-    public List<Point> getPointsOnPath(long pathId) {
+    public LiveData<List<Point>> getPointsOnPath(long pathId) {
         return pathDAO.findPointsOnPath(pathId);
     }
 

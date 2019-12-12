@@ -1,5 +1,6 @@
 package com.example.mapper.services.models;
 // import statements
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -28,6 +29,6 @@ public interface PathDAO {
      * @param pathId a com.example.mapper.services.models.Path id
      */
     @Query("SELECT * FROM points WHERE pathId=:pathId")
-    List<Point> findPointsOnPath(final long pathId);
+    LiveData<List<Point>> findPointsOnPath(final long pathId);
 
 }
