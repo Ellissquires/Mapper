@@ -24,6 +24,10 @@ public class PathRepository extends ViewModel {
         pathDAO = db.pathDao();
     }
 
+    /**
+     * Create a new path object and add it to the database..
+     * @param riCB a RepoInsertCallback which will be called when the path is inserted.
+     */
     public void createPath(RepoInsertCallback riCB){
         new InsertPathAsyncTask(pathDAO, riCB).execute(new Path());
     }

@@ -6,7 +6,7 @@ import android.location.Location;
 import com.google.android.gms.location.LocationResult;
 
 /**
- * Class for AndroidSensor callbacks, used mainly for anonymous functions.
+ * Class for AndroidSensor callbacks, used mainly for anonymous callback functions.
  */
 public class AndroidSensorCallback {
     public void onSensorCallback(SensorEvent event) {}

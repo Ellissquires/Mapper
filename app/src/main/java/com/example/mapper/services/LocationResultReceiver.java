@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 
+
+/**
+ * Class for sending Location from service to activity.
+ */
 public class LocationResultReceiver extends ResultReceiver {
 
     private Receiver mReceiver;
@@ -22,6 +26,10 @@ public class LocationResultReceiver extends ResultReceiver {
         super(handler);
     }
 
+    /**
+     * Implement this reciever if you want to be able to receive results from a service in an
+     * activity,
+     */
     public interface Receiver {
         void onReceiveResult(int resultCode, Bundle resultData);
         void onPathPut(int resultCode, Bundle resultData);
@@ -32,6 +40,11 @@ public class LocationResultReceiver extends ResultReceiver {
         mReceiver = receiver;
     }
 
+    /**
+     *
+     * @param rc An integer result code 0 = LocationResult, 1 = path update, 2 = path finish.
+     * @param b
+     */
     @Override
     public void onReceiveResult(int rc, Bundle b) {
         if (mReceiver != null) {

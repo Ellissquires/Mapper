@@ -19,6 +19,7 @@ import java.util.TimeZone;
  * Android Sensor is an abstract class representing a single sensor.
  */
 public abstract class AndroidSensor {
+
     protected String TAG = AndroidSensor.class.getSimpleName();
     // Sampling rates
     protected long mSamplingRateInMS;
@@ -60,13 +61,18 @@ public abstract class AndroidSensor {
         }
 
     }
+
+    /**
+     * Sets the callback function, which will be used when returning sensor values.
+     * @param callback The AndroidSensorCallback object to use.
+     */
     public void setSensorCallback(AndroidSensorCallback callback) {
         mSensorCallback = callback;
     }
 
 
     /**
-     * Initiliaseds the sensor.
+     * Initiliases the sensor, and registers listeners.
      */
     protected void initListener() {
         if(!sensorAvailable()) {
@@ -85,6 +91,7 @@ public abstract class AndroidSensor {
                         onSensorChange(event, actualTimeInMS);
 
                         lastReportTime = event.timestamp;
+                        Log.d(TAG, "Listener listening!");
                     }
                 }
 
@@ -96,14 +103,25 @@ public abstract class AndroidSensor {
         }
     }
 
+    /**
+     * Called when the sensor is changed, overridden by subclasses to call specific functions
+     * if need be.
+     * @param event SensorEvent object, containing sensor data.
+     * @param ms The time the Sensor returned values.
+     */
     protected abstract void onSensorChange(SensorEvent event, long ms);
 
+    /**
+     * Returns the last values returned by the sensor.
+     * @return SensorEvent, the last values returned by the listener
+     */
     public SensorEvent fetchLastResults () {
         return mLastResult;
     }
 
     /**
-     *
+     * This function can be used to see if the object has been initialised, or if this particular
+     * sensor is available on the device in use.
      * @return False if the sensor is null.
      */
     public boolean sensorAvailable() {
@@ -124,7 +142,7 @@ public abstract class AndroidSensor {
 
 
     /**
-     * Starts the sensor.
+     * Starts the sensor, if it's available.
      */
     public void startSensing() {
         if(sensorAvailable()) {

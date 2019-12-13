@@ -22,7 +22,6 @@ public class LocationFetchService extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_GET_LOCATION = "com.example.mapper.services.action.GET_LOCATION";
 
-
     private LocationSensor mGPSSensor;
 
 
@@ -43,6 +42,10 @@ public class LocationFetchService extends IntentService {
         context.startService(intent);
     }
 
+    /**
+     * Handles the intent (in this case there should only be one valid intent.
+     * @param intent The intent to handle.
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
@@ -58,7 +61,7 @@ public class LocationFetchService extends IntentService {
      * parameters.
      */
     private void handleActionGetLocation(final ResultReceiver res) {
-
+        //Bundle up and send the data returned by the gps sensor.
         mGPSSensor = new LocationSensor(this);
         mGPSSensor.getCurrentLocation(new AndroidSensorCallback() {
             @Override
@@ -71,8 +74,5 @@ public class LocationFetchService extends IntentService {
                 return;
             }
         });
-        
-
     }
-
 }
