@@ -63,10 +63,10 @@ public class VisitListView extends AppCompatActivity {
         });
 
         ImageButton open = (ImageButton) findViewById(R.id.open_gallery);
-        fab.setOnClickListener(new View.OnClickListener() {
+        open.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(VisitListView.this, NewVisitView.class);
+                Intent intent = new Intent(VisitListView.this, GalleryView.class);
                 startActivity(intent);
             }
         });

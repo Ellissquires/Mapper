@@ -1,10 +1,10 @@
-package com.example.mapper.views;
+package com.example.mapper.ImageHandler;
 
 import java.io.File;
 
-class ImageObj {
-    int image=-1;
-    File file=null;
+public class ImageObj {
+    public int image=-1;
+    public File file=null;
 
 
     public ImageObj(int image) {

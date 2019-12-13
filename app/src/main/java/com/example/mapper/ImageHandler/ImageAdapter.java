@@ -1,4 +1,4 @@
-package com.example.mapper.views;
+package com.example.mapper.ImageHandler;
 
 
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
+import com.example.mapper.views.VisitImageView;
 
 import java.util.List;
 

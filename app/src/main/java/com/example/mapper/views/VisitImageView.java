@@ -7,6 +7,8 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mapper.ImageHandler.ImageAdapter;
+import com.example.mapper.ImageHandler.ImageObj;
 import com.example.mapper.R;
 
 public class VisitImageView extends AppCompatActivity {

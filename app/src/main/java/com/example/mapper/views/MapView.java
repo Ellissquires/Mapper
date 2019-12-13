@@ -309,7 +309,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         if (currentPath != null) { mMap.clear(); }
 
         // Define line options
-        PolylineOptions options = new PolylineOptions().width(5).color(Color.WHITE).geodesic(true);
+        PolylineOptions options = new PolylineOptions().width(15).color(Color.BLUE).geodesic(true);
 
         // Loop points and add them to the line
         for(Point p : points){

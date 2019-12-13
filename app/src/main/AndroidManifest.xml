@@ -70,6 +70,11 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
+            android:name=".views.GalleryView"
+            android:label="Gallery"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
             android:name=".views.VisitView"
             android:label="Visit View"
             android:theme="@style/AppTheme.NoActionBar"></activity>
