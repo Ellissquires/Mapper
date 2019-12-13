@@ -30,6 +30,12 @@ public abstract class ApplicationDatabase extends RoomDatabase {
 
     private static volatile ApplicationDatabase INSTANCE;
 
+
+    /**
+     * Creates (if not previously created) or fetches the application database
+     * @param context The context of the application
+     * @return The ApplicationDatabase object
+     */
     public static ApplicationDatabase getDatabase(final Context context){
         if (INSTANCE == null){
             synchronized (ApplicationDatabase.class) {
@@ -46,6 +52,9 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
+    /**
+     * Called when the database is opened.
+     */
     private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
@@ -56,9 +65,15 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         }
     };
 
+    /**
+     * populates the database with test data.
+     */
     private static class PopulateWithTestVisitsAsync extends AsyncTask<Void, Void, Void> {
 
         private final VisitDAO mDao;
+
+        // Change this to false when the database can be persistent between sessions.
+        private boolean mDestroyDatabase = true;
 
         PopulateWithTestVisitsAsync(ApplicationDatabase db) {
             mDao = db.visitDao();
@@ -66,7 +81,10 @@ public abstract class ApplicationDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(final Void... params) {
-            mDao.deleteAll();
+            if (mDestroyDatabase) {
+                mDao.deleteAll();
+
+            }
             return null;
         }
     }

@@ -26,6 +26,7 @@ import java.util.List;
 
 public class PathRecorderService extends Service {
 
+    // The Intents this service accepts Start, Pause and resume
     public static final String ACTION_START = "com.example.mapper.services.action.START";
     public static final String ACTION_PAUSE = "com.example.mapper.services.action.PAUSE";
     public static final String ACTION_RESUME = "com.example.mapper.services.action.RESUME";
@@ -46,34 +47,46 @@ public class PathRecorderService extends Service {
     private TemperatureSensor mTempSensor;
     private boolean mRecordValues = true;
 
-
     long pathID = 0;
     private List<Point> mRecordedPoints;
-
     private ResultReceiver mReceiver;
 
     public PathRecorderService() {
         mBinder = new PRSBinder();
     }
 
+    /**
+     * Static fn which tells the service to pause recording.
+     * @param context
+     */
     public static void pauseRecordingService(Context context) {
         Intent intent = new Intent(context, PathRecorderService.class);
         intent.setAction(ACTION_PAUSE);
         context.startService(intent);
     }
 
+    /**
+     * Static fn which tells the service to resume recording.
+     * @param context
+     */
     public static void resumeRecordingService(Context context) {
         Intent intent = new Intent(context, PathRecorderService.class);
         intent.setAction(ACTION_RESUME);
         context.startService(intent);
     }
 
+    /**
+     * Called when the service is provided a new intent
+     * @param intent The intent to use
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (ACTION_START.equals(action)) {
-            Log.d(TAG, ACTION_START);
-            Log.d(TAG, this.toString());
+            // Initialise the values needed to record
             mGPSSensor = new LocationSensor(this);
             mBarometerSensor = new BarometerSensor(this);
             mTempSensor = new TemperatureSensor(this);
@@ -82,14 +95,11 @@ public class PathRecorderService extends Service {
                 mReceiver = (ResultReceiver) intent.getParcelableExtra("receiverTag");
                 Log.d(TAG, "has receiver");
             }
-
+            // Start recording.
             startRecording();
-
         } else if (ACTION_PAUSE.equals(action)) {
-            Log.d(TAG, ACTION_PAUSE);
             mRecordValues = false;
         } else if (ACTION_RESUME.equals(action)) {
-            Log.d(TAG, ACTION_RESUME);
             mRecordValues = true;
         }
 
@@ -120,6 +130,9 @@ public class PathRecorderService extends Service {
     }
 
 
+    /**
+     * Registers location listeners and starts recording.
+     */
     private void startRecording() {
         mRecordedPoints = new ArrayList<Point>();
 
@@ -131,6 +144,7 @@ public class PathRecorderService extends Service {
                 if (location != null) {
                     double temp = 0.0, pressure = 0.0;
 
+                    // Get the last results from the sensors i9f possible.
                     if (mTempSensor.sensorAvailable()) {
                         SensorEvent tempResults = mTempSensor.fetchLastResults();
                         if (tempResults != null) {
@@ -168,6 +182,9 @@ public class PathRecorderService extends Service {
         mTempSensor.startSensing();
     }
 
+    /**
+     * Finishes recording, hands back the list of points to the reciever if there is one.
+     */
     private void stopRecording() {
         if (mReceiver != null) {
             Bundle bundle = new Bundle();

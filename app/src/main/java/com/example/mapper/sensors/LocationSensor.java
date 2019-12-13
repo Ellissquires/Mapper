@@ -32,10 +32,13 @@ public class LocationSensor extends AndroidSensor {
     private LocationResult mLastResult;
 
 
+    /**
+     * The contrcutor of this class, instantiates required objects.
+     * @param context The context of the app.
+     */
     public LocationSensor(Context context) {
         super(context, 0);
         TAG = "GPS Location Service";
-
         mFusedLocationClient = new FusedLocationProviderClient(context);
 
         // Create a location callback
@@ -75,6 +78,10 @@ public class LocationSensor extends AndroidSensor {
 
     }
 
+    /**
+     * Starts location updates, make sure permissions are given before this. This function is
+     * overriden from the super class. just calls startLocationUpdates()
+     */
     @Override
     public void startSensing () {
         if (mLocationPermissionGranted) {
@@ -83,6 +90,10 @@ public class LocationSensor extends AndroidSensor {
         }
     }
 
+    /**
+     * Stops location updates. This function is
+     * overriden from the super class. just calls stopLocationUpdates()
+     */
     @Override
     public void stopSensing () {
         if (mLocationPermissionGranted) {
@@ -102,39 +113,7 @@ public class LocationSensor extends AndroidSensor {
 
 
     /**
-     * Callback for when permissions are granted/denied.
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-    public static void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                }
-            }
-        }
-    }
-
-    /**
-     * Asks the user for location permission.
-     * @param context
-     */
-    public static void fetchPermission (Context context) {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-        } else {
-            ActivityCompat.requestPermissions((Activity)context, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    /**
-     * Starts the location updatesnusing mfusedlocationclient.
+     * Starts the location updates using mfusedlocationclient.
      */
     private void startLocationUpdates() {
         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -143,7 +122,7 @@ public class LocationSensor extends AndroidSensor {
     }
 
     /**
-     * stops the location updatesnusing mfusedlocationclient.
+     * stops the location updates using mfusedlocationclient.
      */
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
