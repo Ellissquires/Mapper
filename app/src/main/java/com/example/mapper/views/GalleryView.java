@@ -1,8 +1,12 @@
 package com.example.mapper.views;
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -42,15 +46,19 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
         // set up the RecyclerView
 
-        FloatingActionButton camera = (FloatingActionButton) findViewById(R.id.camera);
-        FloatingActionButton fab_gallery = (FloatingActionButton) findViewById(R.id.fab_gallery);
-        FloatingActionButton fab_unsorted = (FloatingActionButton) findViewById(R.id.fab_unsorted);
-        FloatingActionButton fab_sorted = (FloatingActionButton) findViewById(R.id.fab_sorted);
+        ImageButton fab_unsorted = (ImageButton) findViewById(R.id.fab_unsorted);
+        ImageButton fab_sorted = (ImageButton) findViewById(R.id.fab_sorted);
 
-        camera.setVisibility(View.GONE);
-        fab_gallery.setVisibility(View.GONE);
-        fab_sorted.setVisibility(View.VISIBLE);
-        fab_unsorted.setVisibility(View.VISIBLE);
+        LinearLayout image_container = (LinearLayout) findViewById(R.id.Image_Container);
+        LinearLayout sorted_container = (LinearLayout) findViewById(R.id.Sorted_Container);
+        LinearLayout gallery_container = (LinearLayout) findViewById(R.id.Gallery_Container);
+        LinearLayout camera_container = (LinearLayout) findViewById(R.id.Camera_Container);
+
+
+        camera_container.setVisibility(View.GONE);
+        gallery_container.setVisibility(View.GONE);
+        sorted_container.setVisibility(View.VISIBLE);
+        image_container.setVisibility(View.VISIBLE);
 
         fab_sorted.setOnClickListener(new View.OnClickListener() {
             @Override

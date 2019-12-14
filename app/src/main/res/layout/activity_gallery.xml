@@ -10,91 +10,204 @@
 
     <include layout="@layout/content_visit_gallery" />
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/menubar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="25dp"
-        android:background="@drawable/menu_background_light"
-        android:elevation="25dp"
-        android:outlineProvider="none">
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="20dp"
+        android:background="@color/colorButton"
+        android:backgroundTint="@color/colorButton"
+        android:elevation="35dp"
+        app:cardCornerRadius="40dp">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/camera"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:elevation="0dp"
-            android:focusable="auto"
-            android:outlineProvider="paddedBounds"
-            app:backgroundTint="@android:color/transparent"
-            app:borderWidth="0dp"
-            app:elevation="0dp"
-            app:fabSize="normal"
-            app:maxImageSize="24dp"
-            app:pressedTranslationZ="0dp"
-            app:srcCompat="@drawable/ic_camera_alt_black"
-            app:tint="@android:color/white"
-            tools:backgroundTint="@android:color/transparent" />
+            android:layout_gravity="bottom|center"
+            android:padding="2dp">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_gallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:elevation="0dp"
-            android:focusable="auto"
-            android:outlineProvider="paddedBounds"
-            app:backgroundTint="@android:color/transparent"
-            app:borderWidth="0dp"
-            app:elevation="0dp"
-            app:fabSize="normal"
-            app:maxImageSize="24dp"
-            app:pressedTranslationZ="0dp"
-            app:srcCompat="@drawable/ic_image_black_24dp"
-            app:tint="@android:color/white"
-            tools:backgroundTint="@android:color/transparent" />
+            <!-- Floating Action button -->
+
+            <!-- Floating Action button -->
 
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_sorted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:elevation="0dp"
-            android:focusable="auto"
-            android:outlineProvider="paddedBounds"
-            android:visibility="gone"
-            app:backgroundTint="@android:color/transparent"
-            app:borderWidth="0dp"
-            app:elevation="0dp"
-            app:fabSize="normal"
-            app:maxImageSize="24dp"
-            app:pressedTranslationZ="0dp"
-            app:srcCompat="@drawable/ic_sort_black_24dp"
-            app:tint="@android:color/white"
-            tools:backgroundTint="@android:color/transparent" />
+            <LinearLayout
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_unsorted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:elevation="0dp"
-            android:focusable="auto"
-            android:outlineProvider="paddedBounds"
-            android:visibility="gone"
-            app:backgroundTint="@android:color/transparent"
-            app:borderWidth="0dp"
-            app:elevation="0dp"
-            app:fabSize="normal"
-            app:maxImageSize="24dp"
-            app:pressedTranslationZ="0dp"
-            app:srcCompat="@drawable/ic_image_black_24dp"
-            app:tint="@android:color/white"
-            tools:backgroundTint="@android:color/transparent" />
+            </LinearLayout>
 
-    </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/Sorted_Container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/fab_sorted"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@android:color/transparent"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="0dp"
+                    android:tint="@android:color/transparent"
+                    android:visibility="visible"
+                    app:backgroundTint="@android:color/transparent"
+                    app:elevation="0dp"
+                    app:fabSize="auto"
+                    app:srcCompat="@drawable/ic_sort_black_24dp"
+                    app:tint="@color/txtColor"
+                    tools:backgroundTint="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:text="Sorted"
+                    android:textAlignment="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/Gallery_Container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/fab_gallery"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@android:color/transparent"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="0dp"
+                    android:tint="@android:color/transparent"
+                    android:visibility="visible"
+                    app:backgroundTint="@android:color/transparent"
+                    app:elevation="0dp"
+                    app:fabSize="auto"
+                    app:srcCompat="@drawable/ic_image_black_24dp"
+                    app:tint="@color/txtColor"
+                    tools:backgroundTint="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:text="gallery"
+                    android:textAlignment="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/Image_Container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/fab_unsorted"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@android:color/transparent"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="0dp"
+                    android:tint="@android:color/transparent"
+                    android:visibility="visible"
+                    app:backgroundTint="@android:color/transparent"
+                    app:elevation="0dp"
+                    app:fabSize="auto"
+                    app:srcCompat="@drawable/ic_image_black_24dp"
+                    app:tint="@color/txtColor"
+                    tools:backgroundTint="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:text="Images"
+                    android:textAlignment="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/Camera_Container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/camera"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@android:color/transparent"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="0dp"
+                    android:tint="@android:color/transparent"
+                    android:visibility="visible"
+                    app:backgroundTint="@android:color/transparent"
+                    app:elevation="0dp"
+                    app:fabSize="auto"
+                    app:srcCompat="@drawable/ic_camera_alt_black"
+                    app:tint="@color/txtColor"
+                    tools:backgroundTint="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:text="Camera"
+                    android:textAlignment="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -119,6 +119,7 @@
             android:fontFamily="@font/poppins_light"
             android:text="@string/track_temperature"
             android:textColor="@color/colorPrimaryLight"
+            android:textColorLink="@color/colorPrimary"
             app:useMaterialThemeColors="false" />
 
         <com.google.android.material.button.MaterialButton
@@ -128,11 +129,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppins_light"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:text="@string/start_visit"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/colorPrimaryLight"
             app:backgroundTint="@color/colorPrimary"
-            app:iconTint="@color/colorPrimary"
+            app:iconTint="@color/colorButton"
             app:strokeColor="@color/colorPrimary" />
 
     </LinearLayout>

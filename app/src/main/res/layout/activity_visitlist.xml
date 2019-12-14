@@ -42,66 +42,120 @@
         layout="@layout/content_visits"
         android:fadingEdge="none" />
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/menubar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="25dp"
-        android:background="@drawable/menu_background"
-        android:elevation="15dp"
-        android:outlineProvider="paddedBounds"
-        tools:layout_margin="25dp">
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="20dp"
+        android:background="@color/colorButton"
+        android:backgroundTint="@color/colorButton"
+        android:elevation="35dp"
+        app:cardCornerRadius="40dp">
 
-        <!-- Floating Action button -->
-        <ImageButton
-            android:id="@+id/fab"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:background="@android:color/transparent"
-            android:backgroundTint="@android:color/transparent"
-            android:padding="20dp"
-            android:tint="@android:color/transparent"
-            android:visibility="visible"
-            app:backgroundTint="@android:color/transparent"
-            app:borderWidth="0dp"
-            app:elevation="0dp"
-            app:fabSize="normal"
-            app:srcCompat="@drawable/ic_add_white_24dp"
-            app:tint="@color/txtColor"
-            tools:backgroundTint="@android:color/transparent" />
+            android:layout_gravity="bottom|center"
+            android:padding="2dp">
 
-        <!-- Floating Action button -->
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingLeft="12.5dp"
-            android:paddingRight="12.5dp"
-            app:srcCompat="@drawable/ic_logo_50_dp" />
+            <!-- Floating Action button -->
 
-        <ImageButton
-            android:id="@+id/open_gallery"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:background="@android:color/transparent"
-            android:backgroundTint="@android:color/transparent"
-            android:padding="20dp"
-            android:tint="@android:color/transparent"
-            app:backgroundTint="@android:color/transparent"
-            app:borderWidth="0dp"
-            app:elevation="0dp"
-            app:fabSize="normal"
-            app:srcCompat="@drawable/ic_image_black_24dp"
-            app:tint="@color/txtColor"
-            tools:backgroundTint="@android:color/transparent" />
+            <!-- Floating Action button -->
+            <LinearLayout
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/fab"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@android:color/transparent"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingRight="10dp"
+                    android:paddingBottom="0dp"
+                    android:tint="@android:color/transparent"
+                    android:visibility="visible"
+                    app:backgroundTint="@android:color/transparent"
+                    app:elevation="0dp"
+                    app:fabSize="auto"
+                    app:srcCompat="@drawable/ic_add_white_24dp"
+                    app:tint="@color/txtColor"
+                    tools:backgroundTint="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:text="Add Visit"
+                    android:textAlignment="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/open_gallery"
+                    style="@style/Widget.MaterialComponents.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:layout_margin="0dp"
+                    android:background="@android:color/transparent"
+                    android:backgroundTint="@android:color/transparent"
+                    android:padding="10dp"
+                    android:tint="@android:color/transparent"
+                    app:backgroundTint="@android:color/transparent"
+                    app:borderWidth="0dp"
+                    app:elevation="0dp"
+                    app:fabSize="normal"
+                    app:srcCompat="@drawable/ic_image_black_24dp"
+                    app:tint="@color/txtColor"
+                    tools:backgroundTint="@android:color/transparent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|center_vertical"
+                    android:layout_marginBottom="10dp"
+                    android:text="Gallery"
+                    android:textAlignment="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="10sp"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

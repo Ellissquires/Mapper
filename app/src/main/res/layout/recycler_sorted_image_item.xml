@@ -10,9 +10,11 @@
 
     <TextView
         android:id="@+id/Sorted_Title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="25dp"
         android:text="TextView"
+        android:textColor="@color/txtColor"
         app:layout_constraintBottom_toTopOf="@+id/sorted_visit_gallery"
         app:layout_constraintEnd_toStartOf="@+id/sorted_visit_gallery"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +24,7 @@
         android:id="@+id/sorted_visit_gallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/Sorted_Title" />
+        android:layout_below="@id/Sorted_Title"
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>
