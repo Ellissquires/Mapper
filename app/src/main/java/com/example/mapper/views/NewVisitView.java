@@ -2,6 +2,7 @@ package com.example.mapper.views;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProviders;
 import com.example.mapper.R;
 import com.example.mapper.sensors.BarometerSensor;
@@ -25,7 +27,9 @@ public class NewVisitView extends AppCompatActivity {
     private EditText mEditDescriptionView;
     private TextView mTitleWarning;
     private TextView mDescriptionWarning;
+    private CardView warningCard;
     private NewVisitViewModel mNewVisitViewModel;
+    Handler handler = new Handler();
 
     public NewVisitView() {
     }
@@ -36,8 +40,11 @@ public class NewVisitView extends AppCompatActivity {
         setContentView(R.layout.activity_new_visit);
         mEditTitleView = findViewById(R.id.title);
         mEditDescriptionView = findViewById(R.id.description);
-        mTitleWarning = findViewById(R.id.title_warning);
-        mDescriptionWarning = findViewById(R.id.description_warning);
+//        mTitleWarning = findViewById(R.id.title_warning);
+//        mDescriptionWarning = findViewById(R.id.description_warning);
+        mDescriptionWarning = findViewById(R.id.warning);
+        warningCard = findViewById(R.id.warning_container);
+
         mNewVisitViewModel = ViewModelProviders.of(this).get(NewVisitViewModel.class);
 
         // Disable checkboxes if the sensor's are unavailaable
@@ -75,15 +82,45 @@ public class NewVisitView extends AppCompatActivity {
                     finish();
                 } else {
                     // Set warnings to visible if need be.
-                    if (!titleOK) {
-                        mTitleWarning.setVisibility(View.VISIBLE);
-                    } else {
-                        mTitleWarning.setVisibility(View.GONE);
-                    }
-                    if (!descriptionOK) {
-                        mDescriptionWarning.setVisibility(View.VISIBLE);
+                    if (!titleOK && descriptionOK) {
+                        warningCard.setVisibility(View.VISIBLE);
+                        mDescriptionWarning.setText("Must have a title");
+                        warningCard.animate().scaleY(1);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                warningCard.animate().scaleY(0);
+                                warningCard.setVisibility(View.GONE);
+                            }
+                        }, 2000);
+
+                    } else if (!descriptionOK) {
+                        warningCard.setVisibility(View.VISIBLE);
+                        mDescriptionWarning.setText("Must have a description");
+                        warningCard.animate().scaleY(1);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                warningCard.animate().scaleY(0);
+                                warningCard.setVisibility(View.GONE);
+                            }
+                        }, 2000);
+                    } else if(!titleOK){
+                        warningCard.setVisibility(View.VISIBLE);
+                        mDescriptionWarning.setText("Must have a decription and title");
+                        warningCard.animate().scaleY(1);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                warningCard.animate().scaleY(0);
+                                warningCard.setVisibility(View.GONE);
+                            }
+                        }, 2000);
                     } else {
                         mDescriptionWarning.setVisibility(View.GONE);
+                        warningCard.animate().scaleY(0);
+                        warningCard.setVisibility(View.GONE);
+
                     }
                 }
             }

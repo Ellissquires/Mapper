@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -78,7 +79,7 @@ public class CameraView extends AppCompatActivity {
         initEasyImage();
         activity= this;
 
-        FloatingActionButton fab_gallery = (FloatingActionButton) findViewById(R.id.fab_gallery);
+        ImageButton fab_gallery = (ImageButton) findViewById(R.id.fab_gallery);
         fab_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,7 +88,7 @@ public class CameraView extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.camera);
+        ImageButton fab_camera = (ImageButton) findViewById(R.id.camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

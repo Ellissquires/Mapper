@@ -13,6 +13,51 @@
         android:layout_margin="16dp"
         android:orientation="vertical">
 
+        <!--        <TextView-->
+        <!--            android:id="@+id/title_warning"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="32dp"-->
+        <!--            android:layout_marginStart="8dp"-->
+        <!--            android:layout_marginTop="2dp"-->
+        <!--            android:fontFamily="@font/poppins_bold"-->
+        <!--            android:gravity="center_horizontal"-->
+        <!--            android:lineSpacingExtra="8sp"-->
+        <!--            android:text="@string/title_warning"-->
+        <!--            android:textColor="@color/colorSecondary"-->
+        <!--            android:textSize="18sp"-->
+        <!--            android:typeface="normal"-->
+        <!--            android:visibility="visible"-->
+        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/warning_container"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:backgroundTint="#FF5257"
+            android:scaleY="0"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/warning"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="8sp"
+                android:text="@string/description_warning"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:typeface="normal"
+                android:visibility="visible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.cardview.widget.CardView>
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
@@ -32,24 +77,6 @@
                 android:focusable="auto"
                 android:fontFamily="@font/poppins_light"
                 android:textColor="@color/colorPrimaryLight" />
-
-            <TextView
-                android:id="@+id/title_warning"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="2dp"
-                android:gravity="center_horizontal"
-                android:fontFamily="@font/poppins_bold"
-                android:lineSpacingExtra="8sp"
-                android:text="@string/title_warning"
-                android:visibility="gone"
-                android:textColor="@color/colorSecondary"
-                android:textSize="18sp"
-                android:typeface="normal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,29 +98,11 @@
                 android:fontFamily="@font/poppins_light"
                 android:gravity="top"
                 android:inputType="textMultiLine"
-                android:minLines="4"
+                android:minLines="3"
                 android:selectAllOnFocus="false"
                 android:singleLine="false"
                 android:textColor="@color/colorPrimaryLight"
                 android:textColorHighlight="#00BCD4" />
-
-            <TextView
-                android:id="@+id/description_warning"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="2dp"
-                android:gravity="center_horizontal"
-                android:fontFamily="@font/poppins_bold"
-                android:lineSpacingExtra="8sp"
-                android:text="@string/description_warning"
-                android:visibility="gone"
-                android:textColor="@color/colorSecondary"
-                android:textSize="18sp"
-                android:typeface="normal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
