@@ -104,7 +104,7 @@ public class PathRecorderService extends Service {
                 Log.d(TAG, "has receiver");
             }
             // Start recording.
-            startInForeground();
+//            startInForeground();
             startRecording();
         } else if (ACTION_PAUSE.equals(action)) {
             mRecordValues = false;
