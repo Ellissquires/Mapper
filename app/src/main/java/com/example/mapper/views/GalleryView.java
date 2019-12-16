@@ -2,6 +2,7 @@ package com.example.mapper.views;
 
 import android.content.Context;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageAdapter;
 import com.example.mapper.ImageHandler.ImageObj;
 import com.example.mapper.ImageHandler.SortedImageAdapter;
@@ -33,6 +35,7 @@ public class GalleryView extends AppCompatActivity {
     private List<File> myFolderList = new ArrayList<>();
     private RecyclerView.Adapter  mAdapter;
     private RecyclerView mRecyclerView;
+    CacheHandler cache = CacheHandler.getInstance();//Singleton instance handled in ImagesCache class.
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +43,13 @@ public class GalleryView extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
         int numberOfColumns = 3;
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                initData();
+            }
+        });
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         mAdapter= new ImageAdapter(myPictureList);
@@ -74,8 +84,6 @@ public class GalleryView extends AppCompatActivity {
             }
         });
         checkPermissions(getApplicationContext());
-        initData();
-        findImages();
     }
 
     private void findImages(){
@@ -89,6 +97,7 @@ public class GalleryView extends AppCompatActivity {
     }
 
     private void initData(){
+
         File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
         if (storageDir.exists()){
             File[] files = storageDir.listFiles();

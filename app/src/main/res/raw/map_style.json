@@ -3,7 +3,7 @@
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#a8b7cc"
+        "color": "#fcfdfe"
       }
     ]
   },
@@ -102,7 +102,7 @@
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#ffffff"
+        "color": "#becadc"
       }
     ]
   },
@@ -110,9 +110,6 @@
     "featureType": "road",
     "elementType": "geometry.stroke",
     "stylers": [
-      {
-        "color": "#212a37"
-      },
       {
         "visibility": "off"
       }
@@ -220,7 +217,7 @@
     "elementType": "geometry",
     "stylers": [
       {
-        "color": "#323545"
+        "color": "#1c1d27"
       }
     ]
   },
