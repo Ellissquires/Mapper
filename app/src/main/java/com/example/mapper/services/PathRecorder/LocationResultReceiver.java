@@ -1,4 +1,4 @@
-package com.example.mapper.services;
+package com.example.mapper.services.PathRecorder;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,6 +34,7 @@ public class LocationResultReceiver extends ResultReceiver {
         void onReceiveResult(int resultCode, Bundle resultData);
         void onPathPut(int resultCode, Bundle resultData);
         void onPathFinish(int resultCode, Bundle resultData);
+        void onVisitFetch(int resultCode, Bundle resultData);
     }
 
     public void setReceiver (Receiver receiver) {
@@ -54,6 +55,8 @@ public class LocationResultReceiver extends ResultReceiver {
                 mReceiver.onPathPut(rc, b);
             else if (rc == 2)
                 mReceiver.onPathFinish(rc, b);
+            else if (rc == 3)
+                mReceiver.onVisitFetch(rc, b);
         }
     }
 

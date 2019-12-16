@@ -1,8 +1,10 @@
-package com.example.mapper.services;
+package com.example.mapper.services.PathRecorder;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Binder;
@@ -15,20 +17,19 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Notification;
 
+import com.example.mapper.R;
 import com.example.mapper.sensors.AndroidSensorCallback;
 import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.sensors.TemperatureSensor;
-import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
-import com.example.mapper.services.models.RepoInsertCallback;
+import com.example.mapper.services.models.Visit;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.Builder;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -38,6 +39,16 @@ public class PathRecorderService extends Service {
     public static final String ACTION_START = "com.example.mapper.services.action.START";
     public static final String ACTION_PAUSE = "com.example.mapper.services.action.PAUSE";
     public static final String ACTION_RESUME = "com.example.mapper.services.action.RESUME";
+    public static final String ACTION_STOP = "com.example.mapper.services.action.STOP";
+    public static final String ACTION_POST_VISIT = "com.example.mapper.services.action.POST_VISIT";
+    public static final String ACTION_FETCH_VISIT = "com.example.mapper.services.action.FETCH_VISIT";
+
+
+    public static final String VISIT_TAG = "VISIT";
+    public static final String RECEIVER_TAG = "receiverTag";
+    public static final String PATH_TAG = "POINTS";
+    public static final String TIME_TAG = "ELAPSED_TIME";
+
 
 
     public class PRSBinder extends Binder {
@@ -54,6 +65,11 @@ public class PathRecorderService extends Service {
     private BarometerSensor mBarometerSensor;
     private TemperatureSensor mTempSensor;
     private boolean mRecordValues = true;
+    private boolean mAllowDestroy = false;
+
+    // For persistance with the foreground service.
+    private Visit mVisit = null;
+    private long mStartTime = 0;
 
     long pathID = 0;
     private List<Point> mRecordedPoints;
@@ -84,6 +100,40 @@ public class PathRecorderService extends Service {
     }
 
     /**
+     * Static fn which tells the service to stop the recording,
+     * This in turn allows the service to end properly.
+     * @param context
+     */
+    public static void stopRecordingService(Context context) {
+        Intent intent = new Intent(context, PathRecorderService.class);
+        intent.setAction(ACTION_STOP);
+        context.startService(intent);
+
+        context.stopService(intent);
+    }
+
+    /**
+     * Tells the service to store the visit in memory.
+     * @param context
+     */
+    public static void postVisitService(Context context, Visit v) {
+        Intent intent = new Intent(context, PathRecorderService.class);
+        intent.setAction(ACTION_POST_VISIT);
+        intent.putExtra(VISIT_TAG, v);
+
+        context.startService(intent);
+    }
+
+
+    public static void fetchVisitService(Context context, LocationResultReceiver receiver) {
+        Intent intent = new Intent(context, PathRecorderService.class);
+        intent.setAction(ACTION_FETCH_VISIT);
+        intent.putExtra(RECEIVER_TAG, receiver);
+        context.startService(intent);
+    }
+
+
+    /**
      * Called when the service is provided a new intent
      * @param intent The intent to use
      * @param flags
@@ -99,17 +149,33 @@ public class PathRecorderService extends Service {
             mBarometerSensor = new BarometerSensor(this);
             mTempSensor = new TemperatureSensor(this);
 
-            if (intent.hasExtra("receiverTag")) {
-                mReceiver = (ResultReceiver) intent.getParcelableExtra("receiverTag");
+            if (intent.hasExtra(RECEIVER_TAG)) {
+                mReceiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER_TAG);
                 Log.d(TAG, "has receiver");
             }
             // Start recording.
-//            startInForeground();
+            startInForeground();
             startRecording();
         } else if (ACTION_PAUSE.equals(action)) {
             mRecordValues = false;
         } else if (ACTION_RESUME.equals(action)) {
             mRecordValues = true;
+        } else if (ACTION_STOP.equals(action)) {
+            stopRecording();
+            mAllowDestroy = true;
+        } else if (ACTION_POST_VISIT.equals(action)) {
+            mVisit = (Visit) intent.getParcelableExtra(VISIT_TAG);
+        } else if (ACTION_FETCH_VISIT.equals(action)) {
+            // Does nothing if there is no receiver, and no visit
+            if (intent.hasExtra(RECEIVER_TAG)) {
+                mReceiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER_TAG);
+                Log.d(TAG, "Has new receiver");
+            }
+            if (mVisit != null) {
+                Bundle b = new Bundle();
+                b.putParcelable(VISIT_TAG, mVisit);
+                mReceiver.send(3, b);
+            }
         }
 
         return Service.START_NOT_STICKY;
@@ -117,13 +183,15 @@ public class PathRecorderService extends Service {
 
     @Override
     public void onDestroy() {
-//        stopRecording();
-
-        //Code for restarting service
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction("restartPathRecorder");
-        broadcastIntent.setClass(this, PathRecorderRestarter.class);
-        this.sendBroadcast(broadcastIntent);
+        if (!mAllowDestroy) {
+            //Code for restarting service
+            Intent broadcastIntent = new Intent();
+            broadcastIntent.setAction("restartPathRecorder");
+            broadcastIntent.setClass(this, PathRecorderRestarter.class);
+            this.sendBroadcast(broadcastIntent);
+        } else {
+            stopRecording();
+        }
 
         //TODO: Cleanup variables here
     }
@@ -134,8 +202,8 @@ public class PathRecorderService extends Service {
         mBarometerSensor = new BarometerSensor(this);
         mTempSensor = new TemperatureSensor(this);
 
-        if (intent.hasExtra("receiverTag")) {
-            mReceiver = (ResultReceiver) intent.getParcelableExtra("receiverTag");
+        if (intent.hasExtra(RECEIVER_TAG)) {
+            mReceiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER_TAG);
             Log.d(TAG, "has receiver");
         }
 
@@ -147,10 +215,10 @@ public class PathRecorderService extends Service {
     @RequiresApi(Build.VERSION_CODES.O)
     private void startInForeground () {
         String NOTIFICATION_CHANNEL_ID = "example.permanence";
-        String channelName = "Background Service";
+        String channelName = "PathRecorderService";
         NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
-//        chan.setLightColor(Color.BLUE);
-        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         assert manager != null;
@@ -161,6 +229,7 @@ public class PathRecorderService extends Service {
                 .setContentTitle("Tracking your activity!")
                 .setPriority(NotificationManager.IMPORTANCE_MIN)
                 .setCategory(Notification.CATEGORY_SERVICE)
+                .setSmallIcon(R.drawable.logo)
                 .build();
         startForeground(2, notification);
     }
@@ -171,6 +240,7 @@ public class PathRecorderService extends Service {
      */
     private void startRecording() {
         mRecordedPoints = new ArrayList<Point>();
+        mStartTime = Calendar.getInstance().getTimeInMillis();
 
         AndroidSensorCallback callback = new AndroidSensorCallback() {
             @Override
@@ -204,7 +274,7 @@ public class PathRecorderService extends Service {
 
                     if (mReceiver != null) {
                         Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList("points", (ArrayList)mRecordedPoints);
+                        bundle.putParcelableArrayList(PATH_TAG, (ArrayList)mRecordedPoints);
                         mReceiver.send(1, bundle); //Code 1 for list of points
                     }
 
@@ -222,9 +292,13 @@ public class PathRecorderService extends Service {
      * Finishes recording, hands back the list of points to the reciever if there is one.
      */
     private void stopRecording() {
+        long elapsedTime = Calendar.getInstance().getTimeInMillis() - mStartTime;
+        elapsedTime = elapsedTime / 1000; //Convert To seconds
+
         if (mReceiver != null) {
             Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList("points", (ArrayList)mRecordedPoints);
+            bundle.putParcelableArrayList(PATH_TAG, (ArrayList)mRecordedPoints);
+            bundle.putLong(TIME_TAG, elapsedTime);
             mReceiver.send(2, bundle); //Code 1 for list of points
         }
 
@@ -232,6 +306,18 @@ public class PathRecorderService extends Service {
         mBarometerSensor.stopSensing();
         mTempSensor.stopSensing();
         Log.d(TAG, "Finished recording!");
+    }
+
+    public static boolean checkIsRunning (Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (PathRecorderService.class.getName().equals(service.service.getClassName())) {
+                Log.i ("Service status", "Running");
+                return true;
+            }
+        }
+        Log.i ("Service status", "Not running");
+        return false;
     }
 
 }

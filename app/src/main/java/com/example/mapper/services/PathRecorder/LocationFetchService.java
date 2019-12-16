@@ -1,4 +1,4 @@
-package com.example.mapper.services;
+package com.example.mapper.services.PathRecorder;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -9,8 +9,6 @@ import android.os.ResultReceiver;
 
 import com.example.mapper.sensors.AndroidSensorCallback;
 import com.example.mapper.sensors.LocationSensor;
-
-import javax.xml.transform.Result;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in

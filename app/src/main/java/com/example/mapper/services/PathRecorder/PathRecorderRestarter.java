@@ -1,4 +1,4 @@
-package com.example.mapper.services;
+package com.example.mapper.services.PathRecorder;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

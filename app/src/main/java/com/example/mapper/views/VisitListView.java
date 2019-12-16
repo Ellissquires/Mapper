@@ -23,11 +23,13 @@ import com.example.mapper.R;
 import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.sensors.TemperatureSensor;
+import com.example.mapper.services.PathRecorder.PathRecorderService;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.VisitViewModel;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -48,6 +50,12 @@ public class VisitListView extends AppCompatActivity {
         setContentView(R.layout.activity_visitlist);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (PathRecorderService.checkIsRunning(getApplicationContext())) {
+            // Create new intent for the MapView activity, dont pass a visit
+            Intent intent = new Intent(this, MapView.class);
+            startActivity(intent);
+        }
 
 //        bottomAppBar = findViewById(R.id.bar);
         //set bottom bar to Action bar as it is similar like Toolbar

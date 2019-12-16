@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <receiver
-            android:name=".services.PathRecorderRestarter"
+            android:name=".services.PathRecorder.PathRecorderRestarter"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -35,15 +35,15 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".services.LocationResultReceiver"
+            android:name=".services.PathRecorder.LocationResultReceiver"
             android:enabled="true"
             android:exported="true" />
 
         <service
-            android:name=".services.LocationFetchService"
+            android:name=".services.PathRecorder.LocationFetchService"
             android:exported="false" />
         <service
-            android:name=".services.PathRecorderService"
+            android:name=".services.PathRecorder.PathRecorderService"
             android:exported="false" />
 
         <meta-data

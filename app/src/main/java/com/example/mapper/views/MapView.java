@@ -27,9 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mapper.R;
-import com.example.mapper.services.LocationFetchService;
-import com.example.mapper.services.LocationResultReceiver;
-import com.example.mapper.services.PathRecorderService;
+import com.example.mapper.services.PathRecorder.LocationFetchService;
+import com.example.mapper.services.PathRecorder.LocationResultReceiver;
+import com.example.mapper.services.PathRecorder.PathRecorderService;
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PointRepository;
 import com.example.mapper.services.VisitRepository;
@@ -71,6 +71,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
     private int mElapsedMinutes = 0;
     private int mElapsedSeconds = 0;
+    private float mStartTime = 0;
     private Timer mTimer;
     private long mPathID;
     private List<Point> mRecordedPoints;
@@ -87,13 +88,19 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         setContentView(R.layout.activity_map);
         // Make sure app has correct permissions.
 
+        mReceiver = new LocationResultReceiver(new Handler());
         mPathRepo = new PathRepository(getApplication());
         mPointRepo = new PointRepository(getApplication());
         mVisitRepo = new VisitRepository(getApplication());
 
-
+        // If the visit has not been passed through the context,
+        // The the service is probably storing it for use.
         Bundle extras = getIntent().getExtras();
-        mVisit = extras.getParcelable(EXTRA_VISIT);
+        if (getIntent().hasExtra(EXTRA_VISIT)) {
+            mVisit = extras.getParcelable(EXTRA_VISIT);
+        } else {
+            PathRecorderService.fetchVisitService(getApplicationContext(), mReceiver);
+        }
 
         final FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
@@ -106,10 +113,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         });
 
         // Retrieve the visit from the intent
-        Log.d(TAG, "Visit ID received " + mVisit.toString());
-        ((TextView)findViewById(R.id.final_title)).setText(mVisit.getTitle());
-        ((TextView)findViewById(R.id.title)).setText(mVisit.getTitle());
-
+        if (mVisit != null) {
+            Log.d(TAG, "Visit ID received " + mVisit.toString());
+            ((TextView) findViewById(R.id.final_title)).setText(mVisit.getTitle());
+            ((TextView) findViewById(R.id.title)).setText(mVisit.getTitle());
+        }
 
         final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
         final ImageButton fab_record = (ImageButton) findViewById(R.id.fab_record);
@@ -132,7 +140,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         fab_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fab_record.setVisibility(View.VISIBLE);
+                fab_record.setVisibility(View.GONE);
                 fab_stop.setVisibility(View.GONE);
                 fab_pause.setVisibility(View.GONE);
                 fab_resume.setVisibility(View.GONE);
@@ -200,7 +208,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mReceiver = new LocationResultReceiver(new Handler());
         fetchPermission(this);
     }
 
@@ -216,6 +223,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         i.putExtra("receiverTag", mReceiver);
         i.setAction(PathRecorderService.ACTION_START);
         context.startService(i);
+
+        // Give the service the visit for persistence
+        PathRecorderService.postVisitService(context, mVisit);
 
         findViewById(R.id.pBar).setVisibility(View.VISIBLE);
         startTimer();
@@ -242,13 +252,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     }
 
     public void stopTimer() {
-        mTimer.cancel();
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
     }
 
     public void finishRecording(Context context) {
         //Tell the service to stop.
-        Intent i= new Intent(context, PathRecorderService.class);
-        context.stopService(i);
+        PathRecorderService.stopRecordingService(context);
         stopTimer();
 
         // Set values in card view
@@ -377,7 +388,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
      */
     @Override
     public void onPathPut(int resultCode, Bundle resultData) {
-        ArrayList<Point> points = resultData.getParcelableArrayList("points");
+        ArrayList<Point> points = resultData.getParcelableArrayList(PathRecorderService.PATH_TAG);
         int numpoints = points.toArray().length;
         Point[] pointsarr = new Point[numpoints];
         pointsarr = points.toArray(pointsarr);
@@ -424,7 +435,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onPathFinish(int resultCode, Bundle resultData) {
         // Get the lsit of points
-        mRecordedPoints = resultData.getParcelableArrayList("points");
+        mRecordedPoints = resultData.getParcelableArrayList(PathRecorderService.PATH_TAG);
+        long mElapsedTime = resultData.getLong(PathRecorderService.TIME_TAG);
+
 
         // Set values in card view
         TextView distanceText = (TextView) findViewById(R.id.current_distance);
@@ -438,12 +451,35 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         findViewById(R.id.final_path_view).setVisibility(View.VISIBLE);
 
-        finalTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+        long seconds = mElapsedTime % 60;
+        long hours = mElapsedTime / 60;
+        long minutes = hours % 60;
+        hours = hours / 60;
+        finalTime.setText(String.format("%d:%02d:%02d", hours, minutes, seconds));
         finalTemperatureText.setText(temperatureText.getText());
         finalPressureText.setText(pressureText.getText());
         finalDistanceText.setText(distanceText.getText());
 
         findViewById(R.id.path_view).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onVisitFetch(int resultCode, Bundle resultData) {
+        // Retrieve the visit from the service
+        mVisit = resultData.getParcelable("VISIT");
+        Log.d(TAG, "Visit ID received from service" + mVisit.toString());
+        ((TextView)findViewById(R.id.final_title)).setText(mVisit.getTitle());
+        ((TextView)findViewById(R.id.title)).setText(mVisit.getTitle());
+
+
+        final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
+        final ImageButton fab_record = (ImageButton) findViewById(R.id.fab_record);
+        final FloatingActionButton fab_pause = (FloatingActionButton) findViewById(R.id.fab_pause);
+        final FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
+        fab_record.setVisibility(View.GONE);
+        fab_pause.setVisibility(View.VISIBLE);
+        fab_stop.setVisibility(View.VISIBLE);
+        fab_camera.setVisibility(View.VISIBLE);
     }
 
     /**
