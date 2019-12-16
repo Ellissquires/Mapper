@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -17,11 +18,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageAdapter;
 import com.example.mapper.ImageHandler.ImageObj;
 import com.example.mapper.R;
 import com.example.mapper.services.models.Visit;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -47,6 +48,8 @@ public class CameraView extends AppCompatActivity {
     private List<ImageObj> myPictureList = new ArrayList<>();
     private RecyclerView.Adapter  mAdapter;
     private RecyclerView mRecyclerView;
+    CacheHandler cache = CacheHandler.getInstance();//Singleton instance handled in ImagesCache class.
+
 
     private Activity activity;
 
@@ -72,7 +75,15 @@ public class CameraView extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         mAdapter= new ImageAdapter(myPictureList);
         mRecyclerView.setAdapter(mAdapter);
-        initData();
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                initData();
+            }
+        });
+
+        mAdapter.notifyDataSetChanged();
 
         checkPermissions(getApplicationContext());
 
@@ -114,12 +125,12 @@ public class CameraView extends AppCompatActivity {
      */
     private void initData() {
         File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
+
         if (storageDir.exists()){
-            File[] files = storageDir.listFiles();
-            List<File> imageFiles = (Arrays.asList(files));
+
+            List<File> imageFiles = (Arrays.asList(storageDir.listFiles()));
             myPictureList.addAll(ImageFetchService.getImageElements(imageFiles));
-            mAdapter.notifyDataSetChanged();
-            mRecyclerView.scrollToPosition(imageFiles.size() - 1);
+
         }
     }
 
@@ -148,7 +159,7 @@ public class CameraView extends AppCompatActivity {
 
             try {
                 Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-
+                cache.addToCache(file.getAbsolutePath(), bitmap);
 
                 FileOutputStream output = new FileOutputStream(newFile);
 
@@ -177,9 +188,16 @@ public class CameraView extends AppCompatActivity {
             }
 
             @Override
-            public void onImagesPicked(@NotNull List<File> imageFiles, EasyImage.ImageSource source, int type) {
+            public void onImagesPicked(@NotNull final List<File> imageFiles, EasyImage.ImageSource source, int type) {
                 onPhotosReturned(imageFiles);
-                saveImage(imageFiles);
+                final List<File> imageList = new ArrayList<>();
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageList.addAll(imageFiles);
+                        saveImage(imageList);
+                    }
+                });
             }
 
             @Override

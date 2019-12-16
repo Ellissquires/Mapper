@@ -9,7 +9,8 @@
     <ImageView
         android:id="@+id/visit_image"
         android:layout_width="wrap_content"
-        android:layout_height="150dp"
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
         android:contentDescription="Visit Image"
         tools:ignore="HardcodedText" />
 

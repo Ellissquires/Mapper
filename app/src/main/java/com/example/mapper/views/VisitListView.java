@@ -105,6 +105,8 @@ public class VisitListView extends AppCompatActivity {
     }
 
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 //        getMenuInflater().inflate(R.menu.bottomappbar_menu, menu);
