@@ -6,10 +6,14 @@ import android.content.Intent;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Notification;
 
 import com.example.mapper.sensors.AndroidSensorCallback;
 import com.example.mapper.sensors.BarometerSensor;
@@ -18,6 +22,10 @@ import com.example.mapper.sensors.TemperatureSensor;
 import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.RepoInsertCallback;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.Builder;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -96,6 +104,7 @@ public class PathRecorderService extends Service {
                 Log.d(TAG, "has receiver");
             }
             // Start recording.
+            startInForeground();
             startRecording();
         } else if (ACTION_PAUSE.equals(action)) {
             mRecordValues = false;
@@ -108,7 +117,13 @@ public class PathRecorderService extends Service {
 
     @Override
     public void onDestroy() {
-        stopRecording();
+//        stopRecording();
+
+        //Code for restarting service
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction("restartPathRecorder");
+        broadcastIntent.setClass(this, PathRecorderRestarter.class);
+        this.sendBroadcast(broadcastIntent);
 
         //TODO: Cleanup variables here
     }
@@ -127,6 +142,27 @@ public class PathRecorderService extends Service {
         startRecording();
 
         return mBinder;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void startInForeground () {
+        String NOTIFICATION_CHANNEL_ID = "example.permanence";
+        String channelName = "Background Service";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+//        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setContentTitle("Tracking your activity!")
+                .setPriority(NotificationManager.IMPORTANCE_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build();
+        startForeground(2, notification);
     }
 
 
