@@ -153,8 +153,14 @@ public class PathRecorderService extends Service {
                 mReceiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER_TAG);
                 Log.d(TAG, "has receiver");
             }
-            // Start recording.
-            startInForeground();
+
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                startInForeground();
+            } else {
+                startInForegroundFallback();
+            }
+
+            // start recording
             startRecording();
         } else if (ACTION_PAUSE.equals(action)) {
             mRecordValues = false;
@@ -212,10 +218,25 @@ public class PathRecorderService extends Service {
         return mBinder;
     }
 
+    /**
+     * Starts the service as a foreground process, in environments older than oreo
+     */
+    private void startInForegroundFallback () {
+        Notification n = new Notification.Builder(this)
+                .setContentTitle("Tracking your activity!")
+                .setSmallIcon(R.drawable.logo)
+                .build();
+        startForeground(1, n);
+    }
+
+    /**
+     * Starts the service as a foreground process, in environments at least as new as oreo.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     private void startInForeground () {
         String NOTIFICATION_CHANNEL_ID = "example.permanence";
         String channelName = "PathRecorderService";
+
         NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
         chan.setLightColor(Color.BLUE);
         chan.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
