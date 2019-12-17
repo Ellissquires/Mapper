@@ -64,6 +64,10 @@ public class LocationFetchService extends IntentService {
         mGPSSensor.getCurrentLocation(new AndroidSensorCallback() {
             @Override
             public void onSensorCallback(Location location) {
+                if (location == null) {
+                    return;
+                }
+
                 Bundle b = new Bundle();
                 b.putDouble("lat", location.getLatitude());
                 b.putDouble("lng", location.getLongitude());
