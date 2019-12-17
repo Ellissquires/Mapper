@@ -155,9 +155,10 @@ public class ImageFetchService {
         });
     }
 
-    public static void saveImage(final List<File> mFile, Context context, String title, CacheHandler cache) {
+    public static List<String> saveImage(final List<File> mFile, Context context, String title, CacheHandler cache) {
         File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
 
+        List<String> filenames = new ArrayList<>();
         for(File file: mFile){
             //         Create an image file name
             Timestamp date = new Timestamp(System.currentTimeMillis());
@@ -178,14 +179,16 @@ public class ImageFetchService {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
                 output.flush();
                 output.close();
-            }
 
+                filenames.add(newFile.toURI().toString());
+            }
             catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
+        return filenames;
 
-    }
-
+    }//saveImage
 
 }

@@ -224,7 +224,10 @@ public class CameraView extends AppCompatActivity {
                     @Override
                     public void run() {
                         imageList.addAll(imageFiles);
-                        ImageFetchService.saveImage(imageList, context , title, cache);
+                        List<String>imgs = ImageFetchService.saveImage(imageList, context , title, cache);
+                        if (imgs.size() > 0) {
+                            finishActivityAndReturn(imgs.get(0));
+                        }
                     }
                 });
             }
