@@ -155,6 +155,21 @@ public class ImageFetchService {
         });
     }
 
+    public static void editImageFolder (final String originalTitle, final String newTitle, final Context context, final CacheHandler cache){
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + originalTitle);
+                if (storageDir.isDirectory()) {
+                    List<File> fileList = Arrays.asList(storageDir.listFiles());
+                    saveImage(fileList, context, newTitle, cache);
+                }
+            }
+        });
+        deleteImageFolder(originalTitle, context);
+    }
+
     public static List<String> saveImage(final List<File> mFile, Context context, String title, CacheHandler cache) {
         File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
 

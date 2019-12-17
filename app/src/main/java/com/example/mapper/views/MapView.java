@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mapper.R;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.PathRecorder.LocationFetchService;
 import com.example.mapper.services.PathRecorder.LocationResultReceiver;
 import com.example.mapper.services.PathRecorder.PathRecorderService;
@@ -239,6 +240,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         discard_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ImageFetchService.deleteImageFolder(mVisit.getTitle(), MapView.this);
                 finish();
             }
         });
