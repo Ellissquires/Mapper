@@ -149,7 +149,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             public void onClick(View view) {
                 fab_record.setVisibility(View.GONE);
                 fab_pause.setVisibility(View.VISIBLE);
-                fab_stop.setVisibility(View.VISIBLE);
+                fab_stop.setVisibility(View.GONE);
                 fab_camera.setVisibility(View.VISIBLE);
                 beginRecording(getApplicationContext());
             }
@@ -174,6 +174,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 fab_pause.setVisibility(View.GONE);
                 fab_resume.setVisibility(View.VISIBLE);
                 fab_camera.setVisibility(View.GONE);
+                fab_stop.setVisibility(View.VISIBLE);
                 stopTimer();
             }
         });
@@ -185,6 +186,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 fab_pause.setVisibility(View.VISIBLE);
                 fab_resume.setVisibility(View.GONE);
                 fab_camera.setVisibility(View.VISIBLE);
+                fab_stop.setVisibility(View.GONE);
                 startTimer();
             }
         });
