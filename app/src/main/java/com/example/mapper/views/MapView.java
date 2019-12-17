@@ -264,8 +264,12 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 String fileName = b.getString("filename");
                 Point lastPoint = mRecordedPoints.get(mRecordedPoints.size() - 1);
                 pointToPictureDict.put("" + (mRecordedPoints.size() - 1), fileName);
+                LatLng pos = new LatLng(lastPoint.getLat(), lastPoint.getLng());
                 mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(lastPoint.getLat(), lastPoint.getLng())));
+                                .position(pos)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                                .title("Photo"));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(pos));
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
