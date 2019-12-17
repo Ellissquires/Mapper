@@ -18,6 +18,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.mapper.R;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.VisitRepository;
 import com.example.mapper.services.models.Point;
@@ -175,6 +176,8 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                                 }
                             }
                 }).show();
+
+                ImageFetchService.deleteImageFolder(mVisit.getTitle(), this);
                 return true;
             case R.id.visit_edit:
                 return true;

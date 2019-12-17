@@ -129,17 +129,28 @@ public class ImageFetchService {
 
     public static Bitmap decodeSampledBitmapFromResource(File file, int reqWidth, int reqHeight) {
 
-        // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
-        // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
-        // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+    }
+
+    public static void deleteImageFolder (final String title, final Context context){
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title);
+                if (storageDir.isDirectory())
+                    for (File child : storageDir.listFiles())
+                        (child).delete();
+
+                storageDir.delete();
+            }
+        });
     }
 
 
