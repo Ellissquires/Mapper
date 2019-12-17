@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.net.URI;
@@ -68,6 +69,8 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     private Context mContext;
 
     private List<Point> mPoints;
+
+    public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -110,6 +113,15 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        MaterialButton button = (MaterialButton) findViewById(R.id.record);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VisitView.this, CameraView.class);
+                intent.putExtra(EXTRA_VISIT, mVisit);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -167,7 +179,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                     Log.d("VisitView", "Path retrieved with size " + path.size());
                     mMap.clear();
                     // Define line options
-                    PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+                    PolylineOptions options = new PolylineOptions().width(15).color(Color.BLUE).geodesic(true);
                     Point p1 = path.get(0);
                     // Center the map on the first point of the path
                     Log.d("VisitView", "First Point" + p1.getLat() + " - " + p1.getLng());
@@ -180,7 +192,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                         final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
 
-                        // For each point, check if there is a corresponding pictyure point.
+                        // For each point, check if there is a corresponding picture point.
                         // If there is, add a marker to the map.
                         LiveData<PicturePoint> pictPoint = mPictPointRepo.getPicturePoint(p.getId()-1);
                         pictPoint.observe(owner, new Observer<PicturePoint>() {
