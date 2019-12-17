@@ -18,6 +18,8 @@ import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageObj;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -151,6 +153,38 @@ public class ImageFetchService {
                 storageDir.delete();
             }
         });
+    }
+
+    public static void saveImage(final List<File> mFile, Context context, String title, CacheHandler cache) {
+        File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
+
+        for(File file: mFile){
+            //         Create an image file name
+            Timestamp date = new Timestamp(System.currentTimeMillis());
+
+            String timestamp = title + date.toString();
+
+            if (!storageDir.exists())
+                storageDir.mkdirs();
+            File newFile = new File(storageDir, (timestamp + ".jpeg"));
+
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                cache.addToCache(file.getAbsolutePath(), bitmap);
+
+                FileOutputStream output = new FileOutputStream(newFile);
+
+                // Compress into png format image from 0% - 100%
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+                output.flush();
+                output.close();
+            }
+
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 

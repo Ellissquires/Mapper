@@ -50,6 +50,7 @@ public class CameraView extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     CacheHandler cache = CacheHandler.getInstance();//Singleton instance handled in ImagesCache class.
 
+    private Context context;
 
     private Activity activity;
 
@@ -67,6 +68,8 @@ public class CameraView extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+
+        context = this;
 
         title = mVisit.getTitle();
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
@@ -144,38 +147,6 @@ public class CameraView extends AppCompatActivity {
        ImageFetchService.imagePermissions(context,this);
     }
 
-    public void saveImage(List<File> mFile) {
-        File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
-
-        for(File file: mFile){
-            //         Create an image file name
-            Timestamp date = new Timestamp(System.currentTimeMillis());
-
-            String timestamp = title + date.toString();
-
-            if (!storageDir.exists())
-                storageDir.mkdirs();
-            File newFile = new File(storageDir, (timestamp + ".jpeg"));
-
-            try {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                cache.addToCache(file.getAbsolutePath(), bitmap);
-
-                FileOutputStream output = new FileOutputStream(newFile);
-
-                // Compress into png format image from 0% - 100%
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-                output.flush();
-                output.close();
-            }
-
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -195,7 +166,7 @@ public class CameraView extends AppCompatActivity {
                     @Override
                     public void run() {
                         imageList.addAll(imageFiles);
-                        saveImage(imageList);
+                        ImageFetchService.saveImage(imageList, context , title, cache);
                     }
                 });
             }
