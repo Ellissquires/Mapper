@@ -12,6 +12,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.PathDAO;
+import com.example.mapper.services.models.PicturePoint;
+import com.example.mapper.services.models.PicturePointDAO;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.PointDAO;
 import com.example.mapper.services.models.Visit;
@@ -19,7 +21,7 @@ import com.example.mapper.services.models.VisitDAO;
 
 import java.util.Date;
 
-@Database(entities = {Point.class, Path.class, Visit.class}, version = 4, exportSchema = false)
+@Database(entities = {Point.class, Path.class, Visit.class, PicturePoint.class}, version = 6, exportSchema = false)
 @TypeConverters({Converters.class})
 
 public abstract class ApplicationDatabase extends RoomDatabase {
@@ -27,6 +29,7 @@ public abstract class ApplicationDatabase extends RoomDatabase {
     public abstract PointDAO pointDao();
     public abstract PathDAO pathDao();
     public abstract VisitDAO visitDao();
+    public abstract PicturePointDAO picturePointDAO();
 
     private static volatile ApplicationDatabase INSTANCE;
 
@@ -73,7 +76,7 @@ public abstract class ApplicationDatabase extends RoomDatabase {
         private final VisitDAO mDao;
 
         // Change this to false when the database can be persistent between sessions.
-        private boolean mDestroyDatabase = true;
+        private boolean mDestroyDatabase = false;
 
         PopulateWithTestVisitsAsync(ApplicationDatabase db) {
             mDao = db.visitDao();

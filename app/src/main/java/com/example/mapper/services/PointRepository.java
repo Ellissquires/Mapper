@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.mapper.services.database.ApplicationDatabase;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.PointDAO;
+import com.example.mapper.services.models.RepoInsertCallback;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.services.models.VisitDAO;
 
@@ -23,7 +24,11 @@ public class PointRepository extends ViewModel {
     }
 
     public void createPoint(Point point) {
-        new InsertPointAsyncTask(pointDAO).execute(point);
+        new InsertPointAsyncTask(pointDAO, null).execute(point);
+    }
+
+    public void createPoint(Point point, RepoInsertCallback riCB) {
+        new InsertPointAsyncTask(pointDAO, riCB).execute(point);
     }
 
 
@@ -38,18 +43,24 @@ public class PointRepository extends ViewModel {
 //        return points;
 //    }
 
-    static class InsertPointAsyncTask extends AsyncTask<Point, Void, Void> {
+    static class InsertPointAsyncTask extends AsyncTask<Point, Void, Long> {
         private PointDAO asyncPointDao;
+        private RepoInsertCallback mCallback;
 
-        private InsertPointAsyncTask(PointDAO dao){
+        private InsertPointAsyncTask(PointDAO dao, RepoInsertCallback riCB){
             asyncPointDao = dao;
+            mCallback = riCB;
         }
 
         @Override
-        protected Void doInBackground(final Point... params){
-            asyncPointDao.insert(params[0]);
+        protected Long doInBackground(final Point... params){
+            return asyncPointDao.insert(params[0]);
+        }
 
-            return null;
+        protected void onPostExecute(Long result)  {
+            if (mCallback != null) {
+                mCallback.OnFinishInsert(result);
+            }
         }
     }
 }

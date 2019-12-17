@@ -20,7 +20,7 @@ public interface PointDAO {
     void insertAll(Point... points);
 
     @Insert
-    void insert(Point points);
+    long insert(Point points);
 
     @Insert
     void delete(Point points);

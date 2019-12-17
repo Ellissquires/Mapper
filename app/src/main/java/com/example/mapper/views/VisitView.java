@@ -1,25 +1,33 @@
 package com.example.mapper.views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.mapper.R;
 import com.example.mapper.services.PathRepository;
+import com.example.mapper.services.PicturePointRepository;
 import com.example.mapper.services.VisitRepository;
+import com.example.mapper.services.models.PicturePoint;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.Visit;
 import com.google.android.gms.maps.CameraUpdate;
@@ -27,14 +35,20 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
@@ -48,11 +62,11 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private Visit mVisit;
     private PathRepository mPathRepo;
+    private PicturePointRepository mPictPointRepo;
     private VisitRepository mVisitRepo;
     private Context mContext;
 
-
-
+    private List<Point> mPoints;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -81,6 +95,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
         mPathRepo = new PathRepository(getApplication());
         mVisitRepo = new VisitRepository(getApplication());
+        mPictPointRepo = new PicturePointRepository(getApplication());
 
         // Set distance (units dependant on distance, <100m = M, else KM)
         float dist = (float)mVisit.getDistance();
@@ -112,6 +127,25 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap map) {
         mMap = map;
 
+        // Set the maps Info window
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                // Inflate and show the image.
+                View v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
+                ImageView img = (ImageView) v.findViewById(R.id.infowindow_image);
+
+                img.setImageURI(Uri.parse((String)marker.getTag()));
+
+                return v;
+            }
+        }); // SetInfoWindowAdapter
+
         try {
             // Set the map style
              mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(
@@ -124,6 +158,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         long pathID = mVisit.getPathId();
         LiveData<List<Point>> path = mPathRepo.getPointsOnPath(pathID - 1);
 
+        final LifecycleOwner owner = this;
         path.observe(this, new Observer<List<Point>>() {
             @Override
             public void onChanged(@Nullable final List<Point> path) {
@@ -141,16 +176,34 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
                     // Loop points and add them to the line
                     for(Point p : path){
-                        LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
+                        final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
+
+                        // For each point, check if there is a corresponding pictyure point.
+                        // If there is, add a marker to the map.
+                        LiveData<PicturePoint> pictPoint = mPictPointRepo.getPicturePoint(p.getId()-1);
+                        pictPoint.observe(owner, new Observer<PicturePoint>() {
+                            @Override
+                            public void onChanged(PicturePoint picturePoint) {
+                                if (picturePoint != null) {
+                                    Marker m = mMap.addMarker(new MarkerOptions()
+                                            .position(mapPoint)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                                            .title("Photo"));
+                                    m.setTag(picturePoint.getPictureURI());
+                                }
+                            }
+                        });
                     }
                     // Draw the line
                     mMap.addPolyline(options);
+
+                    mPoints = new ArrayList<Point>();
+                    mPoints.addAll(path);
                 }
 
             }
         });
-
     }
 
     @Override
@@ -192,5 +245,4 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 return super.onOptionsItemSelected(item);
         }
     }
-
 }

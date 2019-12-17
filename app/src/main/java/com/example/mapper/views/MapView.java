@@ -14,6 +14,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Picture;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -31,8 +32,11 @@ import com.example.mapper.services.PathRecorder.LocationFetchService;
 import com.example.mapper.services.PathRecorder.LocationResultReceiver;
 import com.example.mapper.services.PathRecorder.PathRecorderService;
 import com.example.mapper.services.PathRepository;
+import com.example.mapper.services.PicturePointRepository;
 import com.example.mapper.services.PointRepository;
 import com.example.mapper.services.VisitRepository;
+import com.example.mapper.services.models.Path;
+import com.example.mapper.services.models.PicturePoint;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.RepoInsertCallback;
 import com.example.mapper.services.models.Visit;
@@ -50,13 +54,21 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.antlr.v4.tool.AttributeDict;
+
+import java.security.cert.Extension;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
+
 
     private GoogleMap mMap;
     private Polyline currentPath;
@@ -79,8 +91,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private PathRepository mPathRepo;
     private PointRepository mPointRepo;
     private VisitRepository mVisitRepo;
+    private PicturePointRepository mPictPointRepo;
 
     private Visit mVisit;
+
+    private Map<String, String> pointToPictureDict;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +107,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mPathRepo = new PathRepository(getApplication());
         mPointRepo = new PointRepository(getApplication());
         mVisitRepo = new VisitRepository(getApplication());
+        mPictPointRepo = new PicturePointRepository(getApplication());
+        pointToPictureDict = new HashMap<>();
 
         // If the visit has not been passed through the context,
         // The the service is probably storing it for use.
@@ -108,7 +125,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             public void onClick(View view) {
                 Intent intent = new Intent(MapView.this, CameraView.class);
                 intent.putExtra(EXTRA_VISIT, mVisit);
-                startActivity(intent);
+                // start activity for result, because we want the filename back.
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -184,9 +202,28 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                         mVisit.setPathId(mPathID);
                         Log.d("MapView", "Inserted path with ID: " + mPathID);
                         // Inserting all points
-                        for (Point p : mRecordedPoints) {
+                        for (int i = 0; i < mRecordedPoints.size(); i++) {
+                            Point p  = mRecordedPoints.get(i);
                             p.setPathId((int)mPathID);
-                            mPointRepo.createPoint(p);
+
+                            // Check to see if this point has an associated picture point.
+                            if (!pointToPictureDict.containsKey("" + i)) {
+                                // no picture point
+                                mPointRepo.createPoint(p);
+                            } else {
+                                // there is a picture point, insert it with the file path.
+                                final String index = "" + i;
+                                mPointRepo.createPoint(p, new RepoInsertCallback() {
+                                    @Override
+                                    public void OnFinishInsert(Long rowID) {
+                                        long pointID = rowID;
+
+                                        String fn = pointToPictureDict.get(index);
+                                        PicturePoint pp = new PicturePoint((int)pointID, fn);
+                                        mPictPointRepo.createPicturePoint(pp);
+                                    }
+                                });
+                            }
                         }
                         mVisitRepo.createVisit(mVisit);
                         finish();
@@ -209,6 +246,29 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mapFragment.getMapAsync(this);
 
         fetchPermission(this);
+    }
+
+    /**
+     * Called when camera view returns, with either cancel or a new picture
+     * @param requestCode should be 1
+     * @param resultCode RESULT_OK or RESULT_CANCELLED
+     * @param data An Intent with returned filename bundled inside it.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){;
+                Bundle b = data.getExtras();
+                String fileName = b.getString("filename");
+                Point lastPoint = mRecordedPoints.get(mRecordedPoints.size() - 1);
+                pointToPictureDict.put("" + (mRecordedPoints.size() - 1), fileName);
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(lastPoint.getLat(), lastPoint.getLng())));
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
     /**
@@ -392,6 +452,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         int numpoints = points.toArray().length;
         Point[] pointsarr = new Point[numpoints];
         pointsarr = points.toArray(pointsarr);
+        mRecordedPoints = points;
         drawPathOnMap(pointsarr);
 
         // Set values in in the card
@@ -434,7 +495,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
      */
     @Override
     public void onPathFinish(int resultCode, Bundle resultData) {
-        // Get the lsit of points
+        // Get the list of points, and elapsed time
         mRecordedPoints = resultData.getParcelableArrayList(PathRecorderService.PATH_TAG);
         long mElapsedTime = resultData.getLong(PathRecorderService.TIME_TAG);
 

@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -22,6 +23,9 @@ import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageAdapter;
 import com.example.mapper.ImageHandler.ImageObj;
 import com.example.mapper.R;
+import com.example.mapper.services.PicturePointRepository;
+import com.example.mapper.services.models.PicturePoint;
+import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.Visit;
 
 import org.jetbrains.annotations.NotNull;
@@ -50,8 +54,8 @@ public class CameraView extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     CacheHandler cache = CacheHandler.getInstance();//Singleton instance handled in ImagesCache class.
 
-
     private Activity activity;
+
 
     private void initEasyImage(){
        EasyImage.configuration(this)
@@ -121,6 +125,26 @@ public class CameraView extends AppCompatActivity {
     }
 
     /**
+     * Finishes the activity and bundles the filename into the data.
+     * @param filePath the file path to the picture taken.
+     */
+    private void finishActivityAndReturn (String filePath) {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("filename", filePath);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+    }
+
+    /**
+     * Cancels this activity and returns as such.
+     */
+    private void cancelActivity () {
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    /**
      * artificial init of the data so to upload some images as a starting point
      */
     private void initData() {
@@ -168,12 +192,13 @@ public class CameraView extends AppCompatActivity {
                 output.flush();
                 output.close();
             }
-
             catch (Exception e) {
                 e.printStackTrace();
             }
-        }
 
+            // Finish and return once saved.
+            finishActivityAndReturn(newFile.toURI().toString());
+        }
     }
 
     @Override
