@@ -54,6 +54,7 @@ public class CameraView extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     CacheHandler cache = CacheHandler.getInstance();//Singleton instance handled in ImagesCache class.
 
+    private Context context;
     private Activity activity;
 
 
@@ -71,6 +72,8 @@ public class CameraView extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+
+        context = this;
 
         title = mVisit.getTitle();
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
@@ -201,6 +204,7 @@ public class CameraView extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -220,7 +224,7 @@ public class CameraView extends AppCompatActivity {
                     @Override
                     public void run() {
                         imageList.addAll(imageFiles);
-                        saveImage(imageList);
+                        ImageFetchService.saveImage(imageList, context , title, cache);
                     }
                 });
             }

@@ -24,6 +24,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.mapper.R;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PicturePointRepository;
 import com.example.mapper.services.VisitRepository;
@@ -223,6 +224,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                             public void onDismissed(Snackbar snackbar, int event) {
                                 if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
                                     // Snackbar closed on its own
+                                    ImageFetchService.deleteImageFolder(mVisit.getTitle(), mContext);
                                     Intent intent = new Intent(VisitView.this, VisitListView.class);
                                     startActivity(intent);
                                 }

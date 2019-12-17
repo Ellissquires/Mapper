@@ -7,8 +7,8 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapper.ImageHandler.CacheHandler;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.views.VisitListView;
-import com.example.mapper.views.VisitView;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -19,6 +19,8 @@ public class SplashActivity extends AppCompatActivity {
 
         CacheHandler cache = CacheHandler.getInstance();
         cache.initializeCache();
+
+        ImageFetchService.cacheImages(cache, this);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
