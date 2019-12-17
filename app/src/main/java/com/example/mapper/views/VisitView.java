@@ -56,6 +56,8 @@ import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
 
 public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
+    public static final String EXTRA_EDIT_VISIT = "com.example.mapper.EDIT_VISIT";
+
     private TextView visitTitleView;
     private TextView visitDescriptionView;
     private TextView visitDistanceView;
@@ -232,6 +234,10 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 }).show();
                 return true;
             case R.id.visit_edit:
+                Intent intent = new Intent(VisitView.this, EditVisitView.class);
+                intent.putExtra(EXTRA_EDIT_VISIT, mVisit);
+                startActivity(intent);
+                finish();
                 return true;
             case R.id.visit_share:
                 Intent sendIntent = new Intent();

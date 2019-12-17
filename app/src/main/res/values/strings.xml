@@ -12,6 +12,7 @@
     <string name="description">Description</string>
     <string name="title">Title</string>
     <string name="start_visit">Start Visit</string>
+    <string name="edit_visit">Edit Visit</string>
     <string name="title_warning">Title cannot be empty!</string>
     <string name="description_warning">Description cannot be empty!</string>
     <string name="search">Search</string>

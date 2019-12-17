@@ -34,6 +34,29 @@ public class VisitRepository extends ViewModel {
         new DeleteVisitAsyncTask(visitDAO).execute(visit);
     }
 
+    public void updateVisit(Visit visit){
+        new UpdateVisitAsyncTask(visitDAO).execute(visit);
+    }
+
+    private class UpdateVisitAsyncTask extends AsyncTask<Visit, Void, Void> {
+        private VisitDAO asyncVisitDao;
+
+        private UpdateVisitAsyncTask(VisitDAO vDao){
+            asyncVisitDao = vDao;
+        }
+
+        @Override
+        protected Void doInBackground(final Visit... params){
+            asyncVisitDao.update(params[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+        }
+    }
+
     private class InsertVisitAsyncTask extends AsyncTask<Visit, Void, Void> {
         private VisitDAO asyncVisitDao;
         private PathDAO asyncPathDao;
