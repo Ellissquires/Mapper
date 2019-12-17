@@ -6,7 +6,11 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -179,7 +183,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                     Log.d("VisitView", "Path retrieved with size " + path.size());
                     mMap.clear();
                     // Define line options
-                    PolylineOptions options = new PolylineOptions().width(15).color(Color.BLUE).geodesic(true);
+                    PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
                     Point p1 = path.get(0);
                     // Center the map on the first point of the path
                     Log.d("VisitView", "First Point" + p1.getLat() + " - " + p1.getLng());
@@ -192,16 +196,19 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                         final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
 
-                        // For each point, check if there is a corresponding picture point.
+                        // For each point, check if there is a corresponding pictyure point.
                         // If there is, add a marker to the map.
                         LiveData<PicturePoint> pictPoint = mPictPointRepo.getPicturePoint(p.getId()-1);
                         pictPoint.observe(owner, new Observer<PicturePoint>() {
                             @Override
                             public void onChanged(PicturePoint picturePoint) {
                                 if (picturePoint != null) {
+                                    final BitmapFactory.Options options = new BitmapFactory.Options();
+                                    Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_pin);
+                                    bitmap = getIcon(bitmap, 150);
                                     Marker m = mMap.addMarker(new MarkerOptions()
                                             .position(mapPoint)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                                             .title("Photo"));
                                     m.setTag(picturePoint.getPictureURI());
                                 }
@@ -258,5 +265,17 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public Bitmap getIcon(Bitmap bm, int w){
+        int width = bm.getWidth();
+        float scaleWidth = ((float) w) / width;
+        // create a matrix for the manipulation
+        Matrix matrix = new Matrix();
+        // resize the bit map
+        matrix.postScale(scaleWidth, scaleWidth);
+        // recreate the new Bitmap
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, width, matrix, true);
+        return resizedBitmap;
     }
 }
