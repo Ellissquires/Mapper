@@ -266,8 +266,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 String fileName = b.getString("filename");
                 Point lastPoint = mRecordedPoints.get(mRecordedPoints.size() - 1);
                 pointToPictureDict.put("" + (mRecordedPoints.size() - 1), fileName);
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(lastPoint.getLat(), lastPoint.getLng())));
+
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
@@ -387,9 +386,18 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         PolylineOptions options = new PolylineOptions().width(15).color(Color.BLUE).geodesic(true);
 
         // Loop points and add them to the line
-        for(Point p : points){
+//        for(Point p : points){
+        for(int i = 0; i < points.length; i ++) {
+            Point p = points[i];
             LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
             options.add(mapPoint);
+
+            if (pointToPictureDict.containsKey("" + i)) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(mapPoint)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                        .title("Photo"));
+            }
         }
 
         // draw line
