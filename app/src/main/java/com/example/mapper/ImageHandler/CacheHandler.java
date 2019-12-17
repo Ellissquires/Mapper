@@ -1,8 +1,11 @@
 package com.example.mapper.ImageHandler;
 
 import android.graphics.Bitmap;
+import android.widget.ImageView;
 
 import androidx.collection.LruCache;
+
+import com.example.mapper.R;
 
 public class CacheHandler {
     private LruCache<String, Bitmap> cacheStore;
@@ -81,4 +84,8 @@ public class CacheHandler {
         return cacheStore;
     }
 
+    public Bitmap loadBitmap(String imageKey) {
+        final Bitmap bitmap = getFromCache(imageKey);
+        return bitmap;
+    }
 }

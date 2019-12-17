@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +16,22 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.views.VisitImageView;
 
 import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder> {
     static private Context context;
     private static List<ImageObj> items;
+    private Boolean sort=  false;
+    private ArrayList<ImageObj> itemsList = new ArrayList<>();
     private static final int THUMBSIZE = Resources.getSystem().getDisplayMetrics().widthPixels;
+    private int size = 0;
+    CacheHandler cache = CacheHandler.getInstance();
 
     public ImageAdapter(List<ImageObj> items) {
         this.items = items;
@@ -35,6 +43,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
         context = cont;
     }
 
+
     @Override
     public View_Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         //Inflate the layout, initialize the View Holder
@@ -45,37 +54,41 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
         return holder;
     }
 
+//    Need to fix
     @Override
     public void onBindViewHolder(final View_Holder holder, final int position) {
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the
         // current row on the RecyclerView
-        if (holder!=null && items.get(position)!=null) {
-            if (items.get(position).image!=-1) {
-                holder.imageView.setImageResource(items.get(position).image);
-            } else if (items.get(position).file!=null){
 
-                Bitmap thumbImage = ThumbnailUtils.extractThumbnail(decodeSampledBitmapFromResource(items.get(position).file, 150, 150),
+        if (holder!=null && items.get(position)!=null) {
+
+            if (items.get(position).file!=null){
+                String path = items.get(position).file.getAbsolutePath();
+                Bitmap bitmap = cache.getFromCache(items.get(position).file.getAbsolutePath());
+                if(bitmap == null) {
+                    bitmap = ImageFetchService.decodeSampledBitmapFromResource(items.get(position).file, 150, 150);
+                    cache.addToCache(path, bitmap);
+                }
+                Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
                         (THUMBSIZE/3 - 5), (THUMBSIZE/3 -5));
-//                Bitmap myBitmap = BitmapFactory.decodeFile(items.get(position).file.getAbsolutePath());
+
                 holder.imageView.setImageBitmap(thumbImage);
             }
-            else if(items.get(position).bitmap != null){
-                Bitmap thumbImage = ThumbnailUtils.extractThumbnail((items.get(position).bitmap),
-                        (THUMBSIZE/3 - 5), (THUMBSIZE/3 -5));
-//                Bitmap myBitmap = BitmapFactory.decodeFile(items.get(position).file.getAbsolutePath());
-                holder.imageView.setImageBitmap(thumbImage);
-            }
+
+            itemsList.add(items.get(position));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
+            File image = itemsList.get(position).file;
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, VisitImageView.class);
-                    intent.putExtra("position", position);
+                    intent.putExtra("image", image);
                     context.startActivity(intent);
                 }
             });
+
+
         }
-        //animate(holder);
     }
 
 
@@ -100,50 +113,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
         }
 
     }
-
-    public static List<ImageObj> getItems() {
-        return items;
-    }
-
-    public static void setItems(List<ImageObj> items) {
-        ImageAdapter.items = items;
-    }
-
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            // Calculate ratios of height and width to requested height and width
-            final int heightRatio = Math.round((float) height / (float) reqHeight);
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
-
-            // Choose the smallest ratio as inSampleSize value, this will guarantee
-            // a final image with both dimensions larger than or equal to the
-            // requested height and width.
-            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
-        }
-
-        return inSampleSize;
-    }
-
-    public static Bitmap decodeSampledBitmapFromResource(File file,
-                                                         int reqWidth, int reqHeight) {
-
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-            return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-    }
+//
+//    public static List<ImageObj> getItems() {
+//        return items;
+//    }
+//
+//    public static void setItems(List<ImageObj> items) {
+//        ImageAdapter.items = items;
+//    }
 }

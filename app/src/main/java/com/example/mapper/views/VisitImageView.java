@@ -7,33 +7,32 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageAdapter;
 import com.example.mapper.ImageHandler.ImageObj;
 import com.example.mapper.R;
 
+import java.io.File;
+import java.util.List;
+
 public class VisitImageView extends AppCompatActivity {
+
+    CacheHandler cache = CacheHandler.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_image);
 
-        Bundle b = getIntent().getExtras();
-        int position=-1;
-        if(b != null) {
-            // this is the image position in the itemList
-            position = b.getInt("position");
-            if (position!=-1){
-                ImageView imageView = (ImageView) findViewById(R.id.image);
-                ImageObj element= ImageAdapter.getItems().get(position);
-                if (element.image!=-1) {
-                    imageView.setImageResource(element.image);
-                } else if (element.file!=null) {
-                    Bitmap myBitmap = BitmapFactory.decodeFile(element.file.getAbsolutePath());
-                    imageView.setImageBitmap(myBitmap);
-                }
-            }
+        Bundle bundle = getIntent().getExtras();
+        File element = (File) getIntent().getExtras().get("image");
 
+        if(element != null){
+            ImageView imageView = (ImageView) findViewById(R.id.image);
+            if (element!=null) {
+                Bitmap myBitmap = BitmapFactory.decodeFile(element.getAbsolutePath());
+                imageView.setImageBitmap(myBitmap);
+            }
         }
     }
 

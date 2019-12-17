@@ -19,10 +19,13 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.R;
+import com.example.mapper.SplashActivity;
 import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.LocationSensor;
 import com.example.mapper.sensors.TemperatureSensor;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.PathRecorder.PathRecorderService;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.VisitViewModel;
@@ -46,10 +49,16 @@ public class VisitListView extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState){
+        ImageFetchService.imagePermissions(getApplicationContext(),this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visitlist);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        CacheHandler cache = CacheHandler.getInstance();
+
+        ImageFetchService.cacheImages(cache, this);
 
         if (PathRecorderService.checkIsRunning(getApplicationContext())) {
             // Create new intent for the MapView activity, dont pass a visit
