@@ -171,13 +171,12 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                             public void onDismissed(Snackbar snackbar, int event) {
                                 if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
                                     // Snackbar closed on its own
+                                    ImageFetchService.deleteImageFolder(mVisit.getTitle(), mContext);
                                     Intent intent = new Intent(VisitView.this, VisitListView.class);
                                     startActivity(intent);
                                 }
                             }
                 }).show();
-
-                ImageFetchService.deleteImageFolder(mVisit.getTitle(), this);
                 return true;
             case R.id.visit_edit:
                 return true;

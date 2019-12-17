@@ -98,6 +98,10 @@ public class VisitListView extends AppCompatActivity {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
             public void onScrolled(RecyclerView recyclerView, int width, int height){
+                int scrollViewHeight = recyclerView.getChildAt(0).getHeight();
+                if(height <= scrollViewHeight){
+                    menubar.animate().translationY(0);
+                }
                 if (height>0)
 //                    menubar.setVisibility(recyclerView.GONE);
                     menubar.animate().translationY(500);
