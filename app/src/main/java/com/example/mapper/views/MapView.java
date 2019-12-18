@@ -53,6 +53,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.antlr.v4.tool.AttributeDict;
@@ -93,6 +94,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private PointRepository mPointRepo;
     private VisitRepository mVisitRepo;
     private PicturePointRepository mPictPointRepo;
+    private MaterialCardView card;
 
     private Visit mVisit;
 
@@ -250,6 +252,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mapFragment.getMapAsync(this);
 
         fetchPermission(this);
+
+        card = (MaterialCardView) findViewById(R.id.path_view);
     }
 
     /**
@@ -348,7 +352,19 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int reason) {
+                card.animate().translationY(-700);
+            }
+        });
 
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                card.animate().translationY(0);
+            }
+        });
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.

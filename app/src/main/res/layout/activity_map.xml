@@ -13,14 +13,14 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/path_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/path_view"
         android:layout_margin="16dp"
         android:layout_marginLeft="@dimen/mtrl_card_spacing"
         android:layout_marginTop="@dimen/mtrl_card_spacing"
         android:layout_marginRight="@dimen/mtrl_card_spacing"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/colorPrimaryDark"
         app:cardCornerRadius="6dp"
         app:contentPadding="8dp">
 
@@ -59,13 +59,13 @@
                 app:layout_constraintTop_toTopOf="parent"></ProgressBar>
 
             <LinearLayout
+                android:id="@+id/values_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:id="@+id/values_layout"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title">
@@ -284,13 +284,15 @@
 
 
     <include layout="@layout/content_map" />
+
     <androidx.cardview.widget.CardView
+        android:id="@+id/map_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_margin="25dp"
-        android:background="@color/colorButton"
-        android:backgroundTint="@color/colorButton"
+        android:background="@color/colorPrimaryDark"
+        android:backgroundTint="@color/colorPrimaryDark"
         android:elevation="30dp"
         app:cardCornerRadius="30dp">
 
@@ -306,7 +308,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
-                android:backgroundTint="@color/colorButton"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:elevation="0dp"
                 android:focusable="auto"
                 android:outlineProvider="paddedBounds"
@@ -326,13 +328,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
-                android:backgroundTint="@color/colorButton"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:elevation="0dp"
                 android:focusable="auto"
                 android:outlineProvider="paddedBounds"
                 android:tint="@color/colorPrimaryDark"
                 android:visibility="gone"
-                app:backgroundTint="@color/colorButton"
                 app:borderWidth="0dp"
                 app:elevation="0dp"
                 app:fabSize="normal"
@@ -347,7 +348,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
-                android:backgroundTint="@color/colorButton"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:elevation="0dp"
                 android:focusable="auto"
                 android:outlineProvider="paddedBounds"
@@ -367,7 +368,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
-                android:backgroundTint="@color/colorButton"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:elevation="0dp"
                 android:focusable="auto"
                 android:outlineProvider="paddedBounds"
@@ -387,7 +388,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
-                android:backgroundTint="@color/colorButton"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:elevation="0dp"
                 android:focusable="auto"
                 android:outlineProvider="paddedBounds"
