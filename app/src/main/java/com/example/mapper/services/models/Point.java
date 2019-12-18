@@ -27,7 +27,6 @@ import static androidx.room.ForeignKey.CASCADE;
         indices = {@Index("pathId")})
 
 public class Point implements Parcelable {
-
     @PrimaryKey(autoGenerate = true)
     public int id;
     private int pathId;
@@ -76,20 +75,15 @@ public class Point implements Parcelable {
         this.lng = lng;
     }
 
-    public void setPressure(double p) {
-        this.pressure = p;
-    }
+    public void setPressure(double p) { this.pressure = p; }
 
     public double getPressure(){return this.pressure; }
 
-    public void setTemperature(double t) {
-        this.temperature = t;
-    }
+    public void setTemperature(double t) { this.temperature = t; }
 
     public double getTemperature(){ return this.temperature; }
 
     // Below are functions for creating a parcelable extra. used for passing data from PathRecorderService to the Activity
-
     public static final Creator<Point> CREATOR = new Creator<Point>() {
         @Override
         public Point createFromParcel(Parcel in) {

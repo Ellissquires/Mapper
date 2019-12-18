@@ -182,7 +182,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                         final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
 
-                        // For each point, check if there is a corresponding pictyure point.
+                        // For each point, check if there is a corresponding picture point.
                         // If there is, add a marker to the map.
                         LiveData<PicturePoint> pictPoint = mPictPointRepo.getPicturePoint(p.getId()-1);
                         pictPoint.observe(owner, new Observer<PicturePoint>() {

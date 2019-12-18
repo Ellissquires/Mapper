@@ -36,6 +36,6 @@ public interface VisitDAO {
     /**
      * Return all the visits
      */
-    @Query("SELECT * FROM visits")
+    @Query("SELECT * FROM visits ORDER BY visitDate DESC")
     LiveData<List<Visit>> getAllVisits();
 }
