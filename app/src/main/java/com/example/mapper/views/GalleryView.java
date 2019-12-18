@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,7 +38,25 @@ public class GalleryView extends AppCompatActivity {
         setContentView(R.layout.activity_gallery);
         ImageFetchService.imagePermissions(getApplicationContext(),this);
 
+        final CardView menubar = (CardView) findViewById(R.id.menubar);
+
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int width, int height) {
+                int scrollViewHeight = recyclerView.getChildAt(0).getHeight();
+                if (height <= scrollViewHeight) {
+                    menubar.animate().translationY(0);
+                }
+                if (height > 0)
+//                    menubar.setVisibility(recyclerView.GONE);
+                    menubar.animate().translationY(500);
+                else if (height < 0)
+//                    menubar.setVisibility(recyclerView.VISIBLE);
+                    menubar.animate().translationY(0);
+            }
+        });
+
         int numberOfColumns = 3;
 
 

@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -76,7 +77,25 @@ public class CameraView extends AppCompatActivity {
         context = this;
 
         title = mVisit.getTitle();
+        final CardView menubar = (CardView) findViewById(R.id.menubar);
+
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int width, int height) {
+                int scrollViewHeight = recyclerView.getChildAt(0).getHeight();
+                if (height <= scrollViewHeight) {
+                    menubar.animate().translationY(0);
+                }
+                if (height > 0)
+//                    menubar.setVisibility(recyclerView.GONE);
+                    menubar.animate().translationY(500);
+                else if (height < 0)
+//                    menubar.setVisibility(recyclerView.VISIBLE);
+                    menubar.animate().translationY(0);
+            }
+        });
+
         // set up the RecyclerView
         int numberOfColumns = 3;
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
