@@ -1,15 +1,21 @@
 package com.example.mapper.views;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -17,11 +23,23 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.R;
 import com.example.mapper.services.ImageFetchService;
+import com.example.mapper.services.PathRepository;
+import com.example.mapper.services.PicturePointRepository;
 import com.example.mapper.services.VisitRepository;
+import com.example.mapper.services.models.PicturePoint;
+import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.Visit;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
@@ -37,13 +55,42 @@ public class EditVisitView extends AppCompatActivity {
     Handler handler = new Handler();
 
     private VisitRepository mVisitRepo;
+    private PathRepository mPathRepo;
+    private PicturePointRepository mPictPointRepo;
 
     CacheHandler cache = CacheHandler.getInstance();
     public EditVisitView() {
     }
 
-    public void editPictureDirectory(){
+    public void editPictureDirectory(final String original, final String current){
+        long pathID = mVisit.getPathId();
+        LiveData<List<Point>> path = mPathRepo.getPointsOnPath(pathID - 1);
 
+        final LifecycleOwner owner = this;
+        path.observe(this, new Observer<List<Point>>() {
+            @Override
+            public void onChanged(@Nullable final List<Point> path) {
+                if (path.size() > 0) {
+
+                    for (final Point p : path) {
+
+                        final LiveData<PicturePoint> pictPoint = mPictPointRepo.getPicturePoint(p.getId() - 1);
+                        pictPoint.observe(owner, new Observer<PicturePoint>() {
+                            @Override
+                            public void onChanged(PicturePoint picturePoint) {
+                                if (picturePoint != null) {
+                                    String[] uri = picturePoint.getPictureURI().split("/" + original + "/");
+                                    String newUri = uri[0] + "/" + current + "/" + uri[1];
+                                    PicturePoint pp = new PicturePoint(picturePoint.getPointId(), newUri);
+                                    mPictPointRepo.updatePicturePoint(pp);
+                                   Log.e("Point URI: ", pp.getPictureURI());
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -56,6 +103,8 @@ public class EditVisitView extends AppCompatActivity {
         warningCard = findViewById(R.id.warning_container);
 
         mVisitRepo = new VisitRepository(getApplication());
+        mPathRepo = new PathRepository(getApplication());
+        mPictPointRepo = new PicturePointRepository(getApplication());
 
         final List<String> files = new ArrayList<>();
         LiveData<List<Visit>> visits =  mVisitRepo.getAllVisits();
@@ -88,6 +137,7 @@ public class EditVisitView extends AppCompatActivity {
 
                 if (titleOK && descriptionOK && !usedName) {
                     ImageFetchService.editImageFolder(mVisit.getTitle(),title, EditVisitView.this, cache);
+//                    editPictureDirectory(mVisit.getTitle(),title);
                     mVisit.setTitle(title);
                     mVisit.setDescription(description);
 

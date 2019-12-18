@@ -25,6 +25,10 @@ public class PicturePointRepository extends ViewModel {
         new InsertPointAsyncTask(picturePointDAO).execute(picturePoint);
     }
 
+    public void updatePicturePoint(PicturePoint picturePoint){
+        new UpdatePointAsyncTask(picturePointDAO).execute(picturePoint);
+    }
+
 
     public LiveData<PicturePoint> getPicturePoint(long pointId) {
         LiveData<PicturePoint> point = picturePointDAO.getPicturePoint(pointId);
@@ -66,8 +70,12 @@ public class PicturePointRepository extends ViewModel {
         @Override
         protected Void doInBackground(final PicturePoint... params){
             asyncPicturePointDao.update(params[0]);
-
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
         }
     }
 }

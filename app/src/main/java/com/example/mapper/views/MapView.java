@@ -1,6 +1,7 @@
 package com.example.mapper.views;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -95,6 +96,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private VisitRepository mVisitRepo;
     private PicturePointRepository mPictPointRepo;
     private MaterialCardView card;
+    private CardView menu_card;
 
     private Visit mVisit;
 
@@ -144,6 +146,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         final ImageButton fab_record = (ImageButton) findViewById(R.id.fab_record);
         final FloatingActionButton fab_pause = (FloatingActionButton) findViewById(R.id.fab_pause);
         final FloatingActionButton fab_resume = (FloatingActionButton) findViewById(R.id.fab_resume);
+        menu_card = (CardView) findViewById(R.id.map_menu);
+
         fab_record.setVisibility(View.VISIBLE);
         fab_stop.setVisibility(View.GONE);
 
@@ -323,6 +327,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         if (mTimer != null) {
             mTimer.cancel();
         }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        menu_card.setVisibility(View.GONE);
+        card.setVisibility(View.GONE);
+        finishRecording(getApplicationContext());
     }
 
     public void finishRecording(Context context) {

@@ -193,7 +193,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                     Log.d("VisitView", "Path retrieved with size " + path.size());
                     mMap.clear();
                     // Define line options
-                    PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+                    PolylineOptions options = new PolylineOptions().width(10).color(Color.BLUE).geodesic(true);
                     Point p1 = path.get(0);
                     // Center the map on the first point of the path
                     Log.d("VisitView", "First Point" + p1.getLat() + " - " + p1.getLng());
