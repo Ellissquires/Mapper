@@ -6,7 +6,11 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +48,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.net.URI;
@@ -70,6 +75,8 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     private Context mContext;
 
     private List<Point> mPoints;
+
+    public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -112,6 +119,15 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        MaterialButton button = (MaterialButton) findViewById(R.id.record);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VisitView.this, CameraView.class);
+                intent.putExtra(EXTRA_VISIT, mVisit);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -189,9 +205,12 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                             @Override
                             public void onChanged(PicturePoint picturePoint) {
                                 if (picturePoint != null) {
+                                    final BitmapFactory.Options options = new BitmapFactory.Options();
+                                    Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_pin);
+                                    bitmap = getIcon(bitmap, 150);
                                     Marker m = mMap.addMarker(new MarkerOptions()
                                             .position(mapPoint)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                                             .title("Photo"));
                                     m.setTag(picturePoint.getPictureURI());
                                 }
@@ -252,5 +271,17 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public Bitmap getIcon(Bitmap bm, int w){
+        int width = bm.getWidth();
+        float scaleWidth = ((float) w) / width;
+        // create a matrix for the manipulation
+        Matrix matrix = new Matrix();
+        // resize the bit map
+        matrix.postScale(scaleWidth, scaleWidth);
+        // recreate the new Bitmap
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, width, matrix, true);
+        return resizedBitmap;
     }
 }

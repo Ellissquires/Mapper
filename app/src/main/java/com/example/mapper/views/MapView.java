@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mapper.R;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.PathRecorder.LocationFetchService;
 import com.example.mapper.services.PathRecorder.LocationResultReceiver;
 import com.example.mapper.services.PathRecorder.PathRecorderService;
@@ -52,6 +53,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.antlr.v4.tool.AttributeDict;
@@ -92,6 +94,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private PointRepository mPointRepo;
     private VisitRepository mVisitRepo;
     private PicturePointRepository mPictPointRepo;
+    private MaterialCardView card;
 
     private Visit mVisit;
 
@@ -239,6 +242,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         discard_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ImageFetchService.deleteImageFolder(mVisit.getTitle(), MapView.this);
                 finish();
             }
         });
@@ -248,6 +252,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mapFragment.getMapAsync(this);
 
         fetchPermission(this);
+
+        card = (MaterialCardView) findViewById(R.id.path_view);
     }
 
     /**
@@ -261,11 +267,13 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){;
                 Bundle b = data.getExtras();
-                String fileName = b.getString("filename");
-                Point lastPoint = mRecordedPoints.get(mRecordedPoints.size() - 1);
-                pointToPictureDict.put("" + (mRecordedPoints.size() - 1), fileName);
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(lastPoint.getLat(), lastPoint.getLng())));
+                ArrayList<String> fileNames = b.getStringArrayList("filename");
+                for(String filepath: fileNames){
+
+                    Point lastPoint = mRecordedPoints.get(mRecordedPoints.size() - 1);
+                    pointToPictureDict.put("" + (mRecordedPoints.size() - 1), filepath);
+                }
+
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
@@ -347,7 +355,19 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int reason) {
+                card.animate().translationY(-700);
+            }
+        });
 
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                card.animate().translationY(0);
+            }
+        });
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -385,9 +405,18 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         PolylineOptions options = new PolylineOptions().width(15).color(Color.BLUE).geodesic(true);
 
         // Loop points and add them to the line
-        for(Point p : points){
+//        for(Point p : points){
+        for(int i = 0; i < points.length; i ++) {
+            Point p = points[i];
             LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
             options.add(mapPoint);
+
+            if (pointToPictureDict.containsKey("" + i)) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(mapPoint)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                        .title("Photo"));
+            }
         }
 
         // draw line
