@@ -1,6 +1,7 @@
 package com.example.mapper.views;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.mapper.ImageHandler.CacheHandler;
@@ -16,7 +19,10 @@ import com.example.mapper.R;
 import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.VisitRepository;
 import com.example.mapper.services.models.Visit;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
 import static com.example.mapper.views.VisitView.EXTRA_EDIT_VISIT;
@@ -36,6 +42,10 @@ public class EditVisitView extends AppCompatActivity {
     public EditVisitView() {
     }
 
+    public void editPictureDirectory(){
+
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -47,6 +57,16 @@ public class EditVisitView extends AppCompatActivity {
 
         mVisitRepo = new VisitRepository(getApplication());
 
+        final List<String> files = new ArrayList<>();
+        LiveData<List<Visit>> visits =  mVisitRepo.getAllVisits();
+        visits.observe(EditVisitView.this, new Observer<List<Visit>>() {
+            @Override
+            public void onChanged(List<Visit> visits) {
+                for(int i = 0; i<visits.size(); i++){
+                    files.add(visits.get(i).getTitle());
+                }
+            }
+        });
 
         Bundle extras = getIntent().getExtras();
         mVisit = extras.getParcelable(EXTRA_EDIT_VISIT);
@@ -64,8 +84,9 @@ public class EditVisitView extends AppCompatActivity {
                 //Title and description can not be left as blank.
                 boolean titleOK = title.length() >= 1;
                 boolean descriptionOK = description.length() >= 1;
+                boolean usedName = files.contains(title);
 
-                if (titleOK && descriptionOK) {
+                if (titleOK && descriptionOK && !usedName) {
                     ImageFetchService.editImageFolder(mVisit.getTitle(),title, EditVisitView.this, cache);
                     mVisit.setTitle(title);
                     mVisit.setDescription(description);
@@ -80,44 +101,42 @@ public class EditVisitView extends AppCompatActivity {
                     finish();
                 } else {
                     // Set warnings to visible if need be.
-                    if (!titleOK && descriptionOK) {
-                        warningCard.setVisibility(View.VISIBLE);
-                        mDescriptionWarning.setText("Must have a title");
-                        warningCard.animate().scaleY(1);
+                    if (!titleOK) {
+                        mEditTitleView.setHint("Required");
+                        mEditTitleView.setHintTextColor(Color.RED);
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                warningCard.animate().scaleY(0);
-                                warningCard.setVisibility(View.GONE);
+                                mEditTitleView.setHint("Title");
+                                mEditTitleView.setHintTextColor(Color.WHITE);
                             }
                         }, 2000);
 
-                    } else if (!descriptionOK) {
-                        warningCard.setVisibility(View.VISIBLE);
-                        mDescriptionWarning.setText("Must have a description");
-                        warningCard.animate().scaleY(1);
+
+                    }
+                    if (!descriptionOK) {
+                        mEditDescriptionView.setHint("Required");
+                        mEditDescriptionView.setHintTextColor(Color.RED);
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                warningCard.animate().scaleY(0);
-                                warningCard.setVisibility(View.GONE);
+                                mEditDescriptionView.setHint("Description");
+                                mEditDescriptionView.setHintTextColor(Color.WHITE);
                             }
                         }, 2000);
-                    } else if(!titleOK){
-                        warningCard.setVisibility(View.VISIBLE);
-                        mDescriptionWarning.setText("Must have a decription and title");
-                        warningCard.animate().scaleY(1);
+                    }
+                    if(usedName){
+                        mEditTitleView.setText("");
+                        mEditTitleView.setHint("Use Different Title");
+                        mEditTitleView.setHintTextColor(Color.RED);
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                warningCard.animate().scaleY(0);
-                                warningCard.setVisibility(View.GONE);
+                                mEditTitleView.setHint("Title");
+                                mEditTitleView.setHintTextColor(Color.WHITE);
                             }
                         }, 2000);
-                    } else {
-                        mDescriptionWarning.setVisibility(View.GONE);
-                        warningCard.animate().scaleY(0);
-                        warningCard.setVisibility(View.GONE);
+
 
                     }
                 }

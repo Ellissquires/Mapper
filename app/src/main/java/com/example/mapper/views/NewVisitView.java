@@ -102,10 +102,6 @@ public class NewVisitView extends AppCompatActivity {
                 boolean titleOK = title.length() >= 1;
                 boolean descriptionOK = description.length() >= 1;
                 boolean usedName = files.contains(title);
-//                for(int i = 0; i < visits.size(); i++){
-//                    if(visits.get(i).getTitle() == title)
-//                        usedName = true;
-//                }
 
                 if (titleOK && descriptionOK && !usedName) {
 

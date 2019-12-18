@@ -55,5 +55,20 @@ public class PicturePointRepository extends ViewModel {
             return null;
         }
     }
+
+    static class UpdatePointAsyncTask extends AsyncTask<PicturePoint, Void, Void> {
+        private PicturePointDAO asyncPicturePointDao;
+
+        private UpdatePointAsyncTask(PicturePointDAO dao){
+            asyncPicturePointDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final PicturePoint... params){
+            asyncPicturePointDao.update(params[0]);
+
+            return null;
+        }
+    }
 }
 
