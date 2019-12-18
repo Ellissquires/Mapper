@@ -10,12 +10,9 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.mapper.R;
 import com.example.mapper.services.models.Visit;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,8 +41,6 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             viewImagesButton = itemView.findViewById(R.id.images_button);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
-
-
 
     }
 
@@ -85,6 +80,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             } else {
                 holder.visitDistanceView.setText(String.format("%.2f Km", dist / 1000.0));
             }
+
             holder.viewImagesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

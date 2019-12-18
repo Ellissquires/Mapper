@@ -296,8 +296,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // Give the service the visit for persistence
         PathRecorderService.postVisitService(context, mVisit);
-
-        findViewById(R.id.pBar).setVisibility(View.VISIBLE);
         startTimer();
     }
 
