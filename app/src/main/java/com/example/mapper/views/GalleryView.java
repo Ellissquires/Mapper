@@ -108,7 +108,6 @@ public class GalleryView extends AppCompatActivity {
     }
 
     private void initData(){
-
         File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
         if (storageDir.exists()){
             File[] files = storageDir.listFiles();
