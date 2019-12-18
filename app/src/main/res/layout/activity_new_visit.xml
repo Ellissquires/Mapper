@@ -58,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="auto"
                 android:fontFamily="@font/poppins_light"
+                android:maxLength="60"
                 android:textColor="@color/colorPrimaryLight" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -79,6 +80,8 @@
                 android:fontFamily="@font/poppins_light"
                 android:gravity="top"
                 android:inputType="textMultiLine"
+                android:maxLength="128"
+                android:maxLines="4"
                 android:minLines="3"
                 android:selectAllOnFocus="false"
                 android:singleLine="false"

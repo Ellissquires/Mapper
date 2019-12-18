@@ -206,7 +206,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                     // Center the map on the first point of the path
                     Log.d("VisitView", "First Point" + p1.getLat() + " - " + p1.getLng());
                     LatLng latLng = new LatLng(p1.getLat(),p1.getLng());
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
                     mMap.animateCamera(cameraUpdate);
                     int counter = 0;
                     // Loop points and add them to the line

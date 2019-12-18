@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageButton;
@@ -39,6 +40,8 @@ import java.util.List;
 public class VisitListView extends AppCompatActivity {
     private VisitListAdapter adapter;
     private VisitViewModel mVisitViewModel;
+
+    Handler handler = new Handler();
     private BottomAppBar bottomAppBar;
   
     private SearchView searchView;
@@ -98,10 +101,7 @@ public class VisitListView extends AppCompatActivity {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
             public void onScrolled(RecyclerView recyclerView, int width, int height){
-                int scrollViewHeight = recyclerView.getChildAt(0).getHeight();
-                if(height <= scrollViewHeight){
-                    menubar.animate().translationY(0);
-                }
+
                 if (height>0)
 //                    menubar.setVisibility(recyclerView.GONE);
                     menubar.animate().translationY(500);
@@ -113,6 +113,16 @@ public class VisitListView extends AppCompatActivity {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            menubar.animate().translationY(0);
+                        }
+                    }, 3000);
+
+                }
+
             }
         });
 
