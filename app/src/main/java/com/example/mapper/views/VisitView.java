@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Picture;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -55,6 +56,7 @@ import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
@@ -158,8 +160,15 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 // Inflate and show the image.
                 View v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
                 ImageView img = (ImageView) v.findViewById(R.id.infowindow_image);
+                TextView pressure = (TextView) v.findViewById(R.id.picpoint_pressure);
+                TextView temperature = (TextView) v.findViewById(R.id.picpoint_temperature);
 
-                img.setImageURI(Uri.parse((String)marker.getTag()));
+                PicturePoint pictPoint = (PicturePoint)((HashMap)marker.getTag()).get("picturePoint");
+                Point point = (Point)((HashMap)marker.getTag()).get("point");
+                img.setImageURI(Uri.parse((String)pictPoint.getPictureURI()));
+
+                pressure.setText("" + point.getPressure());
+                temperature.setText("" + point.getTemperature());
 
                 return v;
             }
@@ -194,7 +203,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                     mMap.animateCamera(cameraUpdate);
 
                     // Loop points and add them to the line
-                    for(Point p : path){
+                    for(final Point p : path){
                         final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
 
@@ -212,7 +221,10 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                                             .position(mapPoint)
                                             .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                                             .title("Photo"));
-                                    m.setTag(picturePoint.getPictureURI());
+                                    HashMap<String, Object> tags = new HashMap<>();
+                                    tags.put("point", p);
+                                    tags.put("picturePoint", picturePoint);
+                                    m.setTag(tags);
                                 }
                             }
                         });
