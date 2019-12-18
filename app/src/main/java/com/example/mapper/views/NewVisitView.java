@@ -1,6 +1,7 @@
 package com.example.mapper.views;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,15 +11,23 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.example.mapper.R;
 import com.example.mapper.sensors.BarometerSensor;
 import com.example.mapper.sensors.TemperatureSensor;
+import com.example.mapper.services.VisitRepository;
+import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.viewmodels.NewVisitViewModel;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class NewVisitView extends AppCompatActivity {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
@@ -31,6 +40,8 @@ public class NewVisitView extends AppCompatActivity {
     private NewVisitViewModel mNewVisitViewModel;
     Handler handler = new Handler();
 
+    private VisitRepository mVisitRepo;
+
     public NewVisitView() {
     }
 
@@ -40,10 +51,27 @@ public class NewVisitView extends AppCompatActivity {
         setContentView(R.layout.activity_new_visit);
         mEditTitleView = findViewById(R.id.title);
         mEditDescriptionView = findViewById(R.id.description);
+        mEditTitleView.setHint("Title");
+        mEditTitleView.setHintTextColor(Color.WHITE);
+
+        mEditDescriptionView.setHint("Description");
+        mEditDescriptionView.setHintTextColor(Color.WHITE);
+
 //        mTitleWarning = findViewById(R.id.title_warning);
 //        mDescriptionWarning = findViewById(R.id.description_warning);
         mDescriptionWarning = findViewById(R.id.warning);
         warningCard = findViewById(R.id.warning_container);
+        final List<String> files = new ArrayList<>();
+        mVisitRepo = new VisitRepository(getApplication());
+        LiveData<List<Visit>> visits =  mVisitRepo.getAllVisits();
+        visits.observe(NewVisitView.this, new Observer<List<Visit>>() {
+            @Override
+            public void onChanged(List<Visit> visits) {
+                for(int i = 0; i<visits.size(); i++){
+                    files.add(visits.get(i).getTitle());
+                }
+            }
+        });
 
         mNewVisitViewModel = ViewModelProviders.of(this).get(NewVisitViewModel.class);
 
@@ -68,11 +96,19 @@ public class NewVisitView extends AppCompatActivity {
                 String title = mEditTitleView.getText().toString();
                 String description = mEditDescriptionView.getText().toString();
 
+
+
                 //Title and description can not be left as blank.
                 boolean titleOK = title.length() >= 1;
                 boolean descriptionOK = description.length() >= 1;
+                boolean usedName = files.contains(title);
+//                for(int i = 0; i < visits.size(); i++){
+//                    if(visits.get(i).getTitle() == title)
+//                        usedName = true;
+//                }
 
-                if (titleOK && descriptionOK) {
+                if (titleOK && descriptionOK && !usedName) {
+
                     Visit newVisit = new Visit(title, description, new Date(), 0, 0);
                     // Create new intent for the MapView activity and pass the visit
                     Intent intent = new Intent(NewVisitView.this, MapView.class);
@@ -82,44 +118,42 @@ public class NewVisitView extends AppCompatActivity {
                     finish();
                 } else {
                     // Set warnings to visible if need be.
-                    if (!titleOK && descriptionOK) {
-                        warningCard.setVisibility(View.VISIBLE);
-                        mDescriptionWarning.setText("Must have a title");
-                        warningCard.animate().scaleY(1);
+                    if (!titleOK) {
+                        mEditTitleView.setHint("Required");
+                        mEditTitleView.setHintTextColor(Color.RED);
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                warningCard.animate().scaleY(0);
-                                warningCard.setVisibility(View.GONE);
+                                mEditTitleView.setHint("Title");
+                                mEditTitleView.setHintTextColor(Color.WHITE);
                             }
                         }, 2000);
 
-                    } else if (!descriptionOK) {
-                        warningCard.setVisibility(View.VISIBLE);
-                        mDescriptionWarning.setText("Must have a description");
-                        warningCard.animate().scaleY(1);
+
+                    }
+                    if (!descriptionOK) {
+                        mEditDescriptionView.setHint("Required");
+                        mEditDescriptionView.setHintTextColor(Color.RED);
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                warningCard.animate().scaleY(0);
-                                warningCard.setVisibility(View.GONE);
+                                mEditDescriptionView.setHint("Description");
+                                mEditDescriptionView.setHintTextColor(Color.WHITE);
                             }
                         }, 2000);
-                    } else if(!titleOK){
-                        warningCard.setVisibility(View.VISIBLE);
-                        mDescriptionWarning.setText("Must have a decription and title");
-                        warningCard.animate().scaleY(1);
+                    }
+                    if(usedName){
+                        mEditTitleView.setText("");
+                        mEditTitleView.setHint("Use Different Title");
+                        mEditTitleView.setHintTextColor(Color.RED);
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                warningCard.animate().scaleY(0);
-                                warningCard.setVisibility(View.GONE);
+                                mEditTitleView.setHint("Title");
+                                mEditTitleView.setHintTextColor(Color.WHITE);
                             }
                         }, 2000);
-                    } else {
-                        mDescriptionWarning.setVisibility(View.GONE);
-                        warningCard.animate().scaleY(0);
-                        warningCard.setVisibility(View.GONE);
+
 
                     }
                 }

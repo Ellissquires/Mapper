@@ -7,19 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.mapper.R;
 import com.example.mapper.services.models.Visit;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.mapper.views.VisitView.EXTRA_VIEW_IMAGES;
 
 public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.VisitViewHolder> implements Filterable {
 
@@ -28,6 +27,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
         private final TextView visitDescriptionView;
         private final TextView visitDistanceView;
         private final TextView visitDateView;
+        private final ImageButton viewImagesButton;
 
         RelativeLayout parentLayout;
 
@@ -38,10 +38,9 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
             visitDescriptionView = itemView.findViewById(R.id.description);
             visitDistanceView = itemView.findViewById(R.id.distance);
             visitDateView = itemView.findViewById(R.id.date);
+            viewImagesButton = itemView.findViewById(R.id.images_button);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
-
-
 
     }
 
@@ -60,7 +59,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
 
     @Override
     public VisitViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = mInflater.inflate(R.layout.recyclerview_visititem, parent, false);
+        View itemView = mInflater.inflate(R.layout.recyclerview_visit_item, parent, false);
         return new VisitViewHolder(itemView);
     }
 
@@ -69,7 +68,7 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
         if (mVisitListFiltered != null) {
             // Populate the Visit card with the visit data
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy"); //date formatting
-            Visit current = mVisitListFiltered.get(position);
+            final Visit current = mVisitListFiltered.get(position);
             holder.visitTitleView.setText(current.getTitle());
             holder.visitDescriptionView.setText(current.getDescription());
             holder.visitDateView.setText(dateFormat.format(current.getVisitDate()));
@@ -82,25 +81,35 @@ public class VisitListAdapter extends RecyclerView.Adapter<VisitListAdapter.Visi
                 holder.visitDistanceView.setText(String.format("%.2f Km", dist / 1000.0));
             }
 
+            holder.viewImagesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), VisitImageGallery.class);
+                    intent.putExtra(EXTRA_VIEW_IMAGES, current.getTitle());
+                    v.getContext().startActivity(intent);
+                }
+            });
+
+            // Listen for clicks on each visit item
+            holder.parentLayout.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    // Get the clicked on visit
+                    Visit visit = mVisitListFiltered.get(position);
+                    // Create a new intent passing in the selected visit
+                    Intent intent = new Intent(v.getContext(), VisitView.class);
+                    intent.putExtra(EXTRA_VISIT_VIEW, visit);
+                    // Launch the activity with the visit intent
+                    v.getContext().startActivity(intent);
+                }
+            });
 
         } else {
             // Covers the case of data not being ready yet.
             holder.visitTitleView.setText("No Title");
         }
 
-        // Listen for clicks on each visit item
-        holder.parentLayout.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                // Get the clicked on visit
-                Visit visit = mVisitListFiltered.get(position);
-                // Create a new intent passing in the selected visit
-                Intent intent = new Intent(v.getContext(), VisitView.class);
-                intent.putExtra(EXTRA_VISIT_VIEW, visit);
-                // Launch the activity with the visit intent
-                v.getContext().startActivity(intent);
-            }
-        });
+
     }
 
     void setVisits(List<Visit> visits){

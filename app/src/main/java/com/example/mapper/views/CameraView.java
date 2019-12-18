@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -42,6 +43,7 @@ import com.example.mapper.services.ImageFetchService;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
+
 public class CameraView extends AppCompatActivity {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
@@ -57,7 +59,7 @@ public class CameraView extends AppCompatActivity {
     private Context context;
     private Activity activity;
 
-
+    ArrayList<String> filePath = new ArrayList<>();
     private void initEasyImage(){
        EasyImage.configuration(this)
                .setImagesFolderName("Mapper")
@@ -76,7 +78,25 @@ public class CameraView extends AppCompatActivity {
         context = this;
 
         title = mVisit.getTitle();
+        final CardView menubar = (CardView) findViewById(R.id.menubar);
+
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int width, int height) {
+                int scrollViewHeight = recyclerView.getChildAt(0).getHeight();
+                if (height <= scrollViewHeight) {
+                    menubar.animate().translationY(0);
+                }
+                if (height > 0)
+//                    menubar.setVisibility(recyclerView.GONE);
+                    menubar.animate().translationY(500);
+                else if (height < 0)
+//                    menubar.setVisibility(recyclerView.VISIBLE);
+                    menubar.animate().translationY(0);
+            }
+        });
+
         // set up the RecyclerView
         int numberOfColumns = 3;
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
@@ -138,6 +158,15 @@ public class CameraView extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public void onBackPressed()
+    {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("filename", filePath);
+        setResult(Activity.RESULT_OK, returnIntent);
+        super.onBackPressed();
+    }
+
     /**
      * Cancels this activity and returns as such.
      */
@@ -171,40 +200,6 @@ public class CameraView extends AppCompatActivity {
        ImageFetchService.imagePermissions(context,this);
     }
 
-    public void saveImage(List<File> mFile) {
-        File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
-
-        for(File file: mFile){
-            //         Create an image file name
-            Timestamp date = new Timestamp(System.currentTimeMillis());
-
-            String timestamp = title + date.toString();
-
-            if (!storageDir.exists())
-                storageDir.mkdirs();
-            File newFile = new File(storageDir, (timestamp + ".jpeg"));
-
-            try {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                cache.addToCache(file.getAbsolutePath(), bitmap);
-
-                FileOutputStream output = new FileOutputStream(newFile);
-
-                // Compress into png format image from 0% - 100%
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-                output.flush();
-                output.close();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // Finish and return once saved.
-            finishActivityAndReturn(newFile.toURI().toString());
-        }
-    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -220,14 +215,13 @@ public class CameraView extends AppCompatActivity {
             public void onImagesPicked(@NotNull final List<File> imageFiles, EasyImage.ImageSource source, int type) {
                 onPhotosReturned(imageFiles);
                 final List<File> imageList = new ArrayList<>();
+
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
                         imageList.addAll(imageFiles);
-                        List<String>imgs = ImageFetchService.saveImage(imageList, context , title, cache);
-                        if (imgs.size() > 0) {
-                            finishActivityAndReturn(imgs.get(0));
-                        }
+                        List<String>imgs = (ImageFetchService.saveImage(imageList, context , title, cache));
+                        filePath.addAll(imgs);
                     }
                 });
             }

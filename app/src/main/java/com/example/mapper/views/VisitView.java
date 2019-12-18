@@ -64,6 +64,7 @@ import static com.example.mapper.views.VisitListAdapter.EXTRA_VISIT_VIEW;
 public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String EXTRA_EDIT_VISIT = "com.example.mapper.EDIT_VISIT";
+    public static final String EXTRA_VIEW_IMAGES = "com.example.mapper.VIEW_IMAGES";
 
     private TextView visitTitleView;
     private TextView visitDescriptionView;
@@ -75,10 +76,8 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     private PicturePointRepository mPictPointRepo;
     private VisitRepository mVisitRepo;
     private Context mContext;
-
     private List<Point> mPoints;
 
-    public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -121,12 +120,12 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        MaterialButton button = (MaterialButton) findViewById(R.id.record);
-        button.setOnClickListener(new View.OnClickListener() {
+        MaterialButton viewImagesButton = findViewById(R.id.view_images);
+        viewImagesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(VisitView.this, CameraView.class);
-                intent.putExtra(EXTRA_VISIT, mVisit);
+                Intent intent = new Intent(VisitView.this, VisitImageGallery.class);
+                intent.putExtra(EXTRA_VIEW_IMAGES, mVisit.getTitle());
                 startActivity(intent);
             }
         });
@@ -207,7 +206,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                         final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
 
-                        // For each point, check if there is a corresponding pictyure point.
+                        // For each point, check if there is a corresponding picture point.
                         // If there is, add a marker to the map.
                         LiveData<PicturePoint> pictPoint = mPictPointRepo.getPicturePoint(p.getId()-1);
                         pictPoint.observe(owner, new Observer<PicturePoint>() {

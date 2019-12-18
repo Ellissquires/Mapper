@@ -10,7 +10,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.R;
+import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.VisitRepository;
 import com.example.mapper.services.models.Visit;
 import java.util.Date;
@@ -29,7 +32,7 @@ public class EditVisitView extends AppCompatActivity {
 
     private VisitRepository mVisitRepo;
 
-
+    CacheHandler cache = CacheHandler.getInstance();
     public EditVisitView() {
     }
 
@@ -63,10 +66,12 @@ public class EditVisitView extends AppCompatActivity {
                 boolean descriptionOK = description.length() >= 1;
 
                 if (titleOK && descriptionOK) {
+                    ImageFetchService.editImageFolder(mVisit.getTitle(),title, EditVisitView.this, cache);
                     mVisit.setTitle(title);
                     mVisit.setDescription(description);
 
                     mVisitRepo.updateVisit(mVisit);
+
                     // Create a new intent passing in the selected visit
                     Intent intent = new Intent(EditVisitView.this, VisitView.class);
                     intent.putExtra(EXTRA_VISIT_VIEW, mVisit);
