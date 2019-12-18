@@ -8,6 +8,8 @@
         android:id="@+id/infowindow_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_margin="0dp"
+        android:padding="0dp"
         android:src="@drawable/ic_pause_black_24dp" />
 
 </LinearLayout>

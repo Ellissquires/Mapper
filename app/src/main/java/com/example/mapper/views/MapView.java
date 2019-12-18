@@ -267,9 +267,12 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){;
                 Bundle b = data.getExtras();
-                String fileName = b.getString("filename");
-                Point lastPoint = mRecordedPoints.get(mRecordedPoints.size() - 1);
-                pointToPictureDict.put("" + (mRecordedPoints.size() - 1), fileName);
+                ArrayList<String> fileNames = b.getStringArrayList("filename");
+                for(String filepath: fileNames){
+
+                    Point lastPoint = mRecordedPoints.get(mRecordedPoints.size() - 1);
+                    pointToPictureDict.put("" + (mRecordedPoints.size() - 1), filepath);
+                }
 
             }
             if (resultCode == Activity.RESULT_CANCELED) {
