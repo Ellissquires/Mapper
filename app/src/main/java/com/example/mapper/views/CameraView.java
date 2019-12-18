@@ -215,13 +215,11 @@ public class CameraView extends AppCompatActivity {
             public void onImagesPicked(@NotNull final List<File> imageFiles, EasyImage.ImageSource source, int type) {
                 onPhotosReturned(imageFiles);
                 final List<File> imageList = new ArrayList<>();
-
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
                         imageList.addAll(imageFiles);
-                        List<String>imgs = (ImageFetchService.saveImage(imageList, context , title, cache));
-                        filePath.addAll(imgs);
+                        filePath.addAll(ImageFetchService.saveImage(imageList, context , title, cache));
                     }
                 });
             }

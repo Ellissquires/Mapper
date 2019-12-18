@@ -77,6 +77,8 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     private VisitRepository mVisitRepo;
     private Context mContext;
     private List<Point> mPoints;
+    String starterID = null;
+    String finisherID = null;
 
 
     @Override
@@ -94,6 +96,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         Bundle extras = getIntent().getExtras();
         mVisit = extras.getParcelable(EXTRA_VISIT_VIEW);
         mContext = getApplicationContext();
+
 
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         visitTitleView = findViewById(R.id.title);
@@ -156,20 +159,25 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
             @Override
             public View getInfoContents(Marker marker) {
-                // Inflate and show the image.
-                View v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
-                ImageView img = (ImageView) v.findViewById(R.id.infowindow_image);
-                TextView pressure = (TextView) v.findViewById(R.id.picpoint_pressure);
-                TextView temperature = (TextView) v.findViewById(R.id.picpoint_temperature);
+                if(marker.getId().equals(starterID) || marker.getId().equals(finisherID)) {
+                    return null;
+                }
+                else {
+                    // Inflate and show the image.
+                    View v = getLayoutInflater().inflate(R.layout.custom_infowindow, null);
+                    ImageView img = (ImageView) v.findViewById(R.id.infowindow_image);
+                    TextView pressure = (TextView) v.findViewById(R.id.picpoint_pressure);
+                    TextView temperature = (TextView) v.findViewById(R.id.picpoint_temperature);
 
-                PicturePoint pictPoint = (PicturePoint)((HashMap)marker.getTag()).get("picturePoint");
-                Point point = (Point)((HashMap)marker.getTag()).get("point");
-                img.setImageURI(Uri.parse((String)pictPoint.getPictureURI()));
+                    PicturePoint pictPoint = (PicturePoint) ((HashMap) marker.getTag()).get("picturePoint");
+                    Point point = (Point) ((HashMap) marker.getTag()).get("point");
+                    img.setImageURI(Uri.parse((String) pictPoint.getPictureURI()));
 
-                pressure.setText("" + point.getPressure());
-                temperature.setText("" + point.getTemperature());
+                    pressure.setText("" + point.getPressure());
+                    temperature.setText("" + point.getTemperature());
 
-                return v;
+                    return v;
+                }
             }
         }); // SetInfoWindowAdapter
 
@@ -200,11 +208,28 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                     LatLng latLng = new LatLng(p1.getLat(),p1.getLng());
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
                     mMap.animateCamera(cameraUpdate);
-
+                    int counter = 0;
                     // Loop points and add them to the line
                     for(final Point p : path){
                         final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
+
+                        if(counter == 0){
+                            Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_start_pin);
+                            bitmap = ImageFetchService.getIcon(bitmap, 200);
+                            starterID = mMap.addMarker(new MarkerOptions()
+                                    .position(mapPoint)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                    .title("Start")).getId();
+                        }
+                        else if(counter == (path.size()-1)){
+                            Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_finish_pin);
+                            bitmap = ImageFetchService.getIcon(bitmap, 200);
+                            finisherID = mMap.addMarker(new MarkerOptions()
+                                    .position(mapPoint)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                    .title("Finish")).getId();
+                        }
 
                         // For each point, check if there is a corresponding picture point.
                         // If there is, add a marker to the map.
@@ -215,7 +240,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                                 if (picturePoint != null) {
                                     final BitmapFactory.Options options = new BitmapFactory.Options();
                                     Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_pin);
-                                    bitmap = getIcon(bitmap, 150);
+                                    bitmap = ImageFetchService.getIcon(bitmap, 150);
                                     Marker m = mMap.addMarker(new MarkerOptions()
                                             .position(mapPoint)
                                             .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
@@ -227,6 +252,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                                 }
                             }
                         });
+                        counter++;
                     }
                     // Draw the line
                     mMap.addPolyline(options);
@@ -284,15 +310,5 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    public Bitmap getIcon(Bitmap bm, int w){
-        int width = bm.getWidth();
-        float scaleWidth = ((float) w) / width;
-        // create a matrix for the manipulation
-        Matrix matrix = new Matrix();
-        // resize the bit map
-        matrix.postScale(scaleWidth, scaleWidth);
-        // recreate the new Bitmap
-        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, width, matrix, true);
-        return resizedBitmap;
-    }
+
 }

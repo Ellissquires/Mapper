@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Build;
 
@@ -205,5 +206,17 @@ public class ImageFetchService {
         return filenames;
 
     }//saveImage
+
+    public static Bitmap getIcon(Bitmap bm, int w){
+        int width = bm.getWidth();
+        float scaleWidth = ((float) w) / width;
+        // create a matrix for the manipulation
+        Matrix matrix = new Matrix();
+        // resize the bit map
+        matrix.postScale(scaleWidth, scaleWidth);
+        // recreate the new Bitmap
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, width, matrix, true);
+        return resizedBitmap;
+    }
 
 }

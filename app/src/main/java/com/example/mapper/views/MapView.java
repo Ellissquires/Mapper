@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.location.Location;
@@ -78,6 +80,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private FusedLocationProviderClient fusedLocationClient;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted = false;
+    private boolean mStarted = false;
     private MapViewModel mMapViewModel;
     private static final String TAG = "MapViewActivity";
     private LocationResultReceiver mReceiver;
@@ -107,6 +110,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         // Make sure app has correct permissions.
+        fetchPermission(this);
 
         mReceiver = new LocationResultReceiver(new Handler());
         mPathRepo = new PathRepository(getApplication());
@@ -148,8 +152,19 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         final FloatingActionButton fab_resume = (FloatingActionButton) findViewById(R.id.fab_resume);
         menu_card = (CardView) findViewById(R.id.map_menu);
 
-        fab_record.setVisibility(View.VISIBLE);
-        fab_stop.setVisibility(View.GONE);
+        if(mLocationPermissionGranted) {
+            //starting the visit immediately the map starts
+            fab_record.setVisibility(View.GONE);
+            fab_pause.setVisibility(View.VISIBLE);
+            fab_stop.setVisibility(View.GONE);
+            fab_camera.setVisibility(View.VISIBLE);
+            beginRecording(getApplicationContext());
+        }
+        else{
+            fab_record.setVisibility(View.VISIBLE);
+            fab_pause.setVisibility(View.GONE);
+            fab_stop.setVisibility(View.GONE);
+        }
 
         fab_record.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,9 +269,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        fetchPermission(this);
-
         card = (MaterialCardView) findViewById(R.id.path_view);
     }
 
@@ -292,6 +304,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // Make sure app has correct permissions.
         fetchPermission(context);
+        mStarted = true;
         // Start PathRecorderService
         Intent i= new Intent(context, PathRecorderService.class);
         i.putExtra("receiverTag", mReceiver);
@@ -332,9 +345,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onBackPressed()
     {
-        menu_card.setVisibility(View.GONE);
-        card.setVisibility(View.GONE);
-        finishRecording(getApplicationContext());
+        if(mStarted) {
+            menu_card.setVisibility(View.GONE);
+            card.setVisibility(View.GONE);
+            finishRecording(getApplicationContext());
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 
     public void finishRecording(Context context) {
@@ -391,7 +409,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         }
 
-
         // If permissions have not yet been granted, these lines get called when they are.
         if (mLocationPermissionGranted) {
             setUpMapPostPermissionCheck();
@@ -421,10 +438,29 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
             options.add(mapPoint);
 
-            if (pointToPictureDict.containsKey("" + i)) {
+            if(i == 0){
+                Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.map_start_pin);
+                bitmap = ImageFetchService.getIcon(bitmap, 200);
                 mMap.addMarker(new MarkerOptions()
                         .position(mapPoint)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        .title("Photo"));
+            }
+            else if(i == (points.length -1)){
+                Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.map_finish_pin);
+                bitmap = ImageFetchService.getIcon(bitmap, 200);
+                mMap.addMarker(new MarkerOptions()
+                        .position(mapPoint)
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        .title("Photo"));
+            }
+
+            if (pointToPictureDict.containsKey("" + i)) {
+                Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.map_pin);
+                bitmap = ImageFetchService.getIcon(bitmap, 150);
+                mMap.addMarker(new MarkerOptions()
+                        .position(mapPoint)
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
                         .title("Photo"));
             }
         }
@@ -475,9 +511,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onReceiveResult(int resultCode, Bundle bundle) {
         LatLng currentLoc = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lng"));
-        mMap.addMarker(new MarkerOptions()
-                .position(currentLoc).title("Hi There")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+//        mMap.addMarker(new MarkerOptions()
+//                .position(currentLoc).title("Hi There")
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
     }
