@@ -54,7 +54,7 @@ public class CameraView extends AppCompatActivity {
     private String title;
     private static final int REQUEST_CAMERA = 7500;
 
-    private List<ImageObj> myPictureList = new ArrayList<>();
+    private static List<ImageObj> myPictureList = new ArrayList<>();
     private RecyclerView.Adapter  mAdapter;
     private RecyclerView mRecyclerView;
     private TextView prompt;
@@ -138,7 +138,22 @@ public class CameraView extends AppCompatActivity {
 
             }
         });
-        initData();
+        initData(this, new ImageFetchService.SaveImagesAsyncTask.AsyncResponse() {
+            @Override
+            public void processFinish(){
+                if(mAdapter.getItemCount() < 1){
+
+                    mRecyclerView.setVisibility(View.GONE);
+                    prompt.setVisibility(View.VISIBLE);
+                }
+                else{
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                    prompt.setVisibility(View.GONE);
+                }
+                mRecyclerView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+            }
+        }, title);
 
         mAdapter.notifyDataSetChanged();
 
@@ -205,15 +220,8 @@ public class CameraView extends AppCompatActivity {
     /**
      * artificial init of the data so to upload some images as a starting point
      */
-    private void initData() {
-        File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
-
-        if (storageDir.exists()){
-
-            List<File> imageFiles = (Arrays.asList(storageDir.listFiles()));
-            myPictureList.addAll(ImageFetchService.getImageElements(imageFiles, null));
-
-        }
+    private static void initData(final Context context, ImageFetchService.SaveImagesAsyncTask.AsyncResponse res, String title){
+        new LoadImagesAsyncTask(context, res, title).execute();
     }
 
     /**
@@ -291,5 +299,42 @@ public class CameraView extends AppCompatActivity {
      */
     public Activity getActivity() {
         return activity;
+    }
+
+    public static class LoadImagesAsyncTask extends AsyncTask<Void, Void, Void> {
+        ImageFetchService.SaveImagesAsyncTask.AsyncResponse delegate = null;
+        Context mContext;
+        String title;
+
+
+        public interface AsyncResponse {
+            void processFinish();
+        }
+
+        public LoadImagesAsyncTask(final Context mContext, final ImageFetchService.SaveImagesAsyncTask.AsyncResponse delegate, String title){
+            this.mContext = mContext;
+            this.delegate = delegate;
+            this.title = title;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params){
+            myPictureList = new ArrayList<>();
+
+            File storageDir = new File((mContext.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
+
+            if (storageDir.exists()){
+
+                List<File> imageFiles = (Arrays.asList(storageDir.listFiles()));
+                myPictureList.addAll(ImageFetchService.getImageElements(imageFiles, null));
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            delegate.processFinish();
+        }
     }
 }

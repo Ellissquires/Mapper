@@ -111,7 +111,7 @@ public class GalleryView extends AppCompatActivity {
 
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
 
         fab_sorted.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,24 +127,27 @@ public class GalleryView extends AppCompatActivity {
             }
         });
 
+        initData(this, new ImageFetchService.SaveImagesAsyncTask.AsyncResponse() {
+            @Override
+            public void processFinish(){
+                if(mAdapter.getItemCount() < 1){
 
-        initData(this);
+                    mRecyclerView.setVisibility(View.GONE);
+                    prompt.setVisibility(View.VISIBLE);
+                }
+                else{
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                    prompt.setVisibility(View.GONE);
+                }
+                mRecyclerView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+
         mAdapter.notifyDataSetChanged();
 
         // set up the RecyclerView
-        if(mAdapter.getItemCount() < 1){
-            mRecyclerView.setVisibility(View.GONE);
-            prompt.setVisibility(View.VISIBLE);
-        }
-        else{
-            mRecyclerView.setVisibility(View.VISIBLE);
-            prompt.setVisibility(View.GONE);
-        }
 
-        if(loadedPics){
-            mRecyclerView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-        }
     }
 
 
@@ -158,42 +161,14 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         mAdapter= new ImageAdapter(myPictureList);
         mRecyclerView.setAdapter(mAdapter);
-
-
     }
 
     /**
      * Initialises the lists that are used in this application as soon as the activity starts. This is done in the background thread.
      *
      */
-    private static void initData(final Context context){
-        myPictureList = new ArrayList<>();
-        myFolderList = new ArrayList<>();
-        AsyncTask initialiseData = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] objects) {
-                File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
-                if (storageDir.exists()){
-                    File[] files = storageDir.listFiles();
-
-                    myFolderList.addAll(Arrays.asList(files));
-
-                    List<File> folders = (Arrays.asList(files));
-                    List<File> imageFile = new ArrayList<>();
-                    for(File file : folders){
-                        File[] visitFolder = file.listFiles();
-                        imageFile.addAll(Arrays.asList(visitFolder));
-                    }
-                    myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null));
-                }
-                return null;
-            }
-        };
-        initialiseData.execute();
-
-        if(initialiseData.getStatus() == AsyncTask.Status.RUNNING) {
-            loadedPics = true;
-        }
+    private static void initData(final Context context, ImageFetchService.SaveImagesAsyncTask.AsyncResponse res){
+        new LoadImagesAsyncTask(context, res).execute();
     }
 
     /**
@@ -204,5 +179,44 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter= new SortedImageAdapter(myFolderList);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    public static class LoadImagesAsyncTask extends AsyncTask<Void, Void, Void> {
+        ImageFetchService.SaveImagesAsyncTask.AsyncResponse delegate = null;
+        Context mContext;
+
+        public interface AsyncResponse {
+            void processFinish();
+        }
+
+        public LoadImagesAsyncTask(final Context mContext, final ImageFetchService.SaveImagesAsyncTask.AsyncResponse delegate){
+            this.mContext = mContext;
+            this.delegate = delegate;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params){
+
+            File storageDir = new File((mContext.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
+            if (storageDir.exists()){
+                File[] files = storageDir.listFiles();
+
+                myFolderList.addAll(Arrays.asList(files));
+
+                List<File> folders = (Arrays.asList(files));
+                List<File> imageFile = new ArrayList<>();
+                for(File file : folders){
+                    File[] visitFolder = file.listFiles();
+                    imageFile.addAll(Arrays.asList(visitFolder));
+                }
+                myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            delegate.processFinish();
+        }
     }
 }

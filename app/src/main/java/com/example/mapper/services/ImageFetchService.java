@@ -192,16 +192,15 @@ public class ImageFetchService {
 
     public static void editImageFolder (final String originalTitle, final String newTitle, final Context context, final CacheHandler cache){
 
-//        AsyncTask.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + originalTitle);
-//                if (storageDir.isDirectory()) {
-//                    List<File> fileList = Arrays.asList(storageDir.listFiles());
-//                    saveImage(fileList, context, newTitle, cache, null);
-//                }
-//            }
-//        });
+        File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + originalTitle);
+        if (storageDir.isDirectory()) {
+            List<File> fileList = Arrays.asList(storageDir.listFiles());
+            saveImage(fileList, context, newTitle, cache, null, new SaveImagesAsyncTask.AsyncResponse() {
+                @Override
+                public void processFinish(){
+                }
+            });
+        }
         deleteImageFolder(originalTitle, context);
     }
 
@@ -277,51 +276,6 @@ public class ImageFetchService {
     public static void saveImage(final List<File> mFile, final Context context, final String title, final CacheHandler cache, final EasyImage.ImageSource source, SaveImagesAsyncTask.AsyncResponse res) {
 
         new SaveImagesAsyncTask(mFile, context, title, cache, source, res).execute();
-
-//        AsyncTask.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
-//
-//                for(File file: mFile){
-//                    //         Create an image file name
-//                    Timestamp date = new Timestamp(System.currentTimeMillis());
-//
-//                    String timestamp = title + date.toString();
-//
-//                    if (!storageDir.exists())
-//                        storageDir.mkdirs();
-//                    File newFile = new File(storageDir, (timestamp + ".jpeg"));
-//
-//                    try {
-//                        Bitmap unrotatedBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//                        Bitmap bitmap;
-//                        if (source.equals(EasyImage.ImageSource.CAMERA)) {
-//                            bitmap = rotateBitmap(unrotatedBitmap, 90);
-//                        }
-//                        else{
-//                            bitmap = unrotatedBitmap;
-//                        }
-//                        cache.addToCache(file.getAbsolutePath(), bitmap);
-//
-//                        FileOutputStream output = new FileOutputStream(newFile);
-//
-//                        // Compress into png format image from 0% - 100%
-//                        bitmap.compress(Bitmap.CompressFormat.PNG, 10, output);
-//                        output.flush();
-//                        output.close();
-//
-//                        cache.addToCache(newFile.toURI().toString(), bitmap);
-//                    }
-//                    catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//            }
-//        });
-//
-//        return true;
 
     }//saveImage
 
