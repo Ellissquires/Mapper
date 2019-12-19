@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,13 +33,15 @@ import java.util.List;
 
 public class GalleryView extends AppCompatActivity {
 
-    private List<ImageObj> myPictureList = new ArrayList<>();
-    private List<File> myFolderList = new ArrayList<>();
+    private static List<ImageObj> myPictureList = new ArrayList<>();
+    private static List<File> myFolderList = new ArrayList<>();
     private RecyclerView.Adapter  mAdapter;
     private RecyclerView mRecyclerView;
 
     private TextView prompt;
-    private Boolean loaded = false;
+    private ProgressBar progressBar;
+
+    static Boolean loadedPics = false;
 
     Handler handler = new Handler();
 
@@ -50,6 +53,7 @@ public class GalleryView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_gallery);
         ImageFetchService.imagePermissions(getApplicationContext(),this);
 
@@ -105,6 +109,10 @@ public class GalleryView extends AppCompatActivity {
         sorted_container.setVisibility(View.VISIBLE);
         image_container.setVisibility(View.VISIBLE);
 
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
+
         fab_sorted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,28 +128,25 @@ public class GalleryView extends AppCompatActivity {
         });
 
 
-        initData();
+        initData(this);
+        mAdapter.notifyDataSetChanged();
 
-    }
+        // set up the RecyclerView
+        if(mAdapter.getItemCount() < 1){
+            mRecyclerView.setVisibility(View.GONE);
+            prompt.setVisibility(View.VISIBLE);
+        }
+        else{
+            mRecyclerView.setVisibility(View.VISIBLE);
+            prompt.setVisibility(View.GONE);
+        }
 
-    protected void onStart(){
-        super.onStart();
-        while(!loaded){
-
-            mAdapter.notifyDataSetChanged();
-
-            // set up the RecyclerView
-            if(mAdapter.getItemCount() < 1){
-                mRecyclerView.setVisibility(View.GONE);
-                prompt.setVisibility(View.VISIBLE);
-            }
-            else{
-                mRecyclerView.setVisibility(View.VISIBLE);
-                prompt.setVisibility(View.GONE);
-            }
-
+        if(loadedPics){
+            mRecyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
         }
     }
+
 
     /**
      * This function toggles the ImageAdapter that organises the gallery recycler view
@@ -161,13 +166,16 @@ public class GalleryView extends AppCompatActivity {
      * Initialises the lists that are used in this application as soon as the activity starts. This is done in the background thread.
      *
      */
-    private void initData(){
-        AsyncTask.execute(new Runnable() {
+    private static void initData(final Context context){
+        myPictureList = new ArrayList<>();
+        myFolderList = new ArrayList<>();
+        AsyncTask initialiseData = new AsyncTask() {
             @Override
-            public void run() {
-                File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
+            protected Object doInBackground(Object[] objects) {
+                File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
                 if (storageDir.exists()){
                     File[] files = storageDir.listFiles();
+
                     myFolderList.addAll(Arrays.asList(files));
 
                     List<File> folders = (Arrays.asList(files));
@@ -178,11 +186,14 @@ public class GalleryView extends AppCompatActivity {
                     }
                     myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null));
                 }
-
-
-                loaded = true;
+                return null;
             }
-        });
+        };
+        initialiseData.execute();
+
+        if(initialiseData.getStatus() == AsyncTask.Status.RUNNING) {
+            loadedPics = true;
+        }
     }
 
     /**

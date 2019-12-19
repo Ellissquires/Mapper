@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -66,6 +67,8 @@ public class CameraView extends AppCompatActivity {
     private Handler handler = new Handler();
 
     private ArrayList<String> filePath = new ArrayList<>();
+    private CardView menubar;
+    private ProgressBar progressBar;
 
     /**
      * Easy image is a library that allows th user to upload images from the inbuilt gallery, as well as to make use of their camera
@@ -100,7 +103,9 @@ public class CameraView extends AppCompatActivity {
         if (mVisit != null) {
             title = mVisit.getTitle();
         }
-        final CardView menubar = findViewById(R.id.menubar);
+        menubar = (CardView)findViewById(R.id.menubar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
         prompt = findViewById(R.id.prompt);
         mRecyclerView = findViewById(R.id.visit_gallery);
 
@@ -259,12 +264,17 @@ public class CameraView extends AppCompatActivity {
      */
     private void onPhotosReturned(final List<File> returnedPhotos, final EasyImage.ImageSource source) {
 
+        menubar.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
         ImageFetchService.saveImage(returnedPhotos, context , title, cache, source, new ImageFetchService.SaveImagesAsyncTask.AsyncResponse() {
             @Override
             public void processFinish(){
                 finishAndReturn();
             }
         });
+
+
 
         myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
         mRecyclerView.setVisibility(View.VISIBLE);

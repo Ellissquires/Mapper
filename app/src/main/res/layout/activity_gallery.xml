@@ -210,4 +210,12 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="75dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        tools:visibility="gone" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
