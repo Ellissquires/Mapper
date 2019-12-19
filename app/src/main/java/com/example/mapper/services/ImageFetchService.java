@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat;
 
 import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageObj;
-import com.example.mapper.services.models.Path;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,6 +24,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class ImageFetchService {
 
@@ -77,10 +78,19 @@ public class ImageFetchService {
         }
     }
 
-    public static List<ImageObj> getImageElements(List<File> returnedPhotos) {
+    public static List<ImageObj> getImageElements(List<File> returnedPhotos, EasyImage.ImageSource source) {
+        String rotateTag = "rotate";
+        String uprightTag = "rotate";
+
         List<ImageObj> imageElementList= new ArrayList<>();
         for (File file: returnedPhotos){
             ImageObj element= new ImageObj(file);
+            if(source == EasyImage.ImageSource.CAMERA){
+                element.setTag(rotateTag);
+            }
+            else{
+                element.setTag(uprightTag);
+            }
             imageElementList.add(element);
         }
         return imageElementList;

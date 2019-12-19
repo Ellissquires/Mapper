@@ -58,7 +58,7 @@ public class VisitImageGallery extends AppCompatActivity {
             List<File> images = null;
             if (files != null) {
                 images = (Arrays.asList(files));
-                mPictureList.addAll(ImageFetchService.getImageElements(images));
+                mPictureList.addAll(ImageFetchService.getImageElements(images, null));
             }
         }
     }

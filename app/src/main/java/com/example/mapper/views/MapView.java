@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -74,6 +73,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted = false;
     private boolean mStarted = false;
+    private boolean stopped = false;
     private MapViewModel mMapViewModel;
     private static final String TAG = "MapViewActivity";
     private LocationResultReceiver mReceiver;
@@ -341,15 +341,15 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onBackPressed()
     {
-        if(mStarted) {
+        if(mStarted && !stopped) {
             menu_card.setVisibility(View.GONE);
             card.setVisibility(View.GONE);
             finishRecording(getApplicationContext());
-            mStarted = false;
+            stopped = false;
         }
-//        else{
-//            super.onBackPressed();
-//        }
+        if(!mStarted){
+            super.onBackPressed();
+        }
     }
 
     public void finishRecording(Context context) {

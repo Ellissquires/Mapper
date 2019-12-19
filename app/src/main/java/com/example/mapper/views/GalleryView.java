@@ -164,7 +164,7 @@ public class GalleryView extends AppCompatActivity {
                 imageFile.addAll(Arrays.asList(visitFolder));
             }
 
-            myPictureList.addAll(ImageFetchService.getImageElements(imageFile));
+            myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null));
         }
     }
 

@@ -74,7 +74,7 @@ public class SortedImageAdapter extends RecyclerView.Adapter<SortedImageAdapter.
                 holder.recyclerView.setLayoutManager(new GridLayoutManager(context, numberOfColumns));
                 holder.textView.setText(contentTitle);
                 holder.recyclerView.setAdapter(mAdapter);
-                myPictureList.addAll(ImageFetchService.getImageElements(imageFiles));
+                myPictureList.addAll(ImageFetchService.getImageElements(imageFiles, null));
                 mAdapter.notifyDataSetChanged();
             }
         }

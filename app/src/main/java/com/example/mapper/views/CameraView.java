@@ -204,7 +204,7 @@ public class CameraView extends AppCompatActivity {
         if (storageDir.exists()){
 
             List<File> imageFiles = (Arrays.asList(storageDir.listFiles()));
-            myPictureList.addAll(ImageFetchService.getImageElements(imageFiles));
+            myPictureList.addAll(ImageFetchService.getImageElements(imageFiles, null));
 
         }
     }
@@ -239,7 +239,7 @@ public class CameraView extends AppCompatActivity {
 
             @Override
             public void onImagesPicked(@NotNull final List<File> imageFiles, EasyImage.ImageSource source, int type) {
-                onPhotosReturned(imageFiles);
+                onPhotosReturned(imageFiles, source);
 
             }
 
@@ -255,9 +255,9 @@ public class CameraView extends AppCompatActivity {
      * drive. It contains an Async task for the
      * @param returnedPhotos
      */
-    private void onPhotosReturned(final List<File> returnedPhotos) {
+    private void onPhotosReturned(final List<File> returnedPhotos, EasyImage.ImageSource source) {
 
-        myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos));
+        myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
         for(File file: returnedPhotos){
             filePath.add(file.getAbsolutePath());
         }
