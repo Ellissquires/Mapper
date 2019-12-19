@@ -344,10 +344,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             menu_card.setVisibility(View.GONE);
             card.setVisibility(View.GONE);
             finishRecording(getApplicationContext());
+            mStarted = false;
         }
-        else{
-            super.onBackPressed();
-        }
+//        else{
+//            super.onBackPressed();
+//        }
     }
 
     public void finishRecording(Context context) {
