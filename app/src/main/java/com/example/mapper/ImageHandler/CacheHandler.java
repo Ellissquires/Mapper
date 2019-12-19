@@ -6,9 +6,25 @@ import androidx.collection.LruCache;
 
 
 public class CacheHandler {
+    /**
+     * To improve the speed and responsiveness of the app it is important to use the app.
+     * If you do not cache the images used in the app the lag of the application will increase and reduce the user experience.
+     * This is where the decoded bitmaps are stored from the app.
+     */
     private LruCache<String, Bitmap> cacheStore;
 
+    /**
+     *
+     */
     private static CacheHandler cache;
+
+
+    /**
+     * For the cache to work, it needs to be accessible from all the application activities. This means that once the cache has been instantiated
+     * the same cache needs to be maintained throughout the application.
+     * This method retrieves the current cache that has been instantiated, or creates a new one if non is found.
+     * @return cache
+     */
 
     public static CacheHandler getInstance()
     {
@@ -19,6 +35,11 @@ public class CacheHandler {
 
         return cache;
     }
+
+    /**
+     * This initialises the cache as a portion of the memory which this app is assigned. This is  an eigth
+     * of the max memory of the app
+     */
 
     public void initializeCache()
     {
@@ -41,6 +62,13 @@ public class CacheHandler {
         };
     }
 
+    /**
+     * A method to add a new bitmap to the application cache. This is stored as a pair of a bitmap, and a key.
+     * The key is used to reference the stored bitmap in the cache.
+     * @param key
+     * @param value
+     */
+
     public void addToCache(String key, Bitmap value)
     {
         if(cacheStore != null && cacheStore.get(key) == null)
@@ -48,6 +76,14 @@ public class CacheHandler {
             cacheStore.put(key, value);
         }
     }
+
+    /**
+     * A method used to get entries from the cache
+     * This method allows the stored entries to be retrieved using the key value, which is a unique string stores
+     * within the entry.
+     * @param key
+     * @return
+     */
 
     public Bitmap getFromCache(String key)
     {
@@ -59,31 +95,5 @@ public class CacheHandler {
         {
             return null;
         }
-    }
-
-    public void removeFromCache(String key)
-    {
-        cacheStore.remove(key);
-    }
-
-    public void clearCache()
-    {
-        if(cacheStore != null)
-        {
-            cacheStore.evictAll();
-        }
-    }
-
-    public int getCacheSize(){
-        return cacheStore.size();
-    }
-
-    public LruCache getCache(){
-        return cacheStore;
-    }
-
-    public Bitmap loadBitmap(String imageKey) {
-        final Bitmap bitmap = getFromCache(imageKey);
-        return bitmap;
     }
 }
