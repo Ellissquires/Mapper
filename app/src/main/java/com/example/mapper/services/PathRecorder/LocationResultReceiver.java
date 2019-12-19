@@ -49,13 +49,13 @@ public class LocationResultReceiver extends ResultReceiver {
     @Override
     public void onReceiveResult(int rc, Bundle b) {
         if (mReceiver != null) {
-            if (rc == 0) //0 for location result
+            if (rc == 0) // 0 for location result (such as one from LocationSensor)
                 mReceiver.onReceiveResult(rc, b);
-            else if (rc == 1)
+            else if (rc == 1) // For passing the semi-completed path back
                 mReceiver.onPathPut(rc, b);
-            else if (rc == 2)
+            else if (rc == 2) // For passing the final path back
                 mReceiver.onPathFinish(rc, b);
-            else if (rc == 3)
+            else if (rc == 3) // For passing visit data back
                 mReceiver.onVisitFetch(rc, b);
         }
     }
