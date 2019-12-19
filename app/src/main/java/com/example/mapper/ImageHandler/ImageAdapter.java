@@ -87,9 +87,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
                 String path = items.get(position).file.getAbsolutePath();
                 Bitmap bitmap = cache.getFromCache(items.get(position).file.getAbsolutePath());
                 if(bitmap == null) {
-                    bitmap = ImageFetchService.decodeSampledBitmapFromResource(items.get(position).file, 150, 150);
+                    bitmap = ImageFetchService.decodeSampledBitmapFromResource(items.get(position).file, 250, 250);
                     if(items.get(position).getTag().equals("rotate"))
-                        bitmap = rotateBitmap(bitmap,90);
+                        bitmap = ImageFetchService.rotateBitmap(bitmap,90);
                     cache.addToCache(path, bitmap);
                 }
                 Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
@@ -105,6 +105,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
                 public void onClick(View v) {
                     Intent intent = new Intent(context, VisitImageView.class);
                     intent.putExtra("image", image);
+                    intent.putExtra("tag", items.get(position).getTag());
                     context.startActivity(intent);
                 }
             });
@@ -139,10 +140,5 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
 
     }
 
-    public static Bitmap rotateBitmap(Bitmap source, float angle)
-    {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getHeight(), source.getWidth(), matrix, true);
-    }
+
 }

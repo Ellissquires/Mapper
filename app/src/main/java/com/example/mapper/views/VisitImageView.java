@@ -11,6 +11,7 @@ import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageAdapter;
 import com.example.mapper.ImageHandler.ImageObj;
 import com.example.mapper.R;
+import com.example.mapper.services.ImageFetchService;
 
 import java.io.File;
 import java.util.List;
@@ -25,13 +26,19 @@ public class VisitImageView extends AppCompatActivity {
         setContentView(R.layout.activity_view_image);
 
         Bundle bundle = getIntent().getExtras();
-        File element = (File) getIntent().getExtras().get("image");
-
+        File element = (File) bundle.get("image");
+        String tag = (String) bundle.get("tag");
         if(element != null){
             ImageView imageView = (ImageView) findViewById(R.id.image);
             if (element!=null) {
                 Bitmap myBitmap = BitmapFactory.decodeFile(element.getAbsolutePath());
-                imageView.setImageBitmap(myBitmap);
+                if(tag.equals("rotate")) {
+                    Bitmap newBitmap = ImageFetchService.rotateBitmap(myBitmap, 90);
+                    imageView.setImageBitmap(newBitmap);
+                }
+                else{
+                    imageView.setImageBitmap(myBitmap);
+                }
             }
         }
     }
