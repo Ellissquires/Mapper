@@ -84,13 +84,22 @@ public class ImageFetchService {
         }
     }
 
+    /**
+     * Gets all file elements provided as inputs and converts them into a list of image objects.
+     * @param returnedPhotos
+     * @param source
+     * @return
+     */
     public static List<ImageObj> getImageElements(List<File> returnedPhotos, EasyImage.ImageSource source) {
         String rotateTag = "rotate";
         String uprightTag = "rotate";
 
+//        iterate over al files and convert them to objects
         List<ImageObj> imageElementList= new ArrayList<>();
         for (File file: returnedPhotos){
             ImageObj element= new ImageObj(file);
+
+//            handle the image tags to determine their orientation
             if(source == EasyImage.ImageSource.CAMERA){
                 element.setTag(rotateTag);
             }
@@ -102,6 +111,11 @@ public class ImageFetchService {
         return imageElementList;
     }
 
+    /**
+     * Function to cache images at initialisation of the app to ensure that
+     * @param cache
+     * @param context
+     */
     public static void cacheImages(final CacheHandler cache, final Context context){
         AsyncTask.execute(new Runnable() {
             @Override
@@ -181,14 +195,14 @@ public class ImageFetchService {
                 File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + originalTitle);
                 if (storageDir.isDirectory()) {
                     List<File> fileList = Arrays.asList(storageDir.listFiles());
-                    saveImage(fileList, context, newTitle, cache);
+                    saveImage(fileList, context, newTitle, cache, null);
                 }
             }
         });
         deleteImageFolder(originalTitle, context);
     }
 
-    public static void saveImage(final List<File> mFile, Context context, String title, CacheHandler cache) {
+    public static void saveImage(final List<File> mFile, Context context, String title, CacheHandler cache, EasyImage.ImageSource source) {
         File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
 
         for(File file: mFile){
@@ -202,7 +216,14 @@ public class ImageFetchService {
             File newFile = new File(storageDir, (timestamp + ".jpeg"));
 
             try {
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                Bitmap unrotatedBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                Bitmap bitmap;
+                if (source.equals(EasyImage.ImageSource.CAMERA)) {
+                    bitmap = rotateBitmap(unrotatedBitmap, 90);
+                }
+                else{
+                    bitmap = unrotatedBitmap;
+                }
                 cache.addToCache(file.getAbsolutePath(), bitmap);
 
                 FileOutputStream output = new FileOutputStream(newFile);

@@ -29,17 +29,9 @@ public class VisitImageView extends AppCompatActivity {
         File element = (File) bundle.get("image");
         String tag = (String) bundle.get("tag");
         if(element != null){
-            ImageView imageView = (ImageView) findViewById(R.id.image);
-            if (element!=null) {
-                Bitmap myBitmap = BitmapFactory.decodeFile(element.getAbsolutePath());
-                if(tag.equals("rotate")) {
-                    Bitmap newBitmap = ImageFetchService.rotateBitmap(myBitmap, 90);
-                    imageView.setImageBitmap(newBitmap);
-                }
-                else{
-                    imageView.setImageBitmap(myBitmap);
-                }
-            }
+            ImageView imageView = findViewById(R.id.image);
+            Bitmap myBitmap = BitmapFactory.decodeFile(element.getAbsolutePath());
+            imageView.setImageBitmap(myBitmap);
         }
     }
 

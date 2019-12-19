@@ -255,7 +255,7 @@ public class CameraView extends AppCompatActivity {
      * drive. It contains an Async task for the
      * @param returnedPhotos
      */
-    private void onPhotosReturned(final List<File> returnedPhotos, EasyImage.ImageSource source) {
+    private void onPhotosReturned(final List<File> returnedPhotos, final EasyImage.ImageSource source) {
 
         myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
         for(File file: returnedPhotos){
@@ -267,7 +267,7 @@ public class CameraView extends AppCompatActivity {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                ImageFetchService.saveImage(returnedPhotos, context , title, cache);
+                ImageFetchService.saveImage(returnedPhotos, context , title, cache, source);
             }
         });
 
