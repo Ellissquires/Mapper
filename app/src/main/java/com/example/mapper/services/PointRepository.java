@@ -1,19 +1,13 @@
 package com.example.mapper.services;
 
+// Imports
 import android.app.Application;
 import android.os.AsyncTask;
-
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.example.mapper.services.database.ApplicationDatabase;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.PointDAO;
 import com.example.mapper.services.models.RepoInsertCallback;
-import com.example.mapper.services.models.Visit;
-import com.example.mapper.services.models.VisitDAO;
-
-import java.util.List;
 
 public class PointRepository extends ViewModel {
     private final PointDAO pointDAO;
@@ -23,26 +17,27 @@ public class PointRepository extends ViewModel {
         pointDAO = db.pointDao();
     }
 
+    /**
+     * Creates a Point record in the database asynchronously
+     * @param point point to be inserted
+     */
     public void createPoint(Point point) {
         new InsertPointAsyncTask(pointDAO, null).execute(point);
     }
 
+    /**
+     * Creates a Point record in the database asynchronously with a callback
+     * @param point point to be inserted
+     * @param riCB callback
+     */
     public void createPoint(Point point, RepoInsertCallback riCB) {
         new InsertPointAsyncTask(pointDAO, riCB).execute(point);
     }
 
-
-
     /**
-     * it returns the value of the live data
-     * @return
+     * Handles inserting points asynchronously, when an insertion task has finishing running the
+     * passed callback is run.
      */
-
-//    public LiveData<List<Point>> getAllPoints() {
-//        LiveData<List<Point>> points = pointDAO.getAllPoints();
-//        return points;
-//    }
-
     static class InsertPointAsyncTask extends AsyncTask<Point, Void, Long> {
         private PointDAO asyncPointDao;
         private RepoInsertCallback mCallback;
@@ -58,6 +53,7 @@ public class PointRepository extends ViewModel {
         }
 
         protected void onPostExecute(Long result)  {
+            // If a callback is available run it
             if (mCallback != null) {
                 mCallback.OnFinishInsert(result);
             }

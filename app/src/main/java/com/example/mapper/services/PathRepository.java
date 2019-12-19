@@ -1,18 +1,15 @@
 package com.example.mapper.services;
 
+// Imports
 import android.app.Application;
 import android.os.AsyncTask;
-import android.os.Handler;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.example.mapper.services.database.ApplicationDatabase;
 import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.PathDAO;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.RepoInsertCallback;
-
 import java.util.List;
 
 public class PathRepository extends ViewModel {
@@ -32,10 +29,18 @@ public class PathRepository extends ViewModel {
         new InsertPathAsyncTask(pathDAO, riCB).execute(new Path());
     }
 
+    /**
+     * Fetches all the points on a path
+     * @param pathId
+     * @return LiveData<List<Point>>
+     */
     public LiveData<List<Point>> getPointsOnPath(long pathId) {
         return pathDAO.findPointsOnPath(pathId);
     }
 
+    /**
+     * Handles inserting paths on a background thread
+     */
     static class InsertPathAsyncTask extends AsyncTask<Path, Void, Long> {
         private PathDAO asyncPathDao;
         private RepoInsertCallback mCallback;

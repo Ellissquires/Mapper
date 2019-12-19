@@ -43,6 +43,7 @@ public class Visit implements Parcelable {
         this.pathId = pathId;
     }
 
+    // Getters and setters
     public long getId() {
         return id;
     }

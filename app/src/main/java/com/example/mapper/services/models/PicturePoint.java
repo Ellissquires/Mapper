@@ -13,7 +13,7 @@ import static androidx.room.ForeignKey.CASCADE;
 
 /**
  * @author      Ellis Squires <ellis.squires@gmail.com>
- * Room Database entity for the com.example.mapper.services.models.Point model
+ * Room Database entity for the com.example.mapper.services.models.PicturePoint model
  */
 
 /**

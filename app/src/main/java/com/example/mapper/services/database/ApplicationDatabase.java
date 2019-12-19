@@ -2,7 +2,6 @@ package com.example.mapper.services.database;
 
 import android.content.Context;
 import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
@@ -19,13 +18,13 @@ import com.example.mapper.services.models.PointDAO;
 import com.example.mapper.services.models.Visit;
 import com.example.mapper.services.models.VisitDAO;
 
-import java.util.Date;
 
 @Database(entities = {Point.class, Path.class, Visit.class, PicturePoint.class}, version = 6, exportSchema = false)
 @TypeConverters({Converters.class})
 
 public abstract class ApplicationDatabase extends RoomDatabase {
 
+    // Define Model DAOs
     public abstract PointDAO pointDao();
     public abstract PathDAO pathDao();
     public abstract VisitDAO visitDao();
