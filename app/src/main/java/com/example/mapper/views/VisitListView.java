@@ -61,18 +61,13 @@ public class VisitListView extends AppCompatActivity {
 
         CacheHandler cache = CacheHandler.getInstance();
 
-        ImageFetchService.cacheImages(cache, this);
+        ImageFetchService.cacheImages(cache, this, cache);
 
         if (PathRecorderService.checkIsRunning(getApplicationContext())) {
             // Create new intent for the MapView activity, dont pass a visit
             Intent intent = new Intent(this, MapView.class);
             startActivity(intent);
         }
-
-//        bottomAppBar = findViewById(R.id.bar);
-        //set bottom bar to Action bar as it is similar like Toolbar
-//        setSupportActionBar(bottomAppBar);
-
 
         ImageButton fab = (ImageButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

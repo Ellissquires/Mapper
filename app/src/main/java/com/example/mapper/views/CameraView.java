@@ -186,13 +186,15 @@ public class CameraView extends AppCompatActivity {
      * to the previous activity. This overrides the method onBackPressed(), that typically just returns to the
      * previous activity
      */
-    @Override
-    public void onBackPressed()
+    public void finishAndReturn()
     {
         Intent returnIntent = new Intent();
+        File[] storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/").listFiles();
+
+        filePath.add(storageDir[storageDir.length - 1].toURI().toString());
         returnIntent.putExtra("filename", filePath);
         setResult(Activity.RESULT_OK, returnIntent);
-        super.onBackPressed();
+        finish();
     }
 
     /**
@@ -258,9 +260,7 @@ public class CameraView extends AppCompatActivity {
     private void onPhotosReturned(final List<File> returnedPhotos, final EasyImage.ImageSource source) {
 
         myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
-        for(File file: returnedPhotos){
-            filePath.add(file.getAbsolutePath());
-        }
+
         mRecyclerView.setVisibility(View.VISIBLE);
         prompt.setVisibility(View.GONE);
 
@@ -275,7 +275,7 @@ public class CameraView extends AppCompatActivity {
         // we tell the adapter that the data is changed and hence the grid needs
         // refreshing
         mAdapter.notifyDataSetChanged();
-        mRecyclerView.scrollToPosition(returnedPhotos.size() - 1);
+        finishAndReturn();
     }
 
     /**

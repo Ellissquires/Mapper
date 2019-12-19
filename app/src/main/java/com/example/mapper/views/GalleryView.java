@@ -38,6 +38,7 @@ public class GalleryView extends AppCompatActivity {
     private RecyclerView mRecyclerView;
 
     private TextView prompt;
+    private Boolean loaded = false;
 
     Handler handler = new Handler();
 
@@ -58,8 +59,6 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.visit_gallery);
  
         int numberOfColumns = 3;
-
-        initData();
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         mAdapter= new ImageAdapter(myPictureList);
@@ -91,17 +90,6 @@ public class GalleryView extends AppCompatActivity {
 
             }
         });
-        
-        // set up the RecyclerView
-        if(mAdapter.getItemCount() < 1){
-            mRecyclerView.setVisibility(View.GONE);
-            prompt.setVisibility(View.VISIBLE);
-        }
-        else{
-            mRecyclerView.setVisibility(View.VISIBLE);
-            prompt.setVisibility(View.GONE);
-        }
-
 
         ImageButton fab_unsorted = findViewById(R.id.fab_unsorted);
         ImageButton fab_sorted =  findViewById(R.id.fab_sorted);
@@ -131,6 +119,28 @@ public class GalleryView extends AppCompatActivity {
             }
         });
 
+
+        initData();
+
+    }
+
+    protected void onStart(){
+        super.onStart();
+        while(!loaded){
+
+            mAdapter.notifyDataSetChanged();
+
+            // set up the RecyclerView
+            if(mAdapter.getItemCount() < 1){
+                mRecyclerView.setVisibility(View.GONE);
+                prompt.setVisibility(View.VISIBLE);
+            }
+            else{
+                mRecyclerView.setVisibility(View.VISIBLE);
+                prompt.setVisibility(View.GONE);
+            }
+
+        }
     }
 
     /**
@@ -152,20 +162,27 @@ public class GalleryView extends AppCompatActivity {
      *
      */
     private void initData(){
-        File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
-        if (storageDir.exists()){
-            File[] files = storageDir.listFiles();
-            myFolderList.addAll(Arrays.asList(files));
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
+                if (storageDir.exists()){
+                    File[] files = storageDir.listFiles();
+                    myFolderList.addAll(Arrays.asList(files));
 
-            List<File> folders = (Arrays.asList(files));
-            List<File> imageFile = new ArrayList<>();
-            for(File file : folders){
-                File[] visitFolder = file.listFiles();
-                imageFile.addAll(Arrays.asList(visitFolder));
+                    List<File> folders = (Arrays.asList(files));
+                    List<File> imageFile = new ArrayList<>();
+                    for(File file : folders){
+                        File[] visitFolder = file.listFiles();
+                        imageFile.addAll(Arrays.asList(visitFolder));
+                    }
+                    myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null));
+                }
+
+
+                loaded = true;
             }
-
-            myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null));
-        }
+        });
     }
 
     /**

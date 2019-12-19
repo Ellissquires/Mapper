@@ -20,8 +20,6 @@ public class SplashActivity extends AppCompatActivity {
         CacheHandler cache = CacheHandler.getInstance();
         cache.initializeCache();
 
-        ImageFetchService.cacheImages(cache, this);
-
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

@@ -83,19 +83,26 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
 
         if (items.get(position)!=null) {
 
-            if (items.get(position).file!=null){
+            if (items.get(position).file!=null) {
                 String path = items.get(position).file.getAbsolutePath();
-                Bitmap bitmap = cache.getFromCache(items.get(position).file.getAbsolutePath());
-                if(bitmap == null) {
-                    bitmap = ImageFetchService.decodeSampledBitmapFromResource(items.get(position).file, 250, 250);
-                    if(items.get(position).getTag().equals("rotate"))
-                        bitmap = ImageFetchService.rotateBitmap(bitmap,90);
-                    cache.addToCache(path, bitmap);
+                Bitmap thumbImage = cache.getFromCache("Thumbnail/" + path);
+                if(thumbImage != null){
+                    holder.imageView.setImageBitmap(thumbImage);
                 }
-                Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
-                        (THUMBSIZE/3 - 5), (THUMBSIZE/3 -5));
+                else {
+                    Bitmap bitmap = cache.getFromCache(path);
+                    if (bitmap == null) {
+                        bitmap = ImageFetchService.decodeSampledBitmapFromResource(items.get(position).file, 100, 100);
+                        if (items.get(position).getTag().equals("rotate"))
+                            bitmap = ImageFetchService.rotateBitmap(bitmap, 90);
+                        cache.addToCache(path, bitmap);
+                    }
+                    thumbImage = ThumbnailUtils.extractThumbnail(bitmap,
+                            (THUMBSIZE / 3 - 5), (THUMBSIZE / 3 - 5));
+                    holder.imageView.setImageBitmap(thumbImage);
+                    cache.addToCache(("Thumbnail/" + path), thumbImage);
+                }
 
-                holder.imageView.setImageBitmap(thumbImage);
             }
 
             itemsList.add(items.get(position));

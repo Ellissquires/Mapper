@@ -92,7 +92,7 @@ public class ImageFetchService {
      */
     public static List<ImageObj> getImageElements(List<File> returnedPhotos, EasyImage.ImageSource source) {
         String rotateTag = "rotate";
-        String uprightTag = "rotate";
+        String uprightTag = "upright";
 
 //        iterate over al files and convert them to objects
         List<ImageObj> imageElementList= new ArrayList<>();
@@ -112,11 +112,11 @@ public class ImageFetchService {
     }
 
     /**
-     * Function to cache images at initialisation of the app to ensure that
+     * Function to cache images at initialisation of the app to ensure that the app loads quickle
      * @param cache
      * @param context
      */
-    public static void cacheImages(final CacheHandler cache, final Context context){
+    public static void cacheImages(final CacheHandler cache, final Context context, final CacheHandler myCache){
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -132,8 +132,10 @@ public class ImageFetchService {
 
                     for(File file: imageFile){
                         String path = file.getAbsolutePath();
-                        Bitmap bitmap = decodeSampledBitmapFromResource(file, 150, 150);
-                        cache.addToCache(path, bitmap);
+                        Bitmap bitmap = cache.getFromCache(path);
+                        if(bitmap == null)
+                            bitmap = decodeSampledBitmapFromResource(file, 150, 150);
+                        myCache.addToCache(path, bitmap);
                     }
                 }
             }
