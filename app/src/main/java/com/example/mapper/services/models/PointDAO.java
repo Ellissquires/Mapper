@@ -30,4 +30,10 @@ public interface PointDAO {
 
     @Query("SELECT COUNT(*) FROM points")
     int count();
+
+    /**
+     * Return point from id
+     */
+    @Query("SELECT * FROM points WHERE id=:id LIMIT 1")
+    LiveData<Point> getPoint(final long id);
 }

@@ -259,7 +259,7 @@ public class CameraView extends AppCompatActivity {
 
         myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
         for(File file: returnedPhotos){
-            filePath.add(file.getAbsolutePath());
+            filePath.add(file.toURI().toString());
         }
         mRecyclerView.setVisibility(View.VISIBLE);
         prompt.setVisibility(View.GONE);
@@ -270,6 +270,7 @@ public class CameraView extends AppCompatActivity {
                 ImageFetchService.saveImage(returnedPhotos, context , title, cache, source);
             }
         });
+
 
 
         // we tell the adapter that the data is changed and hence the grid needs

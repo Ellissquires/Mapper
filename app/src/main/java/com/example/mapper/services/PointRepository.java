@@ -3,6 +3,8 @@ package com.example.mapper.services;
 // Imports
 import android.app.Application;
 import android.os.AsyncTask;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.mapper.services.database.ApplicationDatabase;
 import com.example.mapper.services.models.Point;
@@ -32,6 +34,10 @@ public class PointRepository extends ViewModel {
      */
     public void createPoint(Point point, RepoInsertCallback riCB) {
         new InsertPointAsyncTask(pointDAO, riCB).execute(point);
+    }
+
+    public LiveData<Point> getPoint(long id){
+        return pointDAO.getPoint(id);
     }
 
     /**

@@ -7,6 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -46,4 +47,7 @@ public interface PicturePointDAO {
 
     @Query("SELECT * FROM picturePoints WHERE pointId=:pointId")
     LiveData<PicturePoint> getPicturePoint(final long pointId);
+
+    @Query("SELECT * FROM picturePoints WHERE pictureURI=:uri")
+    LiveData<PicturePoint> getPicturePointFromURI(String uri);
 }

@@ -243,6 +243,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                                         long pointID = rowID;
 
                                         String fn = pointToPictureDict.get(index);
+                                        Log.d("MapViewFile", "uri " + fn);
                                         PicturePoint pp = new PicturePoint((int)pointID, fn);
                                         mPictPointRepo.createPicturePoint(pp);
                                     }
