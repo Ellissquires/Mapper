@@ -141,6 +141,8 @@ public class GalleryView extends AppCompatActivity {
                 }
                 mRecyclerView.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
+
+                findImages();
             }
         });
 
@@ -161,6 +163,15 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         mAdapter= new ImageAdapter(myPictureList);
         mRecyclerView.setAdapter(mAdapter);
+        if(mAdapter.getItemCount() < 1){
+
+            mRecyclerView.setVisibility(View.GONE);
+            prompt.setVisibility(View.VISIBLE);
+        }
+        else{
+            mRecyclerView.setVisibility(View.VISIBLE);
+            prompt.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -179,6 +190,15 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter= new SortedImageAdapter(myFolderList);
         mRecyclerView.setAdapter(mAdapter);
+        if(mAdapter.getItemCount() < 1){
+
+            mRecyclerView.setVisibility(View.GONE);
+            prompt.setVisibility(View.VISIBLE);
+        }
+        else{
+            mRecyclerView.setVisibility(View.VISIBLE);
+            prompt.setVisibility(View.GONE);
+        }
     }
 
 
