@@ -79,6 +79,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     private VisitRepository mVisitRepo;
     private Context mContext;
     private List<Point> mPoints;
+    private String mDist;
     String starterID = null;
     String finisherID = null;
 
@@ -128,10 +129,13 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         // Set distance (units dependant on distance, <100m = M, else KM)
         float dist = (float)mVisit.getDistance();
         if (dist < 100) {
-            visitDistanceView.setText(String.format("%.1f m", dist));
+            mDist = String.format("%.1f m", dist);
+
         } else {
-            visitDistanceView.setText(String.format("%.2f Km", dist / 1000.0));
+            mDist = String.format("%.2f Km", dist / 1000.0);
         }
+
+        visitDistanceView.setText(mDist);
 
         // Map initialisation (async)
         SupportMapFragment mapFragment =
@@ -188,16 +192,10 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
                     PicturePoint pictPoint = (PicturePoint) ((HashMap) marker.getTag()).get("picturePoint");
                     Point point = (Point) ((HashMap) marker.getTag()).get("point");
-//                    img.setImageURI(Uri.parse((String) pictPoint.getPictureURI()));
 
                     Bitmap bitmap = cache.getFromCache(pictPoint.getPictureURI());
                     if(bitmap == null) {
                         img.setImageURI(Uri.parse((String) pictPoint.getPictureURI()));
-//                        bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
-//                        Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
-//                                (THUMBSIZE), (THUMBSIZE));
-//
-//                        img.setImageBitmap(thumbImage);
                     }
                     else{
                         Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
@@ -333,12 +331,11 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, "Look at where I've just been walking: " +
                         "This is a trip I have taken called *" + mVisit.getTitle() +
-                        "* and I have travelled using mapper!");
+                        "* and I have travelled "+ mDist + " using mapper!");
                 sendIntent.setType("text/plain");
 
                 Intent shareIntent = Intent.createChooser(sendIntent, "Share path to...");
                 startActivity(shareIntent);
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

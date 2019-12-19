@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
+/**
+ * Used for when the PathRecorderService is stopped by the android system,
+ * When a message is sent to this classes it restarts it.
+ */
 public class PathRecorderRestarter extends BroadcastReceiver {
 
     @Override

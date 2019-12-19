@@ -127,5 +127,13 @@ public class VisitRepository extends ViewModel {
         return visitDAO.getAllVisits();
     }
 
+    /**
+     * Returns the visit with the given title
+     * @return
+     */
+    public LiveData<Visit> getVisit(String title) {
+        return visitDAO.getVisitFromTitle(title);
+    }
+
 
 }

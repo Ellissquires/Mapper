@@ -38,4 +38,10 @@ public interface VisitDAO {
      */
     @Query("SELECT * FROM visits ORDER BY visitDate DESC")
     LiveData<List<Visit>> getAllVisits();
+
+    /**
+     * Return all the visits
+     */
+    @Query("SELECT * FROM visits WHERE title=:title LIMIT 1")
+    LiveData<Visit> getVisitFromTitle(String title);
 }

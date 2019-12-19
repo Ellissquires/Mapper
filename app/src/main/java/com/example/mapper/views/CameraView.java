@@ -272,6 +272,7 @@ public class CameraView extends AppCompatActivity {
         });
 
 
+
         // we tell the adapter that the data is changed and hence the grid needs
         // refreshing
         mAdapter.notifyDataSetChanged();

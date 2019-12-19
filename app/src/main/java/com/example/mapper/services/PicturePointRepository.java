@@ -11,6 +11,7 @@ import com.example.mapper.services.database.ApplicationDatabase;
 import com.example.mapper.services.models.PicturePoint;
 import com.example.mapper.services.models.PicturePointDAO;
 
+import java.net.URI;
 import java.util.List;
 
 public class PicturePointRepository extends ViewModel {
@@ -44,6 +45,11 @@ public class PicturePointRepository extends ViewModel {
      */
     public LiveData<PicturePoint> getPicturePoint(long pointId) {
         LiveData<PicturePoint> point = picturePointDAO.getPicturePoint(pointId);
+        return point;
+    }
+
+    public LiveData<PicturePoint> getPicturePointFromURI(String uri) {
+        LiveData<PicturePoint> point = picturePointDAO.getPicturePointFromURI(uri);
         return point;
     }
 

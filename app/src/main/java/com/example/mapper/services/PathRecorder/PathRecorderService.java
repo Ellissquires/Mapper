@@ -125,6 +125,11 @@ public class PathRecorderService extends Service {
     }
 
 
+    /**
+     * Tells the service to send visit data to the receiever
+     * @param context
+     * @param receiver A new receiver to use.
+     */
     public static void fetchVisitService(Context context, LocationResultReceiver receiver) {
         Intent intent = new Intent(context, PathRecorderService.class);
         intent.setAction(ACTION_FETCH_VISIT);
@@ -149,11 +154,13 @@ public class PathRecorderService extends Service {
             mBarometerSensor = new BarometerSensor(this);
             mTempSensor = new TemperatureSensor(this);
 
+            // Set the receiever if there is one specified.
             if (intent.hasExtra(RECEIVER_TAG)) {
                 mReceiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER_TAG);
                 Log.d(TAG, "has receiver");
             }
 
+            // Start this service in the foreground.
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
                 startInForeground();
             } else {
@@ -170,8 +177,10 @@ public class PathRecorderService extends Service {
             stopRecording();
             mAllowDestroy = true;
         } else if (ACTION_POST_VISIT.equals(action)) {
+            // Sending the visit details to the service, incase the app closes and loses the visit data.
             mVisit = (Visit) intent.getParcelableExtra(VISIT_TAG);
         } else if (ACTION_FETCH_VISIT.equals(action)) {
+            // Fetches visit data from the service if it can.
             // Does nothing if there is no receiver, and no visit
             if (intent.hasExtra(RECEIVER_TAG)) {
                 mReceiver = (ResultReceiver) intent.getParcelableExtra(RECEIVER_TAG);
@@ -187,6 +196,9 @@ public class PathRecorderService extends Service {
         return Service.START_NOT_STICKY;
     }
 
+    /**
+     * Either restarts this service using PathRecorderRestarter or stops recording
+     */
     @Override
     public void onDestroy() {
         if (!mAllowDestroy) {
@@ -199,9 +211,13 @@ public class PathRecorderService extends Service {
             stopRecording();
         }
 
-        //TODO: Cleanup variables here
     }
 
+    /**
+     * Called when this service is bound.
+     * @param intent
+     * @return
+     */
     @Override
     public IBinder onBind(Intent intent) {
         mGPSSensor = new LocationSensor(this);
@@ -266,12 +282,12 @@ public class PathRecorderService extends Service {
         AndroidSensorCallback callback = new AndroidSensorCallback() {
             @Override
             public void onSensorCallback (Location location) {
-                if (!mRecordValues) return;
+                if (!mRecordValues) return; //If paused, no need to record values
 
                 if (location != null) {
                     double temp = 0.0, pressure = 0.0;
 
-                    // Get the last results from the sensors i9f possible.
+                    // Get the last results from the sensors if possible.
                     if (mTempSensor.sensorAvailable()) {
                         SensorEvent tempResults = mTempSensor.fetchLastResults();
                         if (tempResults != null) {
@@ -288,11 +304,10 @@ public class PathRecorderService extends Service {
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
 
-                    Log.d(TAG, "Recorded values");
-
                     Point p = new Point(lat, lng, pressure, temp, (int)pathID);
                     mRecordedPoints.add(p);
 
+                    // Send data to the reciever if it's possible
                     if (mReceiver != null) {
                         Bundle bundle = new Bundle();
                         bundle.putParcelableArrayList(PATH_TAG, (ArrayList)mRecordedPoints);
@@ -302,6 +317,8 @@ public class PathRecorderService extends Service {
                 }
             }
         };
+
+        // Set callbacks and start sensing.
         mGPSSensor.setSensorCallback(callback);
 
         mGPSSensor.startSensing();
@@ -316,6 +333,7 @@ public class PathRecorderService extends Service {
         long elapsedTime = Calendar.getInstance().getTimeInMillis() - mStartTime;
         elapsedTime = elapsedTime / 1000; //Convert To seconds
 
+        // Send the final data to the reciever when we are done.
         if (mReceiver != null) {
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList(PATH_TAG, (ArrayList)mRecordedPoints);
@@ -329,6 +347,11 @@ public class PathRecorderService extends Service {
         Log.d(TAG, "Finished recording!");
     }
 
+    /**
+     * Returns true if this service is running.
+     * @param context
+     * @return true/false dependant on whether this service is running
+     */
     public static boolean checkIsRunning (Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
