@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.Camera;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -98,6 +99,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private CardView menu_card;
 
     private Visit mVisit;
+    private Boolean hasCamera;
 
     private Map<String, String> pointToPictureDict;
 
@@ -113,6 +115,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         setContentView(R.layout.activity_map);
         // Make sure app has correct permissions.
         fetchPermission(this);
+
+        int numCameras = Camera.getNumberOfCameras();
+        if (numCameras > 0) {
+            hasCamera = true;
+        }
 
         mReceiver = new LocationResultReceiver(new Handler());
         mPathRepo = new PathRepository(getApplication());
@@ -161,7 +168,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             fab_record.setVisibility(View.GONE);
             fab_pause.setVisibility(View.VISIBLE);
             fab_stop.setVisibility(View.GONE);
-            fab_camera.setVisibility(View.VISIBLE);
+            if(hasCamera)
+                fab_camera.setVisibility(View.VISIBLE);
             beginRecording(getApplicationContext());
         }
         else{
@@ -176,7 +184,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 fab_record.setVisibility(View.GONE);
                 fab_pause.setVisibility(View.VISIBLE);
                 fab_stop.setVisibility(View.GONE);
-                fab_camera.setVisibility(View.VISIBLE);
+                if(hasCamera)
+                    fab_camera.setVisibility(View.VISIBLE);
                 beginRecording(getApplicationContext());
             }
         });
@@ -211,7 +220,8 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 PathRecorderService.resumeRecordingService(getApplicationContext());
                 fab_pause.setVisibility(View.VISIBLE);
                 fab_resume.setVisibility(View.GONE);
-                fab_camera.setVisibility(View.VISIBLE);
+                if(hasCamera)
+                    fab_camera.setVisibility(View.VISIBLE);
                 fab_stop.setVisibility(View.GONE);
                 startTimer();
             }
