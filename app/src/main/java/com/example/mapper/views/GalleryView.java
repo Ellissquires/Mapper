@@ -201,6 +201,7 @@ public class GalleryView extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params){
                 myFolderList = new ArrayList<>();
+                myPictureList = new ArrayList<>();
             File storageDir = new File((mContext.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
             if (storageDir.exists()){
                 File[] files = storageDir.listFiles();
