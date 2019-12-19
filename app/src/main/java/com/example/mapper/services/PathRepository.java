@@ -12,6 +12,11 @@ import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.RepoInsertCallback;
 import java.util.List;
 
+/**
+ * @author Ellis Squires
+ * @version 1.0
+ * @since 1.0
+ */
 public class PathRepository extends ViewModel {
 
     private final PathDAO pathDAO;

@@ -20,6 +20,12 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+/**
+ * Class for the Android Location sensor
+ * @author Tom Croasdale
+ * @version 1.0
+ * @since 1.0
+ */
 public class LocationSensor extends AndroidSensor {
 
     private LocationRequest mLocationRequest;

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.ThumbnailUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Neville Kitala
+ * @version 1.0
+ * @since 1.0
+ */
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder> {
     /**
      * variables to be used in this class.
@@ -82,6 +88,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
                 Bitmap bitmap = cache.getFromCache(items.get(position).file.getAbsolutePath());
                 if(bitmap == null) {
                     bitmap = ImageFetchService.decodeSampledBitmapFromResource(items.get(position).file, 150, 150);
+                    if(items.get(position).getTag().equals("rotate"))
+                        bitmap = rotateBitmap(bitmap,90);
                     cache.addToCache(path, bitmap);
                 }
                 Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
@@ -129,5 +137,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
 
         }
 
+    }
+
+    public static Bitmap rotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getHeight(), source.getWidth(), matrix, true);
     }
 }

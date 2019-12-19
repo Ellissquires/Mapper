@@ -1,6 +1,5 @@
 package com.example.mapper.ImageHandler;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Neville Kitala
+ * @version 1.0
+ * @since 1.0
+ */
 public class SortedImageAdapter extends RecyclerView.Adapter<SortedImageAdapter.View_Holder> {
 
     private Context context;
@@ -74,7 +78,7 @@ public class SortedImageAdapter extends RecyclerView.Adapter<SortedImageAdapter.
                 holder.recyclerView.setLayoutManager(new GridLayoutManager(context, numberOfColumns));
                 holder.textView.setText(contentTitle);
                 holder.recyclerView.setAdapter(mAdapter);
-                myPictureList.addAll(ImageFetchService.getImageElements(imageFiles));
+                myPictureList.addAll(ImageFetchService.getImageElements(imageFiles, null));
                 mAdapter.notifyDataSetChanged();
             }
         }

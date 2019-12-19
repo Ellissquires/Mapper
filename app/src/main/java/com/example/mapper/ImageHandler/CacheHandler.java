@@ -3,7 +3,11 @@ package com.example.mapper.ImageHandler;
 import android.graphics.Bitmap;
 import androidx.collection.LruCache;
 
-
+/**
+ * @author Neville Kitala
+ * @version 1.0
+ * @since 1.0
+ */
 public class CacheHandler {
     /**
      * To improve the speed and responsiveness of the app it is important to use the app.

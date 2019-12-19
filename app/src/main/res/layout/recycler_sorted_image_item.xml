@@ -11,11 +11,11 @@
         android:id="@+id/Sorted_Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="25dp"
+        android:fontFamily="@font/poppins_light"
+        android:paddingTop="10dp"
         android:text="TextView"
         android:textColor="@color/txtColor"
-        app:layout_constraintBottom_toTopOf="@+id/sorted_visit_gallery"
-        app:layout_constraintEnd_toStartOf="@+id/sorted_visit_gallery"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
