@@ -8,6 +8,16 @@
     android:background="@color/colorPrimaryDark"
     tools:context=".views.CameraView">
 
+    <TextView
+        android:id="@+id/prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/poppins_light"
+        android:text="No Images in this Gallery."
+        android:textColor="@color/colorPrimaryLight"
+        tools:visibility="gone" />
+
     <include layout="@layout/content_visit_gallery" />
 
     <androidx.cardview.widget.CardView
@@ -33,17 +43,11 @@
 
 
             <LinearLayout
-                android:layout_width="25dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            </LinearLayout>
-
-
-            <LinearLayout
                 android:id="@+id/Sorted_Container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="10dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -83,6 +87,8 @@
                 android:id="@+id/Gallery_Container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="10dp"
                 android:orientation="vertical">
 
                 <ImageButton
@@ -110,24 +116,21 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|center_vertical"
                     android:layout_marginBottom="10dp"
-                    android:text="gallery"
+                    android:fontFamily="@font/poppins_light"
+                    android:text="Upload"
                     android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="@color/txtColor"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:visibility="visible" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="25dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/Image_Container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="25dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -167,6 +170,8 @@
                 android:id="@+id/Camera_Container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="25dp"
                 android:orientation="vertical">
 
                 <ImageButton
@@ -194,19 +199,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|center_vertical"
                     android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/poppins_light"
                     android:text="Camera"
                     android:textAlignment="center"
                     android:textColor="@color/txtColor"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:visibility="visible" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="25dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

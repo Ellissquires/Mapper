@@ -62,16 +62,12 @@
             <!-- Floating Action button -->
 
             <!-- Floating Action button -->
-            <LinearLayout
-                android:layout_width="25dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="10dp"
                 android:orientation="vertical">
 
                 <ImageButton
@@ -99,23 +95,19 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|center_vertical"
                     android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/poppins_light"
                     android:text="Add Visit"
                     android:textAlignment="center"
                     android:textColor="@color/txtColor"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:visibility="visible" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="25dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="25dp"
                 android:orientation="vertical">
 
                 <ImageButton
@@ -141,19 +133,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|center_vertical"
                     android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/poppins_light"
                     android:text="Gallery"
                     android:textAlignment="center"
                     android:textColor="@color/txtColor"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:visibility="visible" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="25dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

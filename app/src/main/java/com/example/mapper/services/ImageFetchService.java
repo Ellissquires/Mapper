@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.ImageHandler.ImageObj;
+import com.example.mapper.services.models.Path;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -171,10 +172,9 @@ public class ImageFetchService {
         deleteImageFolder(originalTitle, context);
     }
 
-    public static List<String> saveImage(final List<File> mFile, Context context, String title, CacheHandler cache) {
+    public static void saveImage(final List<File> mFile, Context context, String title, CacheHandler cache) {
         File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title + "/");
 
-        List<String> filenames = new ArrayList<>();
         for(File file: mFile){
             //         Create an image file name
             Timestamp date = new Timestamp(System.currentTimeMillis());
@@ -192,18 +192,17 @@ public class ImageFetchService {
                 FileOutputStream output = new FileOutputStream(newFile);
 
                 // Compress into png format image from 0% - 100%
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 10, output);
                 output.flush();
                 output.close();
 
-                filenames.add(newFile.toURI().toString());
+                cache.addToCache(newFile.toURI().toString(), bitmap);
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
 
         }
-        return filenames;
 
     }//saveImage
 

@@ -12,6 +12,7 @@ import android.graphics.Matrix;
 import android.graphics.Picture;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import com.example.mapper.ImageHandler.CacheHandler;
 import com.example.mapper.R;
 import com.example.mapper.services.ImageFetchService;
 import com.example.mapper.services.PathRepository;
@@ -80,6 +82,9 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
     String starterID = null;
     String finisherID = null;
 
+    private static final int THUMBSIZE = Resources.getSystem().getDisplayMetrics().widthPixels;
+
+    CacheHandler cache = CacheHandler.getInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -171,7 +176,23 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
                     PicturePoint pictPoint = (PicturePoint) ((HashMap) marker.getTag()).get("picturePoint");
                     Point point = (Point) ((HashMap) marker.getTag()).get("point");
-                    img.setImageURI(Uri.parse((String) pictPoint.getPictureURI()));
+//                    img.setImageURI(Uri.parse((String) pictPoint.getPictureURI()));
+
+                    Bitmap bitmap = cache.getFromCache(pictPoint.getPictureURI());
+                    if(bitmap == null) {
+                        img.setImageURI(Uri.parse((String) pictPoint.getPictureURI()));
+//                        bitmap=((BitmapDrawable)img.getDrawable()).getBitmap();
+//                        Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
+//                                (THUMBSIZE), (THUMBSIZE));
+//
+//                        img.setImageBitmap(thumbImage);
+                    }
+                    else{
+                        Bitmap thumbImage = ThumbnailUtils.extractThumbnail(bitmap ,
+                                (THUMBSIZE/3 - 5), (THUMBSIZE/3 -5));
+
+                        img.setImageBitmap(thumbImage);
+                    }
 
                     pressure.setText("" + point.getPressure());
                     temperature.setText("" + point.getTemperature());
@@ -216,7 +237,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
                         if(counter == 0){
                             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_start_pin);
-                            bitmap = ImageFetchService.getIcon(bitmap, 200);
+                            bitmap = ImageFetchService.getIcon(bitmap, 250);
                             starterID = mMap.addMarker(new MarkerOptions()
                                     .position(mapPoint)
                                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
@@ -224,7 +245,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
                         }
                         else if(counter == (path.size()-1)){
                             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_finish_pin);
-                            bitmap = ImageFetchService.getIcon(bitmap, 200);
+                            bitmap = ImageFetchService.getIcon(bitmap, 250);
                             finisherID = mMap.addMarker(new MarkerOptions()
                                     .position(mapPoint)
                                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
@@ -298,7 +319,9 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
             case R.id.visit_share:
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Look at where I've just been walking!");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Look at where I've just been walking: " +
+                        "This is a trip I have taken called *" + mVisit.getTitle() +
+                        "* and I have travelled using mapper!");
                 sendIntent.setType("text/plain");
 
                 Intent shareIntent = Intent.createChooser(sendIntent, "Share path to...");

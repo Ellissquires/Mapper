@@ -8,10 +8,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -54,12 +57,17 @@ public class CameraView extends AppCompatActivity {
     private List<ImageObj> myPictureList = new ArrayList<>();
     private RecyclerView.Adapter  mAdapter;
     private RecyclerView mRecyclerView;
-    CacheHandler cache = CacheHandler.getInstance();//Singleton instance handled in ImagesCache class.
+    private TextView prompt;
+
+    CacheHandler cache = CacheHandler.getInstance();
 
     private Context context;
     private Activity activity;
 
+    Handler handler = new Handler();
+
     ArrayList<String> filePath = new ArrayList<>();
+
     private void initEasyImage(){
        EasyImage.configuration(this)
                .setImagesFolderName("Mapper")
@@ -79,7 +87,7 @@ public class CameraView extends AppCompatActivity {
 
         title = mVisit.getTitle();
         final CardView menubar = (CardView) findViewById(R.id.menubar);
-
+        prompt = (TextView) findViewById(R.id.prompt);
         mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -102,15 +110,45 @@ public class CameraView extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         mAdapter= new ImageAdapter(myPictureList);
         mRecyclerView.setAdapter(mAdapter);
-
-        AsyncTask.execute(new Runnable() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
-            public void run() {
-                initData();
+            public void onScrolled(RecyclerView recyclerView, int width, int height){
+
+                if (height>0)
+//                    menubar.setVisibility(recyclerView.GONE);
+                    menubar.animate().translationY(500);
+                else if(height<0)
+//                    menubar.setVisibility(recyclerView.VISIBLE);
+                    menubar.animate().translationY(0);
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            menubar.animate().translationY(0);
+                        }
+                    }, 3000);
+
+                }
+
             }
         });
+        initData();
 
         mAdapter.notifyDataSetChanged();
+
+        if(mAdapter.getItemCount() < 1){
+            mRecyclerView.setVisibility(View.GONE);
+            prompt.setVisibility(View.VISIBLE);
+        }
+        else{
+            mRecyclerView.setVisibility(View.VISIBLE);
+            prompt.setVisibility(View.GONE);
+        }
 
         checkPermissions(getApplicationContext());
 
@@ -131,7 +169,7 @@ public class CameraView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int cameraPermission = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA);
-                if (android.os.Build.VERSION.SDK_INT >= 23) {
+                if (Build.VERSION.SDK_INT >= 23) {
                     if (cameraPermission != PackageManager.PERMISSION_GRANTED  ) {
 
                         ActivityCompat.requestPermissions( getActivity(),
@@ -145,17 +183,6 @@ public class CameraView extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    /**
-     * Finishes the activity and bundles the filename into the data.
-     * @param filePath the file path to the picture taken.
-     */
-    private void finishActivityAndReturn (String filePath) {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("filename", filePath);
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
     }
 
     @Override
@@ -214,14 +241,7 @@ public class CameraView extends AppCompatActivity {
             @Override
             public void onImagesPicked(@NotNull final List<File> imageFiles, EasyImage.ImageSource source, int type) {
                 onPhotosReturned(imageFiles);
-                final List<File> imageList = new ArrayList<>();
-                AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        imageList.addAll(imageFiles);
-                        filePath.addAll(ImageFetchService.saveImage(imageList, context , title, cache));
-                    }
-                });
+
             }
 
             @Override
@@ -231,8 +251,23 @@ public class CameraView extends AppCompatActivity {
         });
     }
 
-    private void onPhotosReturned(List<File> returnedPhotos) {
+    private void onPhotosReturned(final List<File> returnedPhotos) {
+
         myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos));
+        for(File file: returnedPhotos){
+            filePath.add(file.getAbsolutePath());
+        }
+        mRecyclerView.setVisibility(View.VISIBLE);
+        prompt.setVisibility(View.GONE);
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                ImageFetchService.saveImage(returnedPhotos, context , title, cache);
+            }
+        });
+
+
         // we tell the adapter that the data is changed and hence the grid needs
         // refreshing
         mAdapter.notifyDataSetChanged();
