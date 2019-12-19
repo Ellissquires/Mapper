@@ -143,6 +143,13 @@ public class ImageFetchService {
         });
     }
 
+    /**
+     * Finds the rtaw dimensions of the images
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
@@ -164,6 +171,13 @@ public class ImageFetchService {
         return inSampleSize;
     }
 
+    /**
+     * Gets a decoded bitmap from the raw image resource
+     * @param file
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
     public static Bitmap decodeSampledBitmapFromResource(File file, int reqWidth, int reqHeight) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -176,6 +190,11 @@ public class ImageFetchService {
         return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
     }
 
+    /**
+     * Delete the folder with the title given in the params
+     * @param title
+     * @param context
+     */
     public static void deleteImageFolder (final String title, final Context context){
         AsyncTask.execute(new Runnable() {
             @Override
