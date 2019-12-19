@@ -72,6 +72,7 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
     String finisherID = null;
     private Visit mVisit;
     private PicturePoint mPoint;
+    private Point imagePoint;
 
     /**
      * A default method for every class that extends AppCompatActivity that allows it to define
@@ -108,16 +109,17 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
                     if (picturePoint != null) {
                         Log.d("VisitImageView", "Point retrieved" + picturePoint.toString());
                         mPoint = picturePoint;
-                        LiveData<Point> p = mPointRepo.getPoint(picturePoint.getPointId());
+                        LiveData<Point> p = mPointRepo.getPoint(picturePoint.getPointId()-1);
                         p.observe(VisitImageView.this, new Observer<Point>() {
                             @Override
                             public void onChanged(Point point) {
                                 if (point != null) {
-                                    Log.d("VisitImageView", "Point retrieved" + point.toString());
+                                    Log.d("VisitImageView", "Point111 retrieved" + point.toString());
                                     String temp = point.getTemperature() + "C";
+                                    imagePoint = point;
                                     visitImageViewTemperature.setText(temp);
-                                    String pressure = String.format("%.1f mbars", point.getTemperature());
-                                    visitImageViewTemperature.setText(temp);
+                                    String pressure = String.format("%.1f mbars", point.getPressure());
+                                    visitImageViewPressure.setText(pressure);
                                 }
                             }
                         });
@@ -126,7 +128,6 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
                     }
                 }
             });
-
             String contentTitle = element.getAbsolutePath().split("/")[9];
             LiveData<Visit> visit = mVisitRepo.getVisit(contentTitle);
             visit.observe(this, new Observer<Visit>() {
@@ -188,10 +189,9 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
                     for(final Point p : path){
                         final LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
                         options.add(mapPoint);
-
                         if(counter == 0){
                             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_start_pin);
-                            bitmap = ImageFetchService.getIcon(bitmap, 75);
+                            bitmap = ImageFetchService.getIcon(bitmap, 150);
                             starterID = mMap.addMarker(new MarkerOptions()
                                     .position(mapPoint)
                                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
@@ -199,7 +199,7 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
                         }
                         else if(counter == (path.size()-1)){
                             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_finish_pin);
-                            bitmap = ImageFetchService.getIcon(bitmap, 75);
+                            bitmap = ImageFetchService.getIcon(bitmap, 150);
                             finisherID = mMap.addMarker(new MarkerOptions()
                                     .position(mapPoint)
                                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
@@ -212,19 +212,30 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
                         pictPoint.observe(owner, new Observer<PicturePoint>() {
                             @Override
                             public void onChanged(PicturePoint picturePoint) {
-                                if (picturePoint != null) {
-                                    final BitmapFactory.Options options = new BitmapFactory.Options();
-                                    Bitmap bitmap;
-                                    bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_pin);
 
-                                    bitmap = ImageFetchService.getIcon(bitmap, 100);
-                                    Marker m = mMap.addMarker(new MarkerOptions()
-                                            .position(mapPoint)
-                                            .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-                                    HashMap<String, Object> tags = new HashMap<>();
-                                    tags.put("point", p);
-                                    tags.put("picturePoint", picturePoint);
-                                    m.setTag(tags);
+                                if (picturePoint != null) {
+                                    if (picturePoint == mPoint) {
+                                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_image_pin);
+                                        bitmap = ImageFetchService.getIcon(bitmap, 250);
+                                        finisherID = mMap.addMarker(new MarkerOptions()
+                                                .position(mapPoint)
+                                                .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                                .title("Image")).getId();
+                                    }
+                                    else {
+                                        final BitmapFactory.Options options = new BitmapFactory.Options();
+                                        Bitmap bitmap;
+                                        bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_pin);
+
+                                        bitmap = ImageFetchService.getIcon(bitmap, 150);
+                                        Marker m = mMap.addMarker(new MarkerOptions()
+                                                .position(mapPoint)
+                                                .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+                                        HashMap<String, Object> tags = new HashMap<>();
+                                        tags.put("point", p);
+                                        tags.put("picturePoint", picturePoint);
+                                        m.setTag(tags);
+                                    }
                                 }
                             }
                         });

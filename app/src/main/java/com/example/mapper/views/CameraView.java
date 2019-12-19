@@ -259,24 +259,20 @@ public class CameraView extends AppCompatActivity {
      */
     private void onPhotosReturned(final List<File> returnedPhotos, final EasyImage.ImageSource source) {
 
-        myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
-
-        mRecyclerView.setVisibility(View.VISIBLE);
-        prompt.setVisibility(View.GONE);
-
-        AsyncTask.execute(new Runnable() {
+        ImageFetchService.saveImage(returnedPhotos, context , title, cache, source, new ImageFetchService.SaveImagesAsyncTask.AsyncResponse() {
             @Override
-            public void run() {
-                ImageFetchService.saveImage(returnedPhotos, context , title, cache, source);
+            public void processFinish(){
+                finishAndReturn();
             }
         });
 
-
+        myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
+        mRecyclerView.setVisibility(View.VISIBLE);
+        prompt.setVisibility(View.GONE);
 
         // we tell the adapter that the data is changed and hence the grid needs
         // refreshing
         mAdapter.notifyDataSetChanged();
-        finishAndReturn();
     }
 
     /**
