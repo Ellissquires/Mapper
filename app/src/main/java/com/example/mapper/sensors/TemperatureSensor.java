@@ -5,7 +5,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.util.Log;
 
-
+/**
+ * Class for the Android Temperature Sensor
+ * @author Tom Croasdale
+ * @version 1.0
+ * @since 1.0
+ */
 public class TemperatureSensor extends AndroidSensor {
     public TemperatureSensor(Context context) {
         super(context, Sensor.TYPE_AMBIENT_TEMPERATURE);

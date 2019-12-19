@@ -27,6 +27,12 @@ import java.util.List;
 
 import pl.aprilapps.easyphotopicker.EasyImage;
 
+/**
+ * @author Neville Kitala
+ * @version 1.0
+ * @since 1.0
+ */
+
 public class ImageFetchService {
 
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 2987;

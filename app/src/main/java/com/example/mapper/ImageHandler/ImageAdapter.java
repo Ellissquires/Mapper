@@ -24,6 +24,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Neville Kitala
+ * @version 1.0
+ * @since 1.0
+ */
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder> {
     /**
      * variables to be used in this class.

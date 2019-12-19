@@ -60,37 +60,6 @@ public class EditVisitView extends AppCompatActivity {
     public EditVisitView() {
     }
 
-    public void editPictureDirectory(final String original, final String current){
-        long pathID = mVisit.getPathId();
-        LiveData<List<Point>> path = mPathRepo.getPointsOnPath(pathID - 1);
-
-        final LifecycleOwner owner = this;
-        path.observe(this, new Observer<List<Point>>() {
-            @Override
-            public void onChanged(@Nullable final List<Point> path) {
-                if (path.size() > 0) {
-
-                    for (final Point p : path) {
-
-                        final LiveData<PicturePoint> pictPoint = mPictPointRepo.getPicturePoint(p.getId() - 1);
-                        pictPoint.observe(owner, new Observer<PicturePoint>() {
-                            @Override
-                            public void onChanged(PicturePoint picturePoint) {
-                                if (picturePoint != null) {
-                                    String[] uri = picturePoint.getPictureURI().split("/" + original + "/");
-                                    String newUri = uri[0] + "/" + current + "/" + uri[1];
-                                    PicturePoint pp = new PicturePoint(picturePoint.getPointId(), newUri);
-                                    mPictPointRepo.updatePicturePoint(pp);
-                                   Log.e("Point URI: ", pp.getPictureURI());
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        });
-    }
-
     /**
      * A default method for every class that extends AppCompatActivity that allows it to define
      * which layout it will use, as well as how define and to manipulate its contents

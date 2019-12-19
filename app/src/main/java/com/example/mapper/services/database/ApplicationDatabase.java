@@ -22,6 +22,11 @@ import com.example.mapper.services.models.VisitDAO;
 @Database(entities = {Point.class, Path.class, Visit.class, PicturePoint.class}, version = 6, exportSchema = false)
 @TypeConverters({Converters.class})
 
+/**
+ * @author Ellis Squires
+ * @version 1.0
+ * @since 1.0
+ */
 public abstract class ApplicationDatabase extends RoomDatabase {
 
     // Define Model DAOs

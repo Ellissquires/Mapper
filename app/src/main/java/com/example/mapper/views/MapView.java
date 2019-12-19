@@ -5,9 +5,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-
 import android.app.Activity;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -59,10 +57,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * @author Ellis Squires
+ * @author Tom Croasdale
+ * @author Neville Kitala
+ * @version 1.0
+ * @since 1.0
+ */
 public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback, ServiceConnection, LocationResultReceiver.Receiver {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
@@ -78,15 +84,12 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     private static final String TAG = "MapViewActivity";
     private LocationResultReceiver mReceiver;
     private PathRecorderService mService;
-
-
     private int mElapsedMinutes = 0;
     private int mElapsedSeconds = 0;
     private float mStartTime = 0;
     private Timer mTimer;
     private long mPathID;
     private List<Point> mRecordedPoints;
-
     private PathRepository mPathRepo;
     private PointRepository mPointRepo;
     private VisitRepository mVisitRepo;
@@ -98,6 +101,12 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
     private Map<String, String> pointToPictureDict;
 
+    /**
+     * A default method for every class that extends AppCompatActivity that allows it to define
+     * which layout it will use, as well as how define and to manipulate its contents
+     * This method makes use of the activity_map layout.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -316,7 +325,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                     @Override
                     public void run() {
                         TextView elapsedTime = findViewById(R.id.time_elapsed);
-                        elapsedTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+                        elapsedTime.setText(String.format(Locale.ENGLISH,"%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
                         if (++mElapsedSeconds == 60) {
                             mElapsedSeconds = 0;
                             mElapsedMinutes++;
@@ -369,7 +378,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         findViewById(R.id.final_path_view).setVisibility(View.VISIBLE);
 
-        finalTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
+        finalTime.setText(String.format(Locale.ENGLISH,"%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
         finalTemperatureText.setText(temperatureText.getText());
         finalPressureText.setText(pressureText.getText());
         finalDistanceText.setText(distanceText.getText());
@@ -377,9 +386,13 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         findViewById(R.id.path_view).setVisibility(View.GONE);
     }
 
+    /*
+        Google map initialisation
+     */
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        // Hide the path information card on map movement
         mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
             @Override
             public void onCameraMoveStarted(int reason) {
@@ -387,6 +400,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             }
         });
 
+        // Unhide the path information when the map is idle
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
@@ -430,7 +444,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         PolylineOptions options = new PolylineOptions().width(15).color(Color.BLUE).geodesic(true);
 
         // Loop points and add them to the line
-//        for(Point p : points){
+        // for(Point p : points){
         for(int i = 0; i < points.length; i ++) {
             Point p = points[i];
             LatLng mapPoint = new LatLng(p.getLat(), p.getLng());
@@ -508,6 +522,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     }
 
 
+    /*
+        Nullifies the current service once its disconnected
+     */
     @Override
     public void onServiceDisconnected(ComponentName name) {
         mService = null;
@@ -521,9 +538,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
     @Override
     public void onReceiveResult(int resultCode, Bundle bundle) {
         LatLng currentLoc = new LatLng(bundle.getDouble("lat"), bundle.getDouble("lng"));
-//        mMap.addMarker(new MarkerOptions()
-//                .position(currentLoc).title("Hi There")
-//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLoc));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 16.0f));
     }
