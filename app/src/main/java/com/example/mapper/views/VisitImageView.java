@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.card.MaterialCardView;
 
 import java.io.File;
 import java.net.URI;
@@ -96,6 +98,22 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
         Bundle bundle = getIntent().getExtras();
         File element = (File) bundle.get("image");
         String tag = (String) bundle.get("tag");
+
+        ImageButton details = (ImageButton) findViewById(R.id.fab_details);
+        final MaterialCardView card = (MaterialCardView) findViewById(R.id.final_path_view);
+        card.setVisibility(View.GONE);
+
+        details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(card.getVisibility() == View.GONE){
+                    card.setVisibility(View.VISIBLE);
+                }
+                else{
+                    card.setVisibility(View.GONE);
+                }
+            }
+        });
 
         if(element != null){
             ImageView imageView = findViewById(R.id.image);
