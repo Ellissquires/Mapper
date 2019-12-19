@@ -91,14 +91,14 @@ public class ImageFetchService {
      * @param source
      * @return
      */
-    public static List<ImageObj> getImageElements(List<File> returnedPhotos, EasyImage.ImageSource source) {
+    public static List<ImageObj> getImageElements(List<File> returnedPhotos, EasyImage.ImageSource source, Boolean bool) {
         String rotateTag = "rotate";
         String uprightTag = "upright";
 
 //        iterate over al files and convert them to objects
         List<ImageObj> imageElementList= new ArrayList<>();
         for (File file: returnedPhotos){
-            ImageObj element= new ImageObj(file);
+            ImageObj element= new ImageObj(file, bool);
 
 //            handle the image tags to determine their orientation
             if(source == EasyImage.ImageSource.CAMERA){
@@ -190,6 +190,13 @@ public class ImageFetchService {
         });
     }
 
+    /**
+     * This folder alows you to deld
+     * @param originalTitle
+     * @param newTitle
+     * @param context
+     * @param cache
+     */
     public static void editImageFolder (final String originalTitle, final String newTitle, final Context context, final CacheHandler cache){
 
         File storageDir = new File((context.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + originalTitle);
@@ -204,6 +211,9 @@ public class ImageFetchService {
         deleteImageFolder(originalTitle, context);
     }
 
+    /**
+     * Image fetch service is used to save images to the app content folder asynchronously.
+     */
     public static class SaveImagesAsyncTask extends AsyncTask<Void, Void, Void> {
 
         final List<File> mFile;
@@ -273,12 +283,27 @@ public class ImageFetchService {
         }
     }
 
+    /**
+     * This calls the async method and provides all the nessecary parameters
+     * @param mFile
+     * @param context
+     * @param title
+     * @param cache
+     * @param source
+     * @param res
+     */
     public static void saveImage(final List<File> mFile, final Context context, final String title, final CacheHandler cache, final EasyImage.ImageSource source, SaveImagesAsyncTask.AsyncResponse res) {
 
         new SaveImagesAsyncTask(mFile, context, title, cache, source, res).execute();
 
     }//saveImage
 
+    /**
+     * Gets an image from resources and converts it into an icon
+     * @param bm
+     * @param w
+     * @return
+     */
     public static Bitmap getIcon(Bitmap bm, int w){
         int width = bm.getWidth();
         float scaleWidth = ((float) w) / width;
@@ -291,6 +316,12 @@ public class ImageFetchService {
         return resizedBitmap;
     }
 
+    /**
+     * Rotates an image by the angle defined in the parameters.
+     * @param source
+     * @param angle
+     * @return
+     */
     public static Bitmap rotateBitmap(Bitmap source, float angle)
     {
         Matrix matrix = new Matrix();

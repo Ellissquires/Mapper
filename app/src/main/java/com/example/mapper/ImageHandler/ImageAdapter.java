@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapper.R;
 import com.example.mapper.services.ImageFetchService;
+import com.example.mapper.views.ImagesView;
 import com.example.mapper.views.VisitImageView;
 
 import org.jetbrains.annotations.NotNull;
@@ -106,16 +107,32 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.View_Holder>
             }
 
             itemsList.add(items.get(position));
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-            File image = itemsList.get(position).file;
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, VisitImageView.class);
-                    intent.putExtra("image", image);
-                    intent.putExtra("tag", items.get(position).getTag());
-                    context.startActivity(intent);
-                }
-            });
+            if(itemsList.get(position).getClickable()) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    File image = itemsList.get(position).file;
+
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, VisitImageView.class);
+                        intent.putExtra("image", image);
+                        intent.putExtra("tag", items.get(position).getTag());
+                        context.startActivity(intent);
+                    }
+                });
+            }
+            else{
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    File image = itemsList.get(position).file;
+
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ImagesView.class);
+                        intent.putExtra("image", image);
+                        intent.putExtra("tag", items.get(position).getTag());
+                        context.startActivity(intent);
+                    }
+                });
+            }
 
 
         }

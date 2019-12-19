@@ -92,6 +92,10 @@
             android:label="Visit View"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".views.ImagesView"
+            android:label="Image View"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".views.NewVisitView"
             android:label="New Visit"
             android:theme="@style/AppTheme.NoActionBar" />

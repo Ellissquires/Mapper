@@ -284,7 +284,7 @@ public class CameraView extends AppCompatActivity {
 
 
 
-        myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source));
+        myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos, source, false));
         mRecyclerView.setVisibility(View.VISIBLE);
         prompt.setVisibility(View.GONE);
 
@@ -301,6 +301,9 @@ public class CameraView extends AppCompatActivity {
         return activity;
     }
 
+    /**
+     * Async function to load the images into the camera.
+     */
     public static class LoadImagesAsyncTask extends AsyncTask<Void, Void, Void> {
         ImageFetchService.SaveImagesAsyncTask.AsyncResponse delegate = null;
         Context mContext;
@@ -326,7 +329,7 @@ public class CameraView extends AppCompatActivity {
             if (storageDir.exists()){
 
                 List<File> imageFiles = (Arrays.asList(storageDir.listFiles()));
-                myPictureList.addAll(ImageFetchService.getImageElements(imageFiles, null));
+                myPictureList.addAll(ImageFetchService.getImageElements(imageFiles, null, false));
 
             }
             return null;

@@ -181,6 +181,10 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
     }
 
+
+    /**
+     * Async function to load the images into the gallery.
+     */
     public static class LoadImagesAsyncTask extends AsyncTask<Void, Void, Void> {
         ImageFetchService.SaveImagesAsyncTask.AsyncResponse delegate = null;
         Context mContext;
@@ -196,7 +200,7 @@ public class GalleryView extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params){
-
+                myFolderList = new ArrayList<>();
             File storageDir = new File((mContext.getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
             if (storageDir.exists()){
                 File[] files = storageDir.listFiles();
@@ -209,7 +213,7 @@ public class GalleryView extends AppCompatActivity {
                     File[] visitFolder = file.listFiles();
                     imageFile.addAll(Arrays.asList(visitFolder));
                 }
-                myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null));
+                myPictureList.addAll(ImageFetchService.getImageElements(imageFile, null, true));
             }
             return null;
         }
