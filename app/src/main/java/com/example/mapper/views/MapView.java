@@ -123,6 +123,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // If the visit has not been passed through the context,
         // The the service is probably storing it for use.
+        // This is used when the app is closed mid-way through recording.
+        // Data needed to display it as it was before the close is given to the service,
+        // and here we get it back from the service.
         Bundle extras = getIntent().getExtras();
         if (getIntent().hasExtra(EXTRA_VISIT)) {
             mVisit = extras.getParcelable(EXTRA_VISIT);
@@ -231,6 +234,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                             p.setPathId((int)mPathID);
 
                             // Check to see if this point has an associated picture point.
+                            // If it does, create a picture point with the associated point Id
                             if (!pointToPictureDict.containsKey("" + i)) {
                                 // no picture point
                                 mPointRepo.createPoint(p);
@@ -317,6 +321,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         startTimer();
     }
 
+    /**
+     * Starts a timer for the elapsed time UI Element.
+     */
     public void startTimer() {
         mTimer = new Timer();    //declare the timer
         mTimer.scheduleAtFixedRate(new TimerTask() { //Set the schedule function and rate
@@ -337,6 +344,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         }, 0L, 1000L);
     }
 
+    /**
+     * Stops the timer.
+     */
     public void stopTimer() {
         if (mTimer != null) {
             mTimer.cancel();
@@ -362,6 +372,10 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         }
     }
 
+    /**
+     * Ends the recording, stops the timer and sets up Ui Values in the save/disccard box.
+     * @param context
+     */
     public void finishRecording(Context context) {
         //Tell the service to stop.
         PathRecorderService.stopRecordingService(context);
@@ -626,6 +640,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         findViewById(R.id.path_view).setVisibility(View.GONE);
     }
 
+    /**
+     * Called when visit information is retreived from the PathRecorderService
+     * @param resultCode integer, should only ever be = to 3
+     * @param resultData contains the Visit information
+     */
     @Override
     public void onVisitFetch(int resultCode, Bundle resultData) {
         // Retrieve the visit from the service
