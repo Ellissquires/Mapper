@@ -13,11 +13,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Picture;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -39,7 +37,6 @@ import com.example.mapper.services.PathRepository;
 import com.example.mapper.services.PicturePointRepository;
 import com.example.mapper.services.PointRepository;
 import com.example.mapper.services.VisitRepository;
-import com.example.mapper.services.models.Path;
 import com.example.mapper.services.models.PicturePoint;
 import com.example.mapper.services.models.Point;
 import com.example.mapper.services.models.RepoInsertCallback;
@@ -59,12 +56,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.antlr.v4.tool.AttributeDict;
-
-import java.security.cert.Extension;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +120,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
             PathRecorderService.fetchVisitService(getApplicationContext(), mReceiver);
         }
 
-        final FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
+        final FloatingActionButton fab_camera = findViewById(R.id.fab_camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,16 +133,15 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
 
         // Retrieve the visit from the intent
         if (mVisit != null) {
-            Log.d(TAG, "Visit ID received " + mVisit.toString());
             ((TextView) findViewById(R.id.final_title)).setText(mVisit.getTitle());
             ((TextView) findViewById(R.id.title)).setText(mVisit.getTitle());
         }
 
-        final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
-        final ImageButton fab_record = (ImageButton) findViewById(R.id.fab_record);
-        final FloatingActionButton fab_pause = (FloatingActionButton) findViewById(R.id.fab_pause);
-        final FloatingActionButton fab_resume = (FloatingActionButton) findViewById(R.id.fab_resume);
-        menu_card = (CardView) findViewById(R.id.map_menu);
+        final FloatingActionButton fab_stop = findViewById(R.id.fab_stop);
+        final ImageButton fab_record = findViewById(R.id.fab_record);
+        final FloatingActionButton fab_pause = findViewById(R.id.fab_pause);
+        final FloatingActionButton fab_resume = findViewById(R.id.fab_resume);
+        menu_card = findViewById(R.id.map_menu);
 
         if(mLocationPermissionGranted) {
             //starting the visit immediately the map starts
@@ -224,7 +215,6 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                     public void OnFinishInsert(Long rowID) {
                         mPathID = rowID;
                         mVisit.setPathId(mPathID);
-                        Log.d("MapView", "Inserted path with ID: " + mPathID);
                         // Inserting all points
                         for (int i = 0; i < mRecordedPoints.size(); i++) {
                             Point p  = mRecordedPoints.get(i);
@@ -257,7 +247,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         });
 
         // When save button is pressed
-        final Button discard_button = (Button) findViewById(R.id.discard_path_button);
+        final Button discard_button =  findViewById(R.id.discard_path_button);
         discard_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,7 +259,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        card = (MaterialCardView) findViewById(R.id.path_view);
+        card = findViewById(R.id.path_view);
     }
 
     /**
@@ -324,7 +314,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 runOnUiThread(new Runnable() { // Must be on Ui Thread to access Ui
                     @Override
                     public void run() {
-                        TextView elapsedTime = (TextView) findViewById(R.id.time_elapsed);
+                        TextView elapsedTime = findViewById(R.id.time_elapsed);
                         elapsedTime.setText(String.format("%d:%02d:%02d", mElapsedMinutes /60, mElapsedMinutes %60, mElapsedSeconds));
                         if (++mElapsedSeconds == 60) {
                             mElapsedSeconds = 0;
@@ -342,6 +332,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         }
     }
 
+    /**
+     * returns a string of image paths that have been collected from all the new images added in this activity
+     * to the previous activity. This overrides the method onBackPressed(), that typically just returns to the
+     * previous activity
+     */
     @Override
     public void onBackPressed()
     {
@@ -361,14 +356,14 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         stopTimer();
 
         // Set values in card view
-        TextView distanceText = (TextView) findViewById(R.id.current_distance);
-        TextView temperatureText = (TextView) findViewById(R.id.temperature);
-        TextView pressureText = (TextView) findViewById(R.id.pressure);
+        TextView distanceText = findViewById(R.id.current_distance);
+        TextView temperatureText = findViewById(R.id.temperature);
+        TextView pressureText = findViewById(R.id.pressure);
 
-        TextView finalDistanceText = (TextView) findViewById(R.id.final_distance);
-        TextView finalTemperatureText = (TextView) findViewById(R.id.final_temperature);
-        TextView finalPressureText = (TextView) findViewById(R.id.final_pressure);
-        TextView finalTime = (TextView) findViewById(R.id.time_elapsed);
+        TextView finalDistanceText = findViewById(R.id.final_distance);
+        TextView finalTemperatureText = findViewById(R.id.final_temperature);
+        TextView finalPressureText = findViewById(R.id.final_pressure);
+        TextView finalTime = findViewById(R.id.time_elapsed);
 
         findViewById(R.id.final_path_view).setVisibility(View.VISIBLE);
 
@@ -396,18 +391,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 card.animate().translationY(0);
             }
         });
-        try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
-            boolean success = mMap.setMapStyle(
+         mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.map_style));
-
-            if (!success) {
-            }
-        } catch (Resources.NotFoundException e) {
-
-        }
 
         // If permissions have not yet been granted, these lines get called when they are.
         if (mLocationPermissionGranted) {
@@ -415,6 +401,9 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         }
     }
 
+    /**
+     * Check for the map permissions after the map has loaded.
+     */
     public void setUpMapPostPermissionCheck() {
         getCurrentLocation();
 
@@ -423,6 +412,13 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         mMap.setOnMyLocationClickListener(this);
     }
 
+    /**
+     * Gets the points passed in as parameters, and looks for an association between that point and the
+     * the images taken during the visit. If the point the images was taken is equal to the current point
+     * then an image marker is drawn.
+     * It also uses a Google provided poly line to draw lines between the images to form a path.
+     * @param points
+     */
     public void drawPathOnMap(Point... points){
 
         // Clear current path
@@ -444,7 +440,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 mMap.addMarker(new MarkerOptions()
                         .position(mapPoint)
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .title("Photo"));
+                        .title("Start"));
             }
             else if(i == (points.length -1)){
                 Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.map_finish_pin);
@@ -452,7 +448,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
                 mMap.addMarker(new MarkerOptions()
                         .position(mapPoint)
                         .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                        .title("Photo"));
+                        .title("Finish"));
             }
 
             if (pointToPictureDict.containsKey("" + i)) {
@@ -469,7 +465,7 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         currentPath = mMap.addPolyline(options);
     }
 
-    
+
     /**
      * Starts the IntentService to get the current location, and attaches this class as the result receiver.
      */
@@ -478,11 +474,18 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         LocationFetchService.startActionGetLocation(this, mReceiver);
     }
 
+    /**
+     * What happens when my current location is clicked.
+     * @param location
+     */
     @Override
     public void onMyLocationClick(@NonNull Location location) {
         Toast.makeText(this, "Current location:\n" + location.getLongitude() + location.getLatitude(), Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * What happens when the get_my_current_location button is clicked.
+     */
     @Override
     public boolean onMyLocationButtonClick() {
         Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
@@ -491,6 +494,11 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         return false;
     }
 
+    /**
+     * Initialise the path recorder service and binds it to the service.
+     * @param name
+     * @param binder
+     */
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         PathRecorderService.PRSBinder b  = (PathRecorderService.PRSBinder) binder;
@@ -610,10 +618,10 @@ public class MapView extends FragmentActivity implements GoogleMap.OnMyLocationB
         ((TextView)findViewById(R.id.title)).setText(mVisit.getTitle());
 
 
-        final FloatingActionButton fab_stop = (FloatingActionButton) findViewById(R.id.fab_stop);
-        final ImageButton fab_record = (ImageButton) findViewById(R.id.fab_record);
-        final FloatingActionButton fab_pause = (FloatingActionButton) findViewById(R.id.fab_pause);
-        final FloatingActionButton fab_camera = (FloatingActionButton) findViewById(R.id.fab_camera);
+        final FloatingActionButton fab_stop = findViewById(R.id.fab_stop);
+        final ImageButton fab_record = findViewById(R.id.fab_record);
+        final FloatingActionButton fab_pause = findViewById(R.id.fab_pause);
+        final FloatingActionButton fab_camera = findViewById(R.id.fab_camera);
         fab_record.setVisibility(View.GONE);
         fab_pause.setVisibility(View.VISIBLE);
         fab_stop.setVisibility(View.VISIBLE);

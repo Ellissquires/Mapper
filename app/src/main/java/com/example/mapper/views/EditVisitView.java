@@ -49,8 +49,6 @@ public class EditVisitView extends AppCompatActivity {
 
     private EditText mEditTitleView;
     private EditText mEditDescriptionView;
-    private TextView mDescriptionWarning;
-    private CardView warningCard;
     private Visit mVisit;
     Handler handler = new Handler();
 
@@ -93,14 +91,18 @@ public class EditVisitView extends AppCompatActivity {
         });
     }
 
+    /**
+     * A default method for every class that extends AppCompatActivity that allows it to define
+     * which layout it will use, as well as how define and to manipulate its contents
+     * This method makes use of the activity_edit_visit layout.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_visit);
         mEditTitleView = findViewById(R.id.title);
         mEditDescriptionView = findViewById(R.id.description);
-        mDescriptionWarning = findViewById(R.id.warning);
-        warningCard = findViewById(R.id.warning_container);
 
         mVisitRepo = new VisitRepository(getApplication());
         mPathRepo = new PathRepository(getApplication());
@@ -118,11 +120,13 @@ public class EditVisitView extends AppCompatActivity {
         });
 
         Bundle extras = getIntent().getExtras();
-        mVisit = extras.getParcelable(EXTRA_EDIT_VISIT);
+        if (extras != null) {
+            mVisit = extras.getParcelable(EXTRA_EDIT_VISIT);
+        }
         mEditTitleView.setText(mVisit.getTitle());
         mEditDescriptionView.setText(mVisit.getDescription());
 
-        final Button editButton = (Button) findViewById(R.id.edit);
+        final Button editButton = findViewById(R.id.edit);
         // Setup pathless visit with title and description
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override

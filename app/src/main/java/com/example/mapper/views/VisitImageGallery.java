@@ -28,9 +28,6 @@ import static com.example.mapper.views.VisitView.EXTRA_VIEW_IMAGES;
 public class VisitImageGallery extends AppCompatActivity {
 
     private List<ImageObj> mPictureList = new ArrayList<>();
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter  mAdapter;
-    private int numberOfColumns = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +44,10 @@ public class VisitImageGallery extends AppCompatActivity {
         String title = intent.getStringExtra(EXTRA_VIEW_IMAGES);
         fetchVisitImages(title);
 
-        mRecyclerView = findViewById(R.id.visit_gallery);
+        RecyclerView mRecyclerView = findViewById(R.id.visit_gallery);
+        int numberOfColumns = 3;
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-        mAdapter = new ImageAdapter(mPictureList);
+        RecyclerView.Adapter mAdapter = new ImageAdapter(mPictureList);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -57,8 +55,11 @@ public class VisitImageGallery extends AppCompatActivity {
         File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/" + title);
         if (storageDir.exists()){
             File[] files = storageDir.listFiles();
-            List<File> images = (Arrays.asList(files));
-            mPictureList.addAll(ImageFetchService.getImageElements(images));
+            List<File> images = null;
+            if (files != null) {
+                images = (Arrays.asList(files));
+                mPictureList.addAll(ImageFetchService.getImageElements(images));
+            }
         }
     }
 

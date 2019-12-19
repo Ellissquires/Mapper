@@ -21,6 +21,8 @@ import com.example.mapper.ImageHandler.SortedImageAdapter;
 import com.example.mapper.R;
 import com.example.mapper.services.ImageFetchService;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,33 +41,23 @@ public class GalleryView extends AppCompatActivity {
 
     Handler handler = new Handler();
 
+    /**
+     * A default method for every class that extends AppCompatActivity that allows it to define
+     * which layout it will use, as well as how define and to manipulate its contents
+     * @param savedInstanceState
+     */
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
         ImageFetchService.imagePermissions(getApplicationContext(),this);
 
-        final CardView menubar = (CardView) findViewById(R.id.menubar);
-        prompt = (TextView) findViewById(R.id.prompt);
+        final CardView menubar = findViewById(R.id.menubar);
+        prompt = findViewById(R.id.prompt);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int width, int height) {
-                int scrollViewHeight = recyclerView.getChildAt(0).getHeight();
-                if (height <= scrollViewHeight) {
-                    menubar.animate().translationY(0);
-                }
-                if (height > 0)
-//                    menubar.setVisibility(recyclerView.GONE);
-                    menubar.animate().translationY(500);
-                else if (height < 0)
-//                    menubar.setVisibility(recyclerView.VISIBLE);
-                    menubar.animate().translationY(0);
-            }
-        });
-
+        mRecyclerView = findViewById(R.id.visit_gallery);
+ 
         int numberOfColumns = 3;
-
 
         initData();
 
@@ -74,7 +66,7 @@ public class GalleryView extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
-            public void onScrolled(RecyclerView recyclerView, int width, int height){
+            public void onScrolled(@NotNull RecyclerView recyclerView, int width, int height){
 
                 if (height>0)
 //                    menubar.setVisibility(recyclerView.GONE);
@@ -85,7 +77,7 @@ public class GalleryView extends AppCompatActivity {
             }
 
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     handler.postDelayed(new Runnable() {
@@ -99,6 +91,7 @@ public class GalleryView extends AppCompatActivity {
 
             }
         });
+        
         // set up the RecyclerView
         if(mAdapter.getItemCount() < 1){
             mRecyclerView.setVisibility(View.GONE);
@@ -110,13 +103,13 @@ public class GalleryView extends AppCompatActivity {
         }
 
 
-        ImageButton fab_unsorted = (ImageButton) findViewById(R.id.fab_unsorted);
-        ImageButton fab_sorted = (ImageButton) findViewById(R.id.fab_sorted);
+        ImageButton fab_unsorted = findViewById(R.id.fab_unsorted);
+        ImageButton fab_sorted =  findViewById(R.id.fab_sorted);
 
-        LinearLayout image_container = (LinearLayout) findViewById(R.id.Image_Container);
-        LinearLayout sorted_container = (LinearLayout) findViewById(R.id.Sorted_Container);
-        LinearLayout gallery_container = (LinearLayout) findViewById(R.id.Gallery_Container);
-        LinearLayout camera_container = (LinearLayout) findViewById(R.id.Camera_Container);
+        LinearLayout image_container =  findViewById(R.id.Image_Container);
+        LinearLayout sorted_container =  findViewById(R.id.Sorted_Container);
+        LinearLayout gallery_container =  findViewById(R.id.Gallery_Container);
+        LinearLayout camera_container =  findViewById(R.id.Camera_Container);
 
 
         camera_container.setVisibility(View.GONE);
@@ -140,6 +133,10 @@ public class GalleryView extends AppCompatActivity {
 
     }
 
+    /**
+     * This function toggles the ImageAdapter that organises the gallery recycler view
+     * into a group of all the images.
+     */
     private void findImages(){
         int numberOfColumns = 3;
 
@@ -150,6 +147,10 @@ public class GalleryView extends AppCompatActivity {
 
     }
 
+    /**
+     * Initialises the lists that are used in this application as soon as the activity starts. This is done in the background thread.
+     *
+     */
     private void initData(){
         File storageDir = new File((getApplicationContext().getExternalFilesDir(null).getAbsolutePath()) + "/Mapper/");
         if (storageDir.exists()){
@@ -167,6 +168,10 @@ public class GalleryView extends AppCompatActivity {
         }
     }
 
+    /**
+     * This function toggles the SortImageAdapter that organises the gallery recycler view
+     * into groups according to the visits they belong to.
+     */
     private void findSortedImages(){
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter= new SortedImageAdapter(myFolderList);

@@ -50,7 +50,6 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 public class CameraView extends AppCompatActivity {
     public static final String EXTRA_VISIT = "com.example.mapper.VISIT";
 
-    private Visit mVisit;
     private String title;
     private static final int REQUEST_CAMERA = 7500;
 
@@ -59,15 +58,19 @@ public class CameraView extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private TextView prompt;
 
-    CacheHandler cache = CacheHandler.getInstance();
+    private CacheHandler cache = CacheHandler.getInstance();
 
     private Context context;
     private Activity activity;
 
-    Handler handler = new Handler();
+    private Handler handler = new Handler();
 
-    ArrayList<String> filePath = new ArrayList<>();
+    private ArrayList<String> filePath = new ArrayList<>();
 
+    /**
+     * Easy image is a library that allows th user to upload images from the inbuilt gallery, as well as to make use of their camera
+     * Here we configure it to allow images from the gallery and from the camera.
+     */
     private void initEasyImage(){
        EasyImage.configuration(this)
                .setImagesFolderName("Mapper")
@@ -76,54 +79,47 @@ public class CameraView extends AppCompatActivity {
                .setAllowMultiplePickInGallery(true);
    }
 
+    /**
+     * A default method for every class that extends AppCompatActivity that allows it to define
+     * which layout it will use, as well as how define and to manipulate its contents
+     * @param savedInstanceState
+     */
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
         Bundle extras = getIntent().getExtras();
-        mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+        Visit mVisit = null;
+        if (extras != null) {
+            mVisit = (Visit) extras.getParcelable(EXTRA_VISIT);
+        }
 
         context = this;
 
-        title = mVisit.getTitle();
-        final CardView menubar = (CardView) findViewById(R.id.menubar);
-        prompt = (TextView) findViewById(R.id.prompt);
-        mRecyclerView = (RecyclerView) findViewById(R.id.visit_gallery);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int width, int height) {
-                int scrollViewHeight = recyclerView.getChildAt(0).getHeight();
-                if (height <= scrollViewHeight) {
-                    menubar.animate().translationY(0);
-                }
-                if (height > 0)
-//                    menubar.setVisibility(recyclerView.GONE);
-                    menubar.animate().translationY(500);
-                else if (height < 0)
-//                    menubar.setVisibility(recyclerView.VISIBLE);
-                    menubar.animate().translationY(0);
-            }
-        });
+        if (mVisit != null) {
+            title = mVisit.getTitle();
+        }
+        final CardView menubar = findViewById(R.id.menubar);
+        prompt = findViewById(R.id.prompt);
+        mRecyclerView = findViewById(R.id.visit_gallery);
 
-        // set up the RecyclerView
         int numberOfColumns = 3;
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         mAdapter= new ImageAdapter(myPictureList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
             @Override
-            public void onScrolled(RecyclerView recyclerView, int width, int height){
+            public void onScrolled(@NotNull RecyclerView recyclerView, int width, int height){
 
                 if (height>0)
-//                    menubar.setVisibility(recyclerView.GONE);
                     menubar.animate().translationY(500);
                 else if(height<0)
-//                    menubar.setVisibility(recyclerView.VISIBLE);
                     menubar.animate().translationY(0);
             }
 
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     handler.postDelayed(new Runnable() {
@@ -155,7 +151,7 @@ public class CameraView extends AppCompatActivity {
         initEasyImage();
         activity= this;
 
-        ImageButton fab_gallery = (ImageButton) findViewById(R.id.fab_gallery);
+        ImageButton fab_gallery = findViewById(R.id.fab_gallery);
         fab_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -164,7 +160,7 @@ public class CameraView extends AppCompatActivity {
             }
         });
 
-        ImageButton fab_camera = (ImageButton) findViewById(R.id.camera);
+        ImageButton fab_camera = findViewById(R.id.camera);
         fab_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,6 +181,11 @@ public class CameraView extends AppCompatActivity {
         });
     }
 
+    /**
+     * returns a string of image paths that have been collected from all the new images added in this activity
+     * to the previous activity. This overrides the method onBackPressed(), that typically just returns to the
+     * previous activity
+     */
     @Override
     public void onBackPressed()
     {
@@ -192,15 +193,6 @@ public class CameraView extends AppCompatActivity {
         returnIntent.putExtra("filename", filePath);
         setResult(Activity.RESULT_OK, returnIntent);
         super.onBackPressed();
-    }
-
-    /**
-     * Cancels this activity and returns as such.
-     */
-    private void cancelActivity () {
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_CANCELED, returnIntent);
-        finish();
     }
 
     /**
@@ -227,6 +219,13 @@ public class CameraView extends AppCompatActivity {
        ImageFetchService.imagePermissions(context,this);
     }
 
+    /**
+     * A callback function that handles the images returned by easy image. Handles
+     * Errors with the pictures retured and cancelation of the easyImage methods.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -251,6 +250,11 @@ public class CameraView extends AppCompatActivity {
         });
     }
 
+    /**
+     * This function updates the recycler view with the new images and saves them to the external
+     * drive. It contains an Async task for the
+     * @param returnedPhotos
+     */
     private void onPhotosReturned(final List<File> returnedPhotos) {
 
         myPictureList.addAll(ImageFetchService.getImageElements(returnedPhotos));
@@ -274,6 +278,10 @@ public class CameraView extends AppCompatActivity {
         mRecyclerView.scrollToPosition(returnedPhotos.size() - 1);
     }
 
+    /**
+     * Gets the current activity
+     * @return
+     */
     public Activity getActivity() {
         return activity;
     }

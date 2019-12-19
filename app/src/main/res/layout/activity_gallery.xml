@@ -107,7 +107,7 @@
                     app:backgroundTint="@android:color/transparent"
                     app:elevation="0dp"
                     app:fabSize="auto"
-                    app:srcCompat="@drawable/ic_image_black_24dp"
+                    app:srcCompat="@drawable/ic_file_upload_black_24dp"
                     app:tint="@color/txtColor"
                     tools:backgroundTint="@android:color/transparent" />
 
