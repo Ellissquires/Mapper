@@ -51,7 +51,7 @@ public class SortedImageAdapter extends RecyclerView.Adapter<SortedImageAdapter.
                 parent, false);
         View_Holder holder = new View_Holder(v);
 
-        context= parent.getContext();
+        context = parent.getContext();
         return holder;
     }
 
