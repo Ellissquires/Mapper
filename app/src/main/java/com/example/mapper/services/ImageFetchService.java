@@ -26,6 +26,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Neville Kitala
+ * @version 1.0
+ * @since 1.0
+ */
 public class ImageFetchService {
 
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 2987;

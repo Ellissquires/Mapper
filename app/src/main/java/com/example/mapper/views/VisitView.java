@@ -86,11 +86,19 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
 
     CacheHandler cache = CacheHandler.getInstance();
 
+
+    /**
+     * A default method for every class that extends AppCompatActivity that allows it to define
+     * which layout it will use, as well as how define and to manipulate its contents
+     * This method makes use of the activity_visit layout.
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visit);
 
+        // Setup the toolbar and back button functionality
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -102,7 +110,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         mVisit = extras.getParcelable(EXTRA_VISIT_VIEW);
         mContext = getApplicationContext();
 
-
+        // Access the Visit Card fields and set the values
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         visitTitleView = findViewById(R.id.title);
         visitTitleView.setText(mVisit.getTitle());
@@ -112,6 +120,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
         visitDateView = findViewById(R.id.date);
         visitDateView.setText(dateFormat.format(mVisit.getVisitDate()));
 
+        // Repository definitions
         mPathRepo = new PathRepository(getApplication());
         mVisitRepo = new VisitRepository(getApplication());
         mPictPointRepo = new PicturePointRepository(getApplication());
@@ -124,10 +133,12 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
             visitDistanceView.setText(String.format("%.2f Km", dist / 1000.0));
         }
 
+        // Map initialisation (async)
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // Load the view images page passing in the current visit title
         MaterialButton viewImagesButton = findViewById(R.id.view_images);
         viewImagesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,6 +149,7 @@ public class VisitView extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {

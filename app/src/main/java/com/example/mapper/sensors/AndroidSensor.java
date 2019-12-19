@@ -1,15 +1,12 @@
 package com.example.mapper.sensors;
 
-import android.app.Service;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,6 +14,9 @@ import java.util.TimeZone;
 
 /**
  * Android Sensor is an abstract class representing a single sensor.
+ * @author Tom Croasdale
+ * @version 1.0
+ * @since 1.0
  */
 public abstract class AndroidSensor {
 
