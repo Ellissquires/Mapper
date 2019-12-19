@@ -232,7 +232,7 @@ public class VisitImageView extends AppCompatActivity implements OnMapReadyCallb
                             public void onChanged(PicturePoint picturePoint) {
 
                                 if (picturePoint != null) {
-                                    if (picturePoint == mPoint) {
+                                    if (picturePoint.getPointId() == mPoint.getPointId()) {
                                         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.map_image_pin);
                                         bitmap = ImageFetchService.getIcon(bitmap, 250);
                                         finisherID = mMap.addMarker(new MarkerOptions()
